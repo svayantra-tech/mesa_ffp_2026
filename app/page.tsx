@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import Script from 'next/script'
+import DemoDay from '@/app/components/DemoDay'
 
 function formatRevenue(amount: number) {
   if (amount >= 100000) return `₹${(amount / 100000).toFixed(2)}L`
@@ -130,48 +132,7 @@ export default async function HomePage() {
       <hr className="section-divider" />
 
       {/* 02 — DEMO DAY */}
-      <section id="demo-day" className="numbered-section on-butter">
-        <img src="/assets/brand-element-concentric.png" alt="" className="section-brand-el" style={{ right: '-120px', top: '50%', transform: 'translateY(-50%)', width: '300px', opacity: 0.06 }} />
-        <div className="section-num reveal">02</div>
-        <div className="section-num-small reveal">How they pitched</div>
-        <h2 className="section-title reveal">DEMO DAY <span className="light">to Tier-1 VCs</span></h2>
-        <p className="section-sub reveal">
-          Students took the stage to pitch their ventures to venture capitalists from
-          Tier-1 VCs — defending their numbers, business models, and growth strategy.
-        </p>
-        <div className="demo-content">
-          <div className="demo-text">
-            <div className="demo-quote reveal d1">
-              Every team had 5 minutes to pitch, 3 minutes for Q&amp;A.
-              Judges scored on revenue, presentation quality, and growth strategy.
-              Winners earned recognition across the entire cohort.
-            </div>
-            <div className="demo-detail reveal d2">
-              Demo Day wasn&apos;t a school presentation — it was a real pitch to real investors.
-              Students defended revenue numbers, customer acquisition costs, and
-              margins under live questioning. The best teams walked away with awards
-              and the confidence that their business actually works.
-            </div>
-            <div className="marquee-wrap demo-photo-strip reveal d2">
-              <div className="marquee-track">
-                {['Pitching', 'Judges', 'Audience', 'Awards', 'Stage',
-                  'Pitching', 'Judges', 'Audience', 'Awards', 'Stage'].map((label, i) => (
-                  <div key={i} className="marquee-slot">
-                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
-                    <span>{label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="demo-stats reveal d3">
-              <div className="demo-stat-card accent"><div className="demo-stat-val">29</div><div className="demo-stat-lbl">Ventures Pitched</div></div>
-              <div className="demo-stat-card"><div className="demo-stat-val">8</div><div className="demo-stat-lbl">Awards Given</div></div>
-              <div className="demo-stat-card"><div className="demo-stat-val">5 min</div><div className="demo-stat-lbl">Per Pitch</div></div>
-              <div className="demo-stat-card"><div className="demo-stat-val">3</div><div className="demo-stat-lbl">VC Judges</div></div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <DemoDay />
 
       <hr className="section-divider" />
 
@@ -345,9 +306,7 @@ function AwardsCarousel({ awardBrands, allStudents }: { awardBrands: any[] | nul
 
 function LandingScripts() {
   return (
-    <script
-      dangerouslySetInnerHTML={{
-        __html: `
+    <Script id="landing-scripts" strategy="afterInteractive">{`
 var revealObserver = new IntersectionObserver(function(entries) {
   entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, {threshold: 0.12});
@@ -405,8 +364,7 @@ document.querySelectorAll('.reveal').forEach(function(el) { revealObserver.obser
   startAuto();
   window.addEventListener('resize', function() { buildDots(); goTo(Math.min(currentIdx, maxIdx())); });
 })();
-        `,
-      }}
-    />
+
+    `}</Script>
   )
 }
