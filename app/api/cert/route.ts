@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
 
   const fileId = match[1]
   const res = await fetch(
-    `https://drive.google.com/uc?export=download&id=${fileId}`,
+    `https://drive.google.com/uc?export=download&confirm=t&id=${fileId}`,
     { redirect: 'follow' }
   )
   if (!res.ok) return new NextResponse('Failed to fetch PDF', { status: 502 })

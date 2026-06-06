@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
 
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
 
 export default function CertificateViewer({ certUrl }: { certUrl: string }) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -28,6 +28,7 @@ export default function CertificateViewer({ certUrl }: { certUrl: string }) {
         loading={null}
         error={null}
         onLoadSuccess={() => setLoaded(true)}
+        onLoadError={(err) => console.error('PDF load error:', err)}
       >
         <Page
           pageNumber={1}
