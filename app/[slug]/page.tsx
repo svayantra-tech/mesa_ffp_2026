@@ -6,6 +6,7 @@ import Script from 'next/script'
 import MarketingAssets from './MarketingAssets'
 import AITools from './AITools'
 import Awards from './Awards'
+import CertificateViewer from './CertificateViewer'
 
 export const revalidate = 3600
 
@@ -49,13 +50,6 @@ function getInstagramHandle(instagram: string): string {
   return instagram.startsWith('@') ? instagram : `@${instagram}`
 }
 
-function getCertImageUrl(url: string | null): string | null {
-  if (!url) return null
-  const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)
-  if (!match) return null
-  return `https://drive.google.com/file/d/${match[1]}/preview`
-}
-
 function getInitials(name: string) {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 }
@@ -73,7 +67,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
   if (!student) notFound()
 
   const brand = student.brand as any
-  const certImageUrl = getCertImageUrl(student.certificate_url)
+  const hasCert = !!student.certificate_url?.match(/\/file\/d\/[a-zA-Z0-9_-]+/)
   const awards: string[] = Array.isArray(brand?.awards) ? brand.awards : []
   const videos: string[] = Array.isArray(brand?.videos) ? brand.videos.slice(0, 3) : []
   const adStatics: string[] = Array.isArray(brand?.ad_statics) ? brand.ad_statics.slice(0, 2) : []
@@ -242,16 +236,9 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
         <div className="sec-tag">11 — Programme Certification</div>
         <h2 className="sec-h">Programme Certification</h2>
         <div className="cert-center">
-          {certImageUrl ? (
+          {hasCert ? (
             <div className="cert-frame reveal d1">
-              <iframe
-                src={certImageUrl}
-                width="100%"
-                height="520px"
-                style={{ border: 'none', borderRadius: '8px' }}
-                allow="autoplay"
-                title="Certificate of Completion"
-              />
+              <CertificateViewer certUrl={student.certificate_url} />
             </div>
           ) : (
             <div className="cert-pending-card reveal d1">
@@ -260,9 +247,9 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
               <div className="cert-pending-sub">Issued by Mesa School of Business &middot; FFP 2026</div>
             </div>
           )}
-          {certImageUrl ? (
+          {hasCert ? (
             <a
-              href={certImageUrl}
+              href={`/api/cert?url=${encodeURIComponent(student.certificate_url)}`}
               download
               className="cert-download active"
             >
