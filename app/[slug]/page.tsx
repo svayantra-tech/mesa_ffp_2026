@@ -51,13 +51,9 @@ function getInstagramHandle(instagram: string): string {
 
 function getCertImageUrl(url: string | null): string | null {
   if (!url) return null
-  if (url.includes('drive.google.com/file/d/')) {
-    const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)
-    if (match) return `https://drive.google.com/uc?export=view&id=${match[1]}`
-  }
-  if (url.includes('drive.google.com')) return null
-  if (url.includes('instagram.com')) return null
-  return url
+  const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)
+  if (!match) return null
+  return `https://drive.google.com/file/d/${match[1]}/preview`
 }
 
 function getInitials(name: string) {
@@ -248,7 +244,14 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
         <div className="cert-center">
           {certImageUrl ? (
             <div className="cert-frame reveal d1">
-              <img src={certImageUrl} alt={`${student.name} — FFP Certificate of Entrepreneurship`} />
+              <iframe
+                src={certImageUrl}
+                width="100%"
+                height="520px"
+                style={{ border: 'none', borderRadius: '8px' }}
+                allow="autoplay"
+                title="Certificate of Completion"
+              />
             </div>
           ) : (
             <div className="cert-pending-card reveal d1">
