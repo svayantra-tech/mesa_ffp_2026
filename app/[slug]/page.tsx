@@ -23,7 +23,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     .select('name, brand:brands(name)')
     .eq('slug', slug)
     .single()
-  return { title: `${student?.name} — FFP 2026 Portfolio · Mesa` }
+  const brandName = Array.isArray(student?.brand) ? student.brand[0]?.name : (student?.brand as any)?.name
+  return {
+    title: `${student?.name} — FFP 2026 Portfolio · Mesa`,
+    openGraph: {
+      title: `${student?.name} — FFP 2026 Portfolio · Mesa`,
+      description: brandName ? `${brandName}` : 'Future Founder\'s Summer School 2026',
+      images: [{ url: '/assets/mesa-logo.png' }],
+    },
+  }
 }
 
 function formatRevenue(amount: number) {

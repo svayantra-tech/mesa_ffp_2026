@@ -26,6 +26,23 @@ export default async function HomePage() {
     .from('students')
     .select('name, brand_id')
 
+  const { data: programMedia } = await supabase
+    .from('program_media')
+    .select('key, value')
+
+  const media: Record<string, string> = Object.fromEntries(
+    (programMedia || []).map(({ key, value }) => [key, value])
+  )
+
+  const fleaPhotos = [
+    media.flea_photo_1,
+    media.flea_photo_2,
+    media.flea_photo_3,
+    media.flea_photo_4,
+    media.flea_photo_5,
+    media.flea_photo_6,
+  ].filter(Boolean)
+
   const ventureOrder = ['azuri', 'kintoken', 'tact', 'lysso']
   const sortedVentures = ventureOrder
     .map(slug => topVentures?.find(v => v.slug === slug))
@@ -100,7 +117,11 @@ export default async function HomePage() {
             {['Flea Market', 'Stall Setup', 'Customers', 'Products', 'Packaging', 'Vega City', 'Team Work', 'Selling',
               'Flea Market', 'Stall Setup', 'Customers', 'Products', 'Packaging', 'Vega City', 'Team Work', 'Selling'].map((label, i) => (
               <div key={i} className="marquee-slot">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+                {fleaPhotos[i % fleaPhotos.length] ? (
+                  <img src={fleaPhotos[i % fleaPhotos.length]} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                ) : (
+                  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+                )}
                 <span>{label}</span>
               </div>
             ))}
@@ -132,7 +153,15 @@ export default async function HomePage() {
       <hr className="section-divider" />
 
       {/* 02 — DEMO DAY */}
-      <DemoDay />
+      <DemoDay
+        demoVideoId={media.demo_day_video_id}
+        demoPhotos={[
+          media.demo_photo_1,
+          media.demo_photo_2,
+          media.demo_photo_3,
+          media.demo_photo_4,
+        ].filter(Boolean)}
+      />
 
       <hr className="section-divider" />
 
@@ -151,7 +180,7 @@ export default async function HomePage() {
         <div className="ventures-grid">
           {sortedVentures?.map((venture, i) => {
             const students = allStudents?.filter(s => s.brand_id === venture.id) || []
-            const founderNames = students.map(s => s.name).join(', ')
+            const founderNames = [...new Set(students.map(s => s.name))].join(', ')
             const awards = Array.isArray(venture.awards) ? venture.awards : []
             const awardLabel = ventureAwardLabels[venture.slug] || (awards.length > 0 ? String(awards[0]) : '')
             return (
@@ -269,7 +298,7 @@ function AwardsCarousel({ awardBrands, allStudents }: { awardBrands: any[] | nul
         <div className="awards-track" id="awardsTrack">
           {brands.map((brand) => {
             const students = allStudents?.filter(s => s.brand_id === brand.id) || []
-            const founderNames = students.map((s: any) => s.name).join(', ')
+            const founderNames = [...new Set(students.map((s: any) => s.name))].join(', ')
             const awards = Array.isArray(brand.awards) ? brand.awards : []
             return (
               <div key={brand.slug} className="award-card-l">

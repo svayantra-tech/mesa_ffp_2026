@@ -1,18 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
-
-const slot1Images = [
-  '/assets/demo-photo-1.jpg',
-  '/assets/demo-photo-2.jpg',
-  '/assets/demo-photo-3.jpg',
-]
-
-const slot2Images = [
-  '/assets/demo-photo-4.jpg',
-  '/assets/demo-photo-5.jpg',
-  '/assets/demo-photo-6.jpg',
-]
+import { useEffect, useRef, useState } from 'react'
 
 const CAMERA_ICON = (
   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="rgba(15,25,25,0.22)" strokeWidth="1.4">
@@ -22,66 +10,31 @@ const CAMERA_ICON = (
   </svg>
 )
 
-function CyclingSlot({ images, interval }: { images: string[]; interval: number }) {
-  const [idx, setIdx] = useState(0)
-  const [fadingIn, setFadingIn] = useState(false)
-  const [failedSrcs, setFailedSrcs] = useState<Set<string>>(new Set())
+function PhotoSlot({ src }: { src?: string }) {
+  const [failed, setFailed] = useState(false)
 
-  const handleError = useCallback((src: string) => {
-    setFailedSrcs(prev => {
-      const next = new Set(prev)
-      next.add(src)
-      return next
-    })
-  }, [])
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setFadingIn(true)
-      setTimeout(() => {
-        setIdx(prev => (prev + 1) % images.length)
-        setFadingIn(false)
-      }, 1200)
-    }, interval)
-    return () => clearInterval(timer)
-  }, [images.length, interval])
-
-  const currentSrc = images[idx]
-  const nextSrc = images[(idx + 1) % images.length]
-  const currentFailed = failedSrcs.has(currentSrc)
-  const nextFailed = failedSrcs.has(nextSrc)
+  if (!src || failed) {
+    return (
+      <div className="dd-photo-slot">
+        <div className="dd-photo-placeholder">{CAMERA_ICON}</div>
+      </div>
+    )
+  }
 
   return (
     <div className="dd-photo-slot">
-      <div className="dd-photo-layer" style={{ opacity: fadingIn ? 0 : 1 }}>
-        {currentFailed ? (
-          <div className="dd-photo-placeholder">{CAMERA_ICON}</div>
-        ) : (
-          <img
-            src={currentSrc}
-            alt="Demo Day"
-            onError={() => handleError(currentSrc)}
-          />
-        )}
-      </div>
-      <div className="dd-photo-layer" style={{ opacity: fadingIn ? 1 : 0 }}>
-        {nextFailed ? (
-          <div className="dd-photo-placeholder">{CAMERA_ICON}</div>
-        ) : (
-          <img
-            src={nextSrc}
-            alt="Demo Day"
-            onError={() => handleError(nextSrc)}
-          />
-        )}
-      </div>
+      <img src={src} alt="Demo Day" onError={() => setFailed(true)} />
     </div>
   )
 }
 
-export default function DemoDay() {
+interface DemoDayProps {
+  demoVideoId?: string | null
+  demoPhotos?: string[]
+}
+
+export default function DemoDay({ demoVideoId, demoPhotos = [] }: DemoDayProps) {
   const videoRef = useRef<HTMLDivElement>(null)
-  const iframeRef = useRef<HTMLIFrameElement>(null)
   const [videoLoaded, setVideoLoaded] = useState(false)
 
   useEffect(() => {
@@ -99,13 +52,6 @@ export default function DemoDay() {
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [videoLoaded])
-
-  useEffect(() => {
-    if (videoLoaded && iframeRef.current) {
-      const src = iframeRef.current.getAttribute('data-src')
-      if (src) iframeRef.current.src = src
-    }
   }, [videoLoaded])
 
   return (
@@ -141,20 +87,20 @@ export default function DemoDay() {
               <span className="dd-video-label">Demo Day Highlights</span>
             </div>
           )}
-          <iframe
-            ref={iframeRef}
-            src="about:blank"
-            data-src="https://www.youtube.com/embed/VIDEO_ID?enablejsapi=1&autoplay=1&mute=1&loop=1"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="dd-video-iframe"
-          />
+          {videoLoaded && demoVideoId && (
+            <iframe
+              src={`https://www.youtube.com/embed/${demoVideoId}?enablejsapi=1&autoplay=1&mute=1&loop=1`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="dd-video-iframe"
+            />
+          )}
         </div>
 
-        {/* Cycling photo slots */}
+        {/* Photo slots */}
         <div className="dd-photos-row">
-          <CyclingSlot images={slot1Images} interval={3000} />
-          <CyclingSlot images={slot2Images} interval={3800} />
+          <PhotoSlot src={demoPhotos[0]} />
+          <PhotoSlot src={demoPhotos[1]} />
         </div>
 
         {/* Stats bar */}
