@@ -700,18 +700,10 @@ section.notes-section{background:#0F1919;border-top:0.5px solid rgba(255,255,255
 /* ── MARKETING ASSETS (portfolio) ── */
 .ma-video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px}
 .ma-video-slot{
-  aspect-ratio:16/9;border-radius:10px;overflow:hidden;
-  background:#0F1919;border:2px solid transparent;
-  position:relative;transition:border-color .3s
+  aspect-ratio:9/16;border-radius:12px;overflow:hidden;
+  background:#0F1919;position:relative;pointer-events:none
 }
-.ma-video-slot iframe,.ma-video-slot>div{width:100%;height:100%;border:none;border-radius:8px}
-.ma-video-placeholder{
-  aspect-ratio:16/9;border-radius:10px;background:#FBF4D7;
-  border:.5px solid rgba(15,25,25,0.08);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px
-}
-.ma-video-placeholder svg{width:24px;height:24px;fill:rgba(186,59,65,0.15);stroke:none}
-.ma-video-placeholder span{font-size:9px;font-weight:600;color:rgba(15,25,25,0.22);text-transform:uppercase;letter-spacing:.06em}
+.ma-video-slot iframe{width:100%;height:100%;border:none}
 .ma-ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .ma-ad-slot{
   aspect-ratio:4/3;border-radius:10px;overflow:hidden;
