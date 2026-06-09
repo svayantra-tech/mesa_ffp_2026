@@ -698,10 +698,9 @@ section.notes-section{background:#0F1919;border-top:0.5px solid rgba(255,255,255
 }
 
 /* ── MARKETING ASSETS (portfolio) ── */
-.ma-video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px}
+.ma-video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
 .ma-video-slot{
-  aspect-ratio:9/16;border-radius:12px;overflow:hidden;
-  background:#0F1919;position:relative;pointer-events:none
+  aspect-ratio:9/16;width:100%;overflow:hidden;border-radius:12px
 }
 .ma-video-slot iframe{width:100%;height:100%;border:none}
 .ma-ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}

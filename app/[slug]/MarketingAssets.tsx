@@ -64,7 +64,7 @@ export default function MarketingAssets({ videos, adStatics }: Props) {
           {videoIds.map((id, i) => (
             <div key={i} className="ma-video-slot">
               <iframe
-                src={`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                src={`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`}
                 allow="autoplay; encrypted-media"
                 allowFullScreen
                 title={`Video ${i + 1}`}
