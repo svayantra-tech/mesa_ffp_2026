@@ -1,17 +1,11 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { getDirectoryStudents } from '@/lib/data'
 import DirectoryClient from './DirectoryClient'
 
 export const revalidate = 3600
 
 export default async function DirectoryPage() {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('students')
-    .select('slug, name, brand:brands(name, description)')
-    .order('name')
-
-  const students = (data as any) || []
+  const students = await getDirectoryStudents()
 
   return (
     <div className="directory-page">

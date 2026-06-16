@@ -1,30 +1,23 @@
-import { createClient } from '@/lib/supabase/server'
-import { createStaticClient } from '@/lib/supabase/static'
+import { getAllStudentSlugs, getStudentBySlug, getStudentMeta } from '@/lib/data'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
 import MarketingAssets from './MarketingAssets'
 import AITools from './AITools'
 import Awards from './Awards'
-import CertificateViewer from './CertificateViewer'
+import CertificateViewer from './CertificateViewerClient'
 
 export const revalidate = 3600
 
 export async function generateStaticParams() {
-  const supabase = createStaticClient()
-  const { data } = await supabase.from('students').select('slug')
-  return data?.map(s => ({ slug: s.slug })) ?? []
+  const slugs = await getAllStudentSlugs()
+  return slugs.map(slug => ({ slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const supabase = createStaticClient()
-  const { data: student } = await supabase
-    .from('students')
-    .select('name, brand:brands(name)')
-    .eq('slug', slug)
-    .single()
-  const brandName = Array.isArray(student?.brand) ? student.brand[0]?.name : (student?.brand as any)?.name
+  const student = await getStudentMeta(slug)
+  const brandName = student?.brand?.name
   return {
     title: `${student?.name} — FFP 2026 Portfolio · Mesa`,
     openGraph: {
@@ -56,13 +49,8 @@ function getInitials(name: string) {
 
 export default async function PortfolioPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const supabase = await createClient()
 
-  const { data: student } = await supabase
-    .from('students')
-    .select('*, brand:brands(*)')
-    .eq('slug', slug)
-    .single()
+  const student = await getStudentBySlug(slug)
 
   if (!student) notFound()
 

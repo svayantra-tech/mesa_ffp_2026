@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getBrandsBySlugs, getAwardBrands, getAllStudentsBasic, getProgramMedia } from '@/lib/data'
 import Link from 'next/link'
 import Script from 'next/script'
 import DemoDay from '@/app/components/DemoDay'
@@ -9,29 +9,15 @@ function formatRevenue(amount: number) {
 }
 
 export default async function HomePage() {
-  const supabase = await createClient()
-
-  const { data: topVentures } = await supabase
-    .from('brands')
-    .select('id, slug, name, description, revenue, customers, awards')
-    .in('slug', ['azuri', 'kintoken', 'tact', 'lysso'])
-
-  const { data: awardBrands } = await supabase
-    .from('brands')
-    .select('id, slug, name, awards')
-    .neq('awards', '[]')
-    .order('revenue', { ascending: false })
-
-  const { data: allStudents } = await supabase
-    .from('students')
-    .select('name, brand_id')
-
-  const { data: programMedia } = await supabase
-    .from('program_media')
-    .select('key, value')
+  const [topVentures, awardBrands, allStudents, programMedia] = await Promise.all([
+    getBrandsBySlugs(['azuri', 'kintoken', 'tact', 'lysso']),
+    getAwardBrands(),
+    getAllStudentsBasic(),
+    getProgramMedia(),
+  ])
 
   const media: Record<string, string> = Object.fromEntries(
-    (programMedia || []).map(({ key, value }) => [key, value])
+    programMedia.map(({ key, value }) => [key, value])
   )
 
   const fleaPhotos = [
