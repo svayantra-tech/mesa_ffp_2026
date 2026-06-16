@@ -17,18 +17,25 @@ const RIGHT_TOOLS = [
   { name: 'Claude', img: '/ai-tools/claude.png' },
 ]
 
-// Render a 3-column checkerboard; pad with empty squares so the board stays a
-// clean rectangle even with an odd number of tools.
-function Board({ tools }: { tools: { name: string; img: string }[] }) {
-  const cells = Math.ceil(tools.length / 3) * 3
+type Tool = { name: string; img: string }
+
+// 3x3 board layouts. `true` = a tool sits here (filled in reading order),
+// `false` = an empty board square. Both share the same checkerboard top + middle
+// so the two boards read as a matching pair; left just has a fuller bottom rank.
+//   Left (6):  ■ · ■      Right (5): ■ · ■
+//              · ■ ·                 · ■ ·
+//              ■ ■ ■                 ■ · ■
+const LEFT_SLOTS = [true, false, true, false, true, false, true, true, true]
+const RIGHT_SLOTS = [true, false, true, false, true, false, true, false, true]
+
+function Board({ tools, slots }: { tools: Tool[]; slots: boolean[] }) {
+  let next = 0
+  const cells = slots.map((filled) => (filled ? tools[next++] ?? null : null))
   return (
     <div className="chess-frame">
       <div className="chess-board">
-        {Array.from({ length: cells }, (_, i) => {
-          const row = Math.floor(i / 3)
-          const col = i % 3
-          const light = (row + col) % 2 === 0
-          const tool = tools[i]
+        {cells.map((tool, i) => {
+          const light = (Math.floor(i / 3) + (i % 3)) % 2 === 0
           return (
             <div key={i} className={`chess-sq ${light ? 'light' : 'dark'}`}>
               {tool && (
@@ -51,7 +58,7 @@ export default function AITools() {
   return (
     <section id="ai" className="ai-chess-section reveal">
       <div className="chess-layout">
-        <Board tools={LEFT_TOOLS} />
+        <Board tools={LEFT_TOOLS} slots={LEFT_SLOTS} />
 
         <div className="chess-center">
           <div className="chess-eyebrow">AI Tools &middot; FFP Curriculum</div>
@@ -63,7 +70,7 @@ export default function AITools() {
           <div className="chess-badge">AI Tools &middot; FFP Curriculum</div>
         </div>
 
-        <Board tools={RIGHT_TOOLS} />
+        <Board tools={RIGHT_TOOLS} slots={RIGHT_SLOTS} />
       </div>
     </section>
   )
