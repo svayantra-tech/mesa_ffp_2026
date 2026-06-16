@@ -20,12 +20,12 @@ const RIGHT_TOOLS = [
 type Tool = { name: string; img: string }
 
 // 3x3 board layouts. `true` = a tool sits here (filled in reading order),
-// `false` = an empty board square. Both share the same checkerboard top + middle
-// so the two boards read as a matching pair; left just has a fuller bottom rank.
-//   Left (6):  ■ · ■      Right (5): ■ · ■
-//              · ■ ·                 · ■ ·
-//              ■ ■ ■                 ■ · ■
-const LEFT_SLOTS = [true, false, true, false, true, false, true, true, true]
+// `false` = an empty board square. Left is a rotationally-symmetric pinwheel
+// with the 3rd, centre and 7th squares left blank; right is a checkerboard.
+//   Left (6):  ■ ■ ·      Right (5): ■ · ■
+//              ■ · ■                 · ■ ·
+//              · ■ ■                 ■ · ■
+const LEFT_SLOTS = [true, true, false, true, false, true, false, true, true]
 const RIGHT_SLOTS = [true, false, true, false, true, false, true, false, true]
 
 function Board({ tools, slots }: { tools: Tool[]; slots: boolean[] }) {
