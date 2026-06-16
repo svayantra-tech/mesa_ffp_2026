@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { Brand } from '@/lib/models/Brand'
 import { getBrand, revalidatePublic } from '@/lib/admin-data'
+import { extractYouTubeId, normalizeImageUrl } from '@/lib/normalize'
 
 export const runtime = 'nodejs'
 
@@ -25,7 +26,11 @@ export async function PUT(request: Request, { params }: Ctx) {
   for (const k of STRING_FIELDS) if (k in body) update[k] = body[k] ?? ''
   for (const k of NUMBER_FIELDS) if (k in body) update[k] = Number(body[k]) || 0
   for (const k of ARRAY_FIELDS) {
-    if (k in body) update[k] = Array.isArray(body[k]) ? body[k].filter((v: unknown) => v != null && v !== '') : []
+    if (!(k in body)) continue
+    let arr: string[] = Array.isArray(body[k]) ? body[k].filter((v: unknown) => v != null && v !== '').map(String) : []
+    if (k === 'videos') arr = arr.map(extractYouTubeId).filter(Boolean)
+    else if (k !== 'awards') arr = arr.map(normalizeImageUrl).filter(Boolean)
+    update[k] = arr
   }
 
   await connectDB()

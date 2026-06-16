@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { uploadFile } from './upload'
+import { normalizeImageUrl } from '@/lib/normalize'
 
 type Props = {
   label: string
@@ -92,7 +93,7 @@ export default function AssetListField({ label, values, onChange, accept = 'imag
               type="button"
               className="admin-btn admin-btn-sm"
               onClick={() => {
-                const u = pasteUrl.trim()
+                const u = normalizeImageUrl(pasteUrl.trim())
                 if (!u) return
                 onChange([...values, u])
                 setPasteUrl('')

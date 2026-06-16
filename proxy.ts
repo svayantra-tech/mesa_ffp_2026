@@ -5,7 +5,7 @@ import { ADMIN_BASE, ADMIN_COOKIE, verifySession } from '@/lib/admin-auth'
 const LOGIN_PATH = `${ADMIN_BASE}/login`
 const LOGIN_API = '/api/admin/login'
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   const isAdminPage = pathname.startsWith(ADMIN_BASE)

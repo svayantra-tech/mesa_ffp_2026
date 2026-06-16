@@ -54,7 +54,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
 
   if (!student) notFound()
 
-  const brand = student.brand as any
+  const brand = student.brand
   const hasCert = !!student.certificate_url?.match(/\/file\/d\/[a-zA-Z0-9_-]+/)
   const awards: string[] = Array.isArray(brand?.awards) ? brand.awards : []
   const videos: string[] = Array.isArray(brand?.videos) ? brand.videos.slice(0, 3) : []

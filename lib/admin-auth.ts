@@ -32,10 +32,17 @@ function bytesFromB64url(s: string): Uint8Array {
 }
 
 async function hmacKey(): Promise<CryptoKey> {
-  const secret = process.env.ADMIN_SESSION_SECRET || 'dev-insecure-secret'
+  const secret = process.env.ADMIN_SESSION_SECRET
+  if (!secret) {
+    // Never sign/verify with a known fallback in production — that would let
+    // anyone forge a valid admin session.
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('ADMIN_SESSION_SECRET must be set in production')
+    }
+  }
   return crypto.subtle.importKey(
     'raw',
-    bytes(secret),
+    bytes(secret || 'dev-insecure-secret'),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
     ['sign', 'verify']

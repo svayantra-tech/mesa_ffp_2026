@@ -2,8 +2,12 @@ import { NextResponse } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { Brand } from '@/lib/models/Brand'
 import { listBrands, revalidatePublic } from '@/lib/admin-data'
+import { extractYouTubeId, normalizeImageUrl } from '@/lib/normalize'
 
 export const runtime = 'nodejs'
+
+const cleanArr = (v: unknown): string[] =>
+  Array.isArray(v) ? v.filter((x) => x != null && x !== '').map(String) : []
 
 export async function GET() {
   return NextResponse.json(await listBrands())
@@ -23,11 +27,11 @@ export async function POST(request: Request) {
       description: body.description ?? '',
       revenue: Number(body.revenue) || 0,
       customers: Number(body.customers) || 0,
-      awards: body.awards ?? [],
-      videos: body.videos ?? [],
-      ad_statics: body.ad_statics ?? [],
-      flea_photos: body.flea_photos ?? [],
-      demo_photos: body.demo_photos ?? [],
+      awards: cleanArr(body.awards),
+      videos: cleanArr(body.videos).map(extractYouTubeId).filter(Boolean),
+      ad_statics: cleanArr(body.ad_statics).map(normalizeImageUrl).filter(Boolean),
+      flea_photos: cleanArr(body.flea_photos).map(normalizeImageUrl).filter(Boolean),
+      demo_photos: cleanArr(body.demo_photos).map(normalizeImageUrl).filter(Boolean),
       website: body.website ?? '',
       instagram: body.instagram ?? '',
     })

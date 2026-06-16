@@ -2,8 +2,15 @@ import { NextResponse } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { ProgramMedia } from '@/lib/models/ProgramMedia'
 import { listProgramMedia, revalidatePublic } from '@/lib/admin-data'
+import { extractYouTubeId, normalizeImageUrl } from '@/lib/normalize'
 
 export const runtime = 'nodejs'
+
+function normalizeMedia(key: string, value: string): string {
+  if (/video_id$/.test(key)) return extractYouTubeId(value)
+  if (/(photo|image|img|poster|thumb)/i.test(key)) return normalizeImageUrl(value)
+  return value
+}
 
 export async function GET() {
   return NextResponse.json(await listProgramMedia())
@@ -20,13 +27,17 @@ export async function PUT(request: Request) {
     await Promise.all(
       items
         .filter((it) => it && it.key)
-        .map((it) =>
-          ProgramMedia.updateOne(
-            { key: it.key },
-            { $set: { value: it.value ?? '' } },
+        .map((it) => {
+          // Coerce to strings so a malformed body can't smuggle a Mongo
+          // operator object into the query filter.
+          const key = String(it.key)
+          const value = String(it.value ?? '')
+          return ProgramMedia.updateOne(
+            { key },
+            { $set: { value: normalizeMedia(key, value) } },
             { upsert: true }
           )
-        )
+        })
     )
     revalidatePublic()
     return NextResponse.json({ ok: true })

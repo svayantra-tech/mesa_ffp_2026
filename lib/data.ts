@@ -88,7 +88,10 @@ export async function getStudentMeta(
     .populate('brand_id', 'name')
     .lean()
   if (!doc) return null
-  const brand = doc.brand_id && typeof doc.brand_id === 'object' ? (doc.brand_id as any) : null
+  const brand =
+    doc.brand_id && typeof doc.brand_id === 'object'
+      ? (doc.brand_id as { name?: string })
+      : null
   return { name: (doc.name as string) ?? '', brand: brand ? { name: brand.name ?? '' } : null }
 }
 
@@ -102,7 +105,10 @@ export async function getDirectoryStudents(): Promise<
     .sort({ name: 1 })
     .lean()
   return rows.map((s) => {
-    const brand = s.brand_id && typeof s.brand_id === 'object' ? (s.brand_id as any) : null
+    const brand =
+      s.brand_id && typeof s.brand_id === 'object'
+        ? (s.brand_id as { name?: string; description?: string })
+        : null
     return {
       slug: (s.slug as string) ?? '',
       name: (s.name as string) ?? '',

@@ -796,27 +796,27 @@ section.notes-section{background:#0F1919;border-top:0.5px solid rgba(255,255,255
   .ai-wheels-layout{gap:24px}
 }
 
-/* ===== AI TOOLS — CHESS BENTO ===== */
+/* ===== AI TOOLS — CHESS BOARDS ===== */
 .ai-chess-section{background:#0F1919;padding:72px 56px;border-top:0.5px solid rgba(15,25,25,0.06)}
-.chess-bento{display:grid;grid-template-columns:1.1fr 2fr;gap:18px;max-width:1000px;margin:0 auto;align-items:stretch;font-family:'Manrope',sans-serif}
-.chess-hero{background:linear-gradient(140deg,#BA3B41,#8a2c31);border-radius:22px;padding:36px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
-.chess-hero::after{content:'\265E';position:absolute;right:-16px;bottom:-44px;font-size:200px;line-height:1;color:rgba(255,255,255,0.09);pointer-events:none}
-.chess-hero-eyebrow{font-size:11px;font-weight:800;letter-spacing:.12em;color:rgba(255,255,255,0.72);text-transform:uppercase}
-.chess-hero-title{font-size:32px;font-weight:800;margin:12px 0;line-height:1.05;letter-spacing:-0.02em;color:#fff}
-.chess-hero-sub{font-size:13.5px;color:rgba(255,255,255,0.88);line-height:1.55;position:relative;z-index:1}
-.chess-hero-pill{margin-top:18px;align-self:flex-start;background:rgba(0,0,0,0.22);border:1px solid rgba(255,255,255,0.28);border-radius:30px;padding:7px 16px;font-size:12px;font-weight:700;color:#fff}
-.chess-frame{border:7px solid #1b2a27;border-radius:16px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.05),0 14px 34px rgba(0,0,0,0.45)}
-.chess-board{display:grid;grid-template-columns:repeat(4,1fr)}
-.chess-sq{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px}
+.chess-layout{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:40px;max-width:1140px;margin:0 auto;font-family:'Manrope',sans-serif}
+.chess-center{text-align:center;max-width:320px;margin:0 auto}
+.chess-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,251,243,0.35);margin-bottom:12px}
+.chess-title{font-size:32px;font-weight:800;color:#FFFBF3;margin:0 0 12px;line-height:1.1;letter-spacing:-0.02em}
+.chess-title span{color:#BA3B41}
+.chess-sub{font-size:13px;color:rgba(255,251,243,0.5);line-height:1.6;margin:0 0 20px}
+.chess-badge{display:inline-block;font-size:11px;font-weight:700;color:#BA3B41;background:rgba(186,59,65,0.12);border:1px solid rgba(186,59,65,0.3);padding:7px 16px;border-radius:30px}
+.chess-frame{width:100%;max-width:340px;margin:0 auto;border:7px solid #1b2a27;border-radius:16px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.05),0 14px 34px rgba(0,0,0,0.45)}
+.chess-board{display:grid;grid-template-columns:repeat(3,1fr)}
+.chess-sq{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
 .chess-sq.light{background:#e7ddc6}
 .chess-sq.dark{background:#233330}
-.chess-piece{width:54px;height:54px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;padding:11px;box-shadow:0 5px 12px rgba(0,0,0,0.28);transition:transform .16s}
+.chess-piece{width:48px;height:48px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;padding:10px;box-shadow:0 5px 12px rgba(0,0,0,0.28);transition:transform .16s}
 .chess-piece img{max-width:100%;max-height:100%;object-fit:contain}
-.chess-sq:hover .chess-piece{transform:translateY(-6px) scale(1.04)}
-.chess-name{font-size:11px;font-weight:800;letter-spacing:.02em}
+.chess-sq:hover .chess-piece{transform:translateY(-6px) scale(1.05)}
+.chess-name{font-size:10px;font-weight:800;letter-spacing:.02em;text-align:center;padding:0 4px}
 .chess-sq.light .chess-name{color:#4a4029}
 .chess-sq.dark .chess-name{color:#cdd8d4}
-@media(max-width:760px){.ai-chess-section{padding:56px 24px}.chess-bento{grid-template-columns:1fr}}
+@media(max-width:900px){.ai-chess-section{padding:56px 24px}.chess-layout{grid-template-columns:1fr;gap:28px}.chess-center{order:-1}}
 
 /* ===== DIRECTORY PAGE STYLES ===== */
 .directory-page{min-height:100vh;background:#FFFBF3}

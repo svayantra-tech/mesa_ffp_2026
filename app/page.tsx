@@ -1,4 +1,6 @@
-import { getBrandsBySlugs, getAwardBrands, getAllStudentsBasic, getProgramMedia } from '@/lib/data'
+import { getBrandsBySlugs, getAwardBrands, getAllStudentsBasic, getProgramMedia, type BrandShape } from '@/lib/data'
+
+type StudentBasic = { name: string; brand_id: string | null }
 import Link from 'next/link'
 import Script from 'next/script'
 import DemoDay from '@/app/components/DemoDay'
@@ -276,7 +278,7 @@ export default async function HomePage() {
   )
 }
 
-function AwardsCarousel({ awardBrands, allStudents }: { awardBrands: any[] | null; allStudents: any[] | null }) {
+function AwardsCarousel({ awardBrands, allStudents }: { awardBrands: BrandShape[] | null; allStudents: StudentBasic[] | null }) {
   const brands = awardBrands || []
   return (
     <div className="awards-carousel reveal d3" id="awardsCarousel">
@@ -284,7 +286,7 @@ function AwardsCarousel({ awardBrands, allStudents }: { awardBrands: any[] | nul
         <div className="awards-track" id="awardsTrack">
           {brands.map((brand) => {
             const students = allStudents?.filter(s => s.brand_id === brand.id) || []
-            const founderNames = [...new Set(students.map((s: any) => s.name))].join(', ')
+            const founderNames = [...new Set(students.map((s) => s.name))].join(', ')
             const awards = Array.isArray(brand.awards) ? brand.awards : []
             return (
               <div key={brand.slug} className="award-card-l">
