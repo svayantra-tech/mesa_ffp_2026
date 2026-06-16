@@ -1,3 +1,6 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 
 function extractYouTubeId(url: string): string | null {
@@ -29,11 +32,12 @@ type Props = {
 }
 
 export default function MarketingAssets({ videos, adStatics }: Props) {
-  const rawVideos = videos.slice(0, 3)
-  const rawAds = adStatics.slice(0, 2)
+  // Guard: only ever work with arrays.
+  const rawVideos = (Array.isArray(videos) ? videos : []).slice(0, 3)
+  const rawAds = (Array.isArray(adStatics) ? adStatics : []).slice(0, 2)
 
   const videoIds = rawVideos
-    .map(url => extractYouTubeId(url))
+    .map((url) => extractYouTubeId(url))
     .filter(Boolean) as string[]
 
   const adSlots = Array.from({ length: 2 }, (_, i) => {
@@ -44,38 +48,71 @@ export default function MarketingAssets({ videos, adStatics }: Props) {
   const hasVideos = videoIds.length > 0
   const hasAds = rawAds.length > 0
 
+  // Mount the YouTube iframes only once the grid is near the viewport (keeps
+  // them off the initial page load) — but reliably, via IntersectionObserver
+  // rather than native lazy iframes, which can fail to fire inside the
+  // reveal-animated, below-the-fold section.
+  const videoRef = useRef<HTMLDivElement>(null)
+  const [loadVideos, setLoadVideos] = useState(false)
+
+  useEffect(() => {
+    if (!hasVideos) return
+    const el = videoRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setLoadVideos(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '400px' }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [hasVideos])
+
   if (!hasVideos && !hasAds) return null
 
   return (
-    <section
-      id="assets"
-      className="on-cream reveal portfolio-section"
-    >
+    <section id="assets" className="on-cream reveal portfolio-section">
       <div className="sec-tag">10 — Marketing Assets Built</div>
       <h2 className="sec-h">Marketing Assets Built</h2>
       <p className="sec-sub">Videos and ad creatives produced during the 2-week FFP program.</p>
 
       {/* VIDEO SLOTS */}
       {hasVideos && (
-      <div className="asset-cat reveal d1">
-        <div className="asset-cat-header">
-          <svg viewBox="0 0 13 13"><polygon points="2,2 11,6.5 2,11" /></svg>
-          Video Creatives
+        <div className="asset-cat reveal d1">
+          <div className="asset-cat-header">
+            <svg viewBox="0 0 13 13"><polygon points="2,2 11,6.5 2,11" /></svg>
+            Video Creatives
+          </div>
+          <div className="ma-video-grid" ref={videoRef}>
+            {videoIds.map((id, i) => (
+              <div key={i} className="ma-video-slot">
+                {loadVideos ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`}
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                    title={`Video ${i + 1}`}
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    className="ma-video-cover"
+                    onClick={() => setLoadVideos(true)}
+                    aria-label={`Play video ${i + 1}`}
+                  >
+                    <span className="ma-video-play">
+                      <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" /></svg>
+                    </span>
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="ma-video-grid">
-          {videoIds.map((id, i) => (
-            <div key={i} className="ma-video-slot">
-              <iframe
-                src={`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`}
-                allow="autoplay; encrypted-media"
-                allowFullScreen
-                loading="lazy"
-                title={`Video ${i + 1}`}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
       )}
 
       {/* AD STATIC SLOTS */}
