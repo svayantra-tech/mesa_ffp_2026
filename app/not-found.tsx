@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function NotFound() {
   return (
@@ -9,14 +10,16 @@ export default function NotFound() {
       alignItems: 'center',
       justifyContent: 'center',
       background: '#FDF8F0',
-      fontFamily: "'Manrope', sans-serif",
+      fontFamily: "var(--font-manrope), sans-serif",
       textAlign: 'center',
       padding: '40px 20px',
     }}>
-      <img
+      <Image
         src="/assets/mesa-logo.png"
         alt="Mesa School of Business"
-        style={{ width: '64px', height: '64px', objectFit: 'contain', marginBottom: '32px' }}
+        width={64}
+        height={64}
+        style={{ objectFit: 'contain', marginBottom: '32px' }}
       />
       <h1 style={{
         fontSize: '48px',

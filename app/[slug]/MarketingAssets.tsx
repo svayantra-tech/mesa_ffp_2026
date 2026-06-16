@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 function extractYouTubeId(url: string): string | null {
   if (!url) return null
   if (url.includes('instagram.com')) return null
@@ -67,6 +69,7 @@ export default function MarketingAssets({ videos, adStatics }: Props) {
                 src={`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`}
                 allow="autoplay; encrypted-media"
                 allowFullScreen
+                loading="lazy"
                 title={`Video ${i + 1}`}
               />
             </div>
@@ -90,7 +93,7 @@ export default function MarketingAssets({ videos, adStatics }: Props) {
             if (slot.url && slot.isImage) {
               return (
                 <div key={i} className="ma-ad-slot">
-                  <img src={slot.url} alt={`Ad creative ${i + 1}`} />
+                  <Image src={slot.url} alt={`Ad creative ${i + 1}`} fill sizes="(max-width: 900px) 100vw, 420px" style={{ objectFit: 'cover' }} />
                 </div>
               )
             }

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { getDirectoryStudents } from '@/lib/data'
 import DirectoryClient from './DirectoryClient'
 
@@ -12,7 +13,7 @@ export default async function DirectoryPage() {
       <nav>
         <div className="nav-left">
           <Link href="/">
-            <img src="/assets/mesa-logo.png" alt="Mesa School of Business" className="nav-logo" />
+            <Image src="/assets/mesa-logo.png" alt="Mesa School of Business" width={75} height={28} className="nav-logo" priority />
           </Link>
         </div>
         <div className="nav-center">

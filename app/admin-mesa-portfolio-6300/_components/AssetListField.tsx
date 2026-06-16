@@ -64,6 +64,9 @@ export default function AssetListField({ label, values, onChange, accept = 'imag
         <div className="asset-grid">
           {values.map((url, i) => (
             <div key={`${url}-${i}`} className="asset-thumb">
+              {/* Admin preview of an arbitrary user-pasted url — next/image can't
+                  optimize unknown hosts, so a plain img is correct here. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={url} alt={`asset ${i + 1}`} />
               <button type="button" className="asset-thumb-x" onClick={() => remove(i)} title="Remove">
                 ×

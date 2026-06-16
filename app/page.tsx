@@ -2,6 +2,7 @@ import { getBrandsBySlugs, getAwardBrands, getAllStudentsBasic, getProgramMedia,
 
 type StudentBasic = { name: string; brand_id: string | null }
 import Link from 'next/link'
+import Image from 'next/image'
 import Script from 'next/script'
 import DemoDay from '@/app/components/DemoDay'
 
@@ -49,7 +50,7 @@ export default async function HomePage() {
       <nav>
         <div className="nav-left">
           <Link href="/">
-            <img src="/assets/mesa-logo.png" alt="Mesa School of Business" className="nav-logo" />
+            <Image src="/assets/mesa-logo.png" alt="Mesa School of Business" width={75} height={28} className="nav-logo" priority />
           </Link>
         </div>
         <div className="nav-center">
@@ -91,7 +92,7 @@ export default async function HomePage() {
 
       {/* 01 — FLEA MARKET */}
       <section id="what-they-built" className="numbered-section on-cream">
-        <img src="/assets/brand-element-solid.png" alt="" className="section-brand-el" style={{ right: '-120px', bottom: '-100px', width: '280px', opacity: 0.05 }} />
+        <Image src="/assets/brand-element-solid.png" alt="" width={280} height={361} className="section-brand-el" style={{ right: '-120px', bottom: '-100px', opacity: 0.05 }} />
         <div className="section-num reveal">01</div>
         <div className="section-num-small reveal">What they built</div>
         <h2 className="section-title reveal">FLEA MARKET <span className="light">at Vega City Mall</span></h2>
@@ -106,7 +107,7 @@ export default async function HomePage() {
               'Flea Market', 'Stall Setup', 'Customers', 'Products', 'Packaging', 'Vega City', 'Team Work', 'Selling'].map((label, i) => (
               <div key={i} className="marquee-slot">
                 {fleaPhotos[i % fleaPhotos.length] ? (
-                  <img src={fleaPhotos[i % fleaPhotos.length]} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                  <Image src={fleaPhotos[i % fleaPhotos.length]} alt={label} fill sizes="(max-width: 768px) 320px, 420px" style={{ objectFit: 'cover' }} />
                 ) : (
                   <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
                 )}
@@ -160,7 +161,7 @@ export default async function HomePage() {
             <div className="section-num-small">Featured ventures</div>
             <h2 className="section-title">TOP <span className="light">Performers</span></h2>
           </div>
-          <Link href="/directory" style={{ fontSize: '12px', fontWeight: 700, color: '#BA3B41', textDecoration: 'none', letterSpacing: '.03em', display: 'flex', alignItems: 'center', gap: '4px', fontFamily: "'Manrope',sans-serif" }}>
+          <Link href="/directory" style={{ fontSize: '12px', fontWeight: 700, color: '#BA3B41', textDecoration: 'none', letterSpacing: '.03em', display: 'flex', alignItems: 'center', gap: '4px', fontFamily: "var(--font-manrope),sans-serif" }}>
             View all 29 ventures
             <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="#BA3B41" strokeWidth="2"><path d="M4 2l4 4-4 4" /></svg>
           </Link>
@@ -208,7 +209,7 @@ export default async function HomePage() {
       {/* AWARDS CAROUSEL */}
       <section className="awards-landing">
         <div className="awards-bg-text">Awards</div>
-        <img src="/assets/brand-element-concentric.png" alt="" className="section-brand-el" style={{ right: '-140px', top: '-80px', width: '340px', opacity: 0.04 }} />
+        <Image src="/assets/brand-element-concentric.png" alt="" width={340} height={443} className="section-brand-el" style={{ right: '-140px', top: '-80px', opacity: 0.04 }} />
         <div className="awards-landing-tag reveal">Recognition &middot; Earned During FFP</div>
         <h2 className="awards-landing-title reveal d1">RECOGNITION <span className="light">&amp; Awards</span></h2>
         <p className="awards-landing-sub reveal d2">17 ventures earned awards across Demo Day, Flea Market performance, and special categories.</p>
@@ -218,7 +219,7 @@ export default async function HomePage() {
 
       {/* 03 — ENQUIRE */}
       <section id="enquire" className="numbered-section on-butter">
-        <img src="/assets/brand-element-concentric.png" alt="" className="section-brand-el" style={{ right: '-140px', top: '50%', transform: 'translateY(-50%)', width: '280px', opacity: 0.06 }} />
+        <Image src="/assets/brand-element-concentric.png" alt="" width={280} height={365} className="section-brand-el" style={{ right: '-140px', top: '50%', transform: 'translateY(-50%)', opacity: 0.06 }} />
         <div className="section-num reveal">03</div>
         <div className="section-num-small reveal">Know more</div>
         <h2 className="section-title reveal">INTERESTED <span className="light">in FFP 2027?</span></h2>
@@ -245,7 +246,7 @@ export default async function HomePage() {
 
       {/* DIRECTORY CTA */}
       <section className="directory-cta">
-        <img src="/assets/brand-element-concentric.png" alt="" className="brand-el" />
+        <Image src="/assets/brand-element-concentric.png" alt="" width={340} height={443} className="brand-el" />
         <div className="directory-cta-tag reveal">Student Directory</div>
         <h2 className="directory-cta-title reveal d1">Browse 100+ student portfolios</h2>
         <p className="directory-cta-sub reveal d2">

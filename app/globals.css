@@ -2,7 +2,7 @@
 
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Manrope',sans-serif;background:#FFFBF3;color:#0F1919;overflow-x:hidden}
+body{font-family:var(--font-manrope),sans-serif;background:#FFFBF3;color:#0F1919;overflow-x:hidden}
 :root{
   --crimson:#BA3B41;--crimson-dark:#702327;--teal:#0F1919;
   --cream:#FFFBF3;--butter:#FBF4D7;--peach:#DFA396;--lemon:#E5E55A;
@@ -46,7 +46,7 @@ nav{
 }
 .hero-tag-line{width:32px;height:1.5px;background:#BA3B41;border-radius:1px}
 .hero-headline{
-  font-family:'Manrope',sans-serif;font-size:clamp(48px,6.5vw,80px);
+  font-family:var(--font-manrope),sans-serif;font-size:clamp(48px,6.5vw,80px);
   font-weight:800;letter-spacing:-.035em;line-height:1.0;
   color:#0F1919;margin-bottom:8px;max-width:800px
 }
@@ -61,9 +61,9 @@ nav{
 }
 .stat{flex:1;padding:22px 24px;border-right:.5px solid rgba(15,25,25,0.07)}
 .stat:last-child{border-right:none}
-.stat-val{font-size:28px;font-weight:800;letter-spacing:-.02em;color:#0F1919;line-height:1;font-family:'Manrope',sans-serif}
+.stat-val{font-size:28px;font-weight:800;letter-spacing:-.02em;color:#0F1919;line-height:1;font-family:var(--font-manrope),sans-serif}
 .stat-val.red{color:#BA3B41}
-.stat-lbl{font-size:10px;font-weight:600;color:rgba(15,25,25,0.36);text-transform:uppercase;letter-spacing:.08em;margin-top:5px;font-family:'Manrope',sans-serif}
+.stat-lbl{font-size:10px;font-weight:600;color:rgba(15,25,25,0.36);text-transform:uppercase;letter-spacing:.08em;margin-top:5px;font-family:var(--font-manrope),sans-serif}
 
 /* ── SECTION DIVIDER ── */
 .section-divider{border:none;border-top:1px dashed rgba(15,25,25,0.1);margin:0}
@@ -72,9 +72,9 @@ nav{
 .numbered-section{padding:80px 56px;position:relative;overflow:hidden}
 .numbered-section.on-cream{background:#FFFBF3}
 .numbered-section.on-butter{background:#FBF4D7}
-.section-num{font-family:'Manrope',sans-serif;font-size:64px;font-weight:800;color:rgba(186,59,65,0.08);letter-spacing:-.03em;line-height:1;margin-bottom:-20px;position:relative;z-index:1}
-.section-num-small{font-family:'Manrope',sans-serif;font-size:11px;font-weight:700;color:#BA3B41;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;position:relative;z-index:2}
-.section-title{font-family:'Manrope',sans-serif;font-size:clamp(26px,3vw,40px);font-weight:800;letter-spacing:-.025em;line-height:1.1;color:#0F1919;margin-bottom:6px;position:relative;z-index:2}
+.section-num{font-family:var(--font-manrope),sans-serif;font-size:64px;font-weight:800;color:rgba(186,59,65,0.08);letter-spacing:-.03em;line-height:1;margin-bottom:-20px;position:relative;z-index:1}
+.section-num-small{font-family:var(--font-manrope),sans-serif;font-size:11px;font-weight:700;color:#BA3B41;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;position:relative;z-index:2}
+.section-title{font-family:var(--font-manrope),sans-serif;font-size:clamp(26px,3vw,40px);font-weight:800;letter-spacing:-.025em;line-height:1.1;color:#0F1919;margin-bottom:6px;position:relative;z-index:2}
 .section-title .light{font-weight:400}
 .section-sub{font-size:13px;color:rgba(15,25,25,0.44);margin-bottom:40px;max-width:520px;line-height:1.65;position:relative;z-index:2}
 .section-brand-el{position:absolute;pointer-events:none;object-fit:contain}
@@ -91,7 +91,7 @@ nav{
 .marquee-wrap:hover .marquee-track{animation-play-state:paused}
 @keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .marquee-slot{
-  flex-shrink:0;width:420px;height:320px;
+  position:relative;flex-shrink:0;width:420px;height:320px;
   background:#FBF4D7;border-radius:12px;
   border:.5px solid rgba(15,25,25,0.06);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
@@ -99,15 +99,15 @@ nav{
 }
 .marquee-slot img{width:100%;height:100%;object-fit:cover}
 .marquee-slot svg{width:36px;height:36px;stroke:rgba(186,59,65,0.18);fill:none;stroke-width:1.2}
-.marquee-slot span{font-size:10px;font-weight:600;color:rgba(15,25,25,0.2);text-transform:uppercase;letter-spacing:.07em;font-family:'Manrope',sans-serif}
+.marquee-slot span{font-size:10px;font-weight:600;color:rgba(15,25,25,0.2);text-transform:uppercase;letter-spacing:.07em;font-family:var(--font-manrope),sans-serif}
 
 /* ── HIGHLIGHT CHIPS ── */
 .highlight-strip{display:flex;gap:20px;margin-top:28px;position:relative;z-index:2}
 .highlight-item{flex:1;padding:18px 20px;background:#fff;border:.5px solid rgba(15,25,25,0.08);border-radius:10px;display:flex;align-items:flex-start;gap:12px}
 .highlight-icon{width:36px;height:36px;background:rgba(186,59,65,0.08);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .highlight-icon svg{width:16px;height:16px;stroke:#BA3B41;fill:none;stroke-width:1.8}
-.highlight-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(15,25,25,0.33);font-family:'Manrope',sans-serif}
-.highlight-val{font-size:13px;font-weight:600;color:#0F1919;margin-top:2px;font-family:'Manrope',sans-serif}
+.highlight-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(15,25,25,0.33);font-family:var(--font-manrope),sans-serif}
+.highlight-val{font-size:13px;font-weight:600;color:#0F1919;margin-top:2px;font-family:var(--font-manrope),sans-serif}
 
 /* ── DEMO DAY — DIAGONAL SPLIT ── */
 .dd-section{
@@ -165,7 +165,7 @@ nav{
 .dd-video-play svg{width:20px;height:20px;fill:#FFFBF3;stroke:none;margin-left:2px}
 .dd-video-label{
   font-size:10px;font-weight:700;color:rgba(255,251,243,0.4);
-  text-transform:uppercase;letter-spacing:.08em;font-family:'Manrope',sans-serif
+  text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-manrope),sans-serif
 }
 
 /* Cycling photo slots */
@@ -193,18 +193,18 @@ nav{
 }
 .dd-chip-val{
   font-size:15px;font-weight:800;color:#FFFBF3;
-  font-family:'Manrope',sans-serif
+  font-family:var(--font-manrope),sans-serif
 }
 .dd-chip-lbl{
   font-size:9px;font-weight:700;color:rgba(255,251,243,0.35);
   text-transform:uppercase;letter-spacing:.06em;
-  font-family:'Manrope',sans-serif
+  font-family:var(--font-manrope),sans-serif
 }
 
 /* ── ENQUIRE ── */
 .enquire-content{position:relative;z-index:2}
-.enquire-text{font-size:14px;color:rgba(15,25,25,0.52);line-height:1.75;margin-bottom:32px;max-width:560px;font-family:'Manrope',sans-serif}
-.enquire-cta{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:#BA3B41;color:#FFFBF3;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;letter-spacing:.03em;text-decoration:none;transition:background .2s}
+.enquire-text{font-size:14px;color:rgba(15,25,25,0.52);line-height:1.75;margin-bottom:32px;max-width:560px;font-family:var(--font-manrope),sans-serif}
+.enquire-cta{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:#BA3B41;color:#FFFBF3;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-manrope),sans-serif;letter-spacing:.03em;text-decoration:none;transition:background .2s}
 .enquire-cta:hover{background:#9e3137}
 .enquire-cta svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
 
@@ -218,23 +218,23 @@ nav{
 .venture-card-photo img{width:100%;height:100%;object-fit:cover}
 .venture-card-photo svg{width:28px;height:28px;stroke:rgba(186,59,65,0.2);fill:none;stroke-width:1.3}
 .venture-card-header{background:#BA3B41;padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
-.venture-card-name{font-size:15px;font-weight:800;color:#FFFBF3;font-family:'Manrope',sans-serif;letter-spacing:-.01em}
+.venture-card-name{font-size:15px;font-weight:800;color:#FFFBF3;font-family:var(--font-manrope),sans-serif;letter-spacing:-.01em}
 .venture-card-award{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,251,243,0.6);background:rgba(255,251,243,0.12);padding:3px 8px;border-radius:4px;white-space:nowrap}
 .venture-card-body{padding:18px}
-.venture-card-product{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:rgba(15,25,25,0.36);margin-bottom:12px;font-family:'Manrope',sans-serif}
+.venture-card-product{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:rgba(15,25,25,0.36);margin-bottom:12px;font-family:var(--font-manrope),sans-serif}
 .venture-card-stats{display:flex;gap:16px}
-.venture-card-stat-val{font-size:18px;font-weight:800;color:#0F1919;font-family:'Manrope',sans-serif;letter-spacing:-.02em}
+.venture-card-stat-val{font-size:18px;font-weight:800;color:#0F1919;font-family:var(--font-manrope),sans-serif;letter-spacing:-.02em}
 .venture-card-stat-val.red{color:#BA3B41}
-.venture-card-stat-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:rgba(15,25,25,0.32);margin-top:2px;font-family:'Manrope',sans-serif}
+.venture-card-stat-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:rgba(15,25,25,0.32);margin-top:2px;font-family:var(--font-manrope),sans-serif}
 .venture-card-team{margin-top:14px;padding-top:12px;border-top:.5px dashed rgba(15,25,25,0.1)}
-.venture-card-team-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(15,25,25,0.28);margin-bottom:4px;font-family:'Manrope',sans-serif}
-.venture-card-team-names{font-size:12px;font-weight:500;color:rgba(15,25,25,0.55);line-height:1.5;font-family:'Manrope',sans-serif}
+.venture-card-team-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(15,25,25,0.28);margin-bottom:4px;font-family:var(--font-manrope),sans-serif}
+.venture-card-team-names{font-size:12px;font-weight:500;color:rgba(15,25,25,0.55);line-height:1.5;font-family:var(--font-manrope),sans-serif}
 
 /* ── AWARDS CAROUSEL ── */
 .awards-landing{background:#0F1919;padding:80px 56px 80px;position:relative;overflow:hidden}
-.awards-bg-text{position:absolute;font-family:'Manrope',sans-serif;font-size:180px;font-weight:800;color:rgba(255,251,243,0.02);top:-20px;right:-20px;line-height:1;pointer-events:none;user-select:none;letter-spacing:-.04em}
+.awards-bg-text{position:absolute;font-family:var(--font-manrope),sans-serif;font-size:180px;font-weight:800;color:rgba(255,251,243,0.02);top:-20px;right:-20px;line-height:1;pointer-events:none;user-select:none;letter-spacing:-.04em}
 .awards-landing-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#DFA396;margin-bottom:10px}
-.awards-landing-title{font-family:'Manrope',sans-serif;font-size:clamp(26px,3vw,40px);font-weight:800;letter-spacing:-.025em;line-height:1.1;color:#FFFBF3;margin-bottom:6px}
+.awards-landing-title{font-family:var(--font-manrope),sans-serif;font-size:clamp(26px,3vw,40px);font-weight:800;letter-spacing:-.025em;line-height:1.1;color:#FFFBF3;margin-bottom:6px}
 .awards-landing-title .light{font-weight:400;color:rgba(255,251,243,0.5)}
 .awards-landing-sub{font-size:13px;color:rgba(255,251,243,0.32);margin-bottom:32px;max-width:500px;line-height:1.65}
 .awards-carousel{position:relative;z-index:2}
@@ -252,10 +252,10 @@ nav{
 .award-card-photo svg{width:32px;height:32px;stroke:rgba(255,251,243,0.12);fill:none;stroke-width:1.2}
 .award-card-body{padding:20px 20px 20px 24px;display:flex;flex-direction:column;gap:8px;flex:1}
 .award-lemon-stripe{position:absolute;top:0;left:0;width:4px;height:100%;background:#E5E55A}
-.award-venture-name{font-size:16px;font-weight:800;color:#FFFBF3;font-family:'Manrope',sans-serif;letter-spacing:-.01em}
-.award-founders{font-size:11px;font-weight:500;color:rgba(255,251,243,0.32);line-height:1.5;font-family:'Manrope',sans-serif}
+.award-venture-name{font-size:16px;font-weight:800;color:#FFFBF3;font-family:var(--font-manrope),sans-serif;letter-spacing:-.01em}
+.award-founders{font-size:11px;font-weight:500;color:rgba(255,251,243,0.32);line-height:1.5;font-family:var(--font-manrope),sans-serif}
 .award-names{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
-.award-badge{display:inline-flex;padding:3px 10px;background:rgba(229,229,90,0.12);border:.5px solid rgba(229,229,90,0.25);border-radius:4px;font-size:9px;font-weight:700;color:#E5E55A;letter-spacing:.06em;text-transform:uppercase;font-family:'Manrope',sans-serif}
+.award-badge{display:inline-flex;padding:3px 10px;background:rgba(229,229,90,0.12);border:.5px solid rgba(229,229,90,0.25);border-radius:4px;font-size:9px;font-weight:700;color:#E5E55A;letter-spacing:.06em;text-transform:uppercase;font-family:var(--font-manrope),sans-serif}
 .awards-controls{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:24px}
 .awards-arrow{
   width:36px;height:36px;border-radius:50%;border:.5px solid rgba(255,251,243,0.15);
@@ -272,9 +272,9 @@ nav{
 .directory-cta{padding:80px 56px;background:#0F1919;text-align:center;position:relative;overflow:hidden}
 .directory-cta .brand-el{position:absolute;right:-60px;top:50%;transform:translateY(-50%);width:340px;opacity:.05;pointer-events:none}
 .directory-cta-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#DFA396;margin-bottom:10px}
-.directory-cta-title{font-family:'Manrope',sans-serif;font-size:clamp(28px,3.5vw,44px);font-weight:800;letter-spacing:-.025em;line-height:1.1;color:#FFFBF3;margin-bottom:8px}
+.directory-cta-title{font-family:var(--font-manrope),sans-serif;font-size:clamp(28px,3.5vw,44px);font-weight:800;letter-spacing:-.025em;line-height:1.1;color:#FFFBF3;margin-bottom:8px}
 .directory-cta-sub{font-size:13px;color:rgba(255,251,243,0.35);margin-bottom:36px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.65}
-.directory-cta-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:#BA3B41;color:#FFFBF3;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;letter-spacing:.03em;text-decoration:none;transition:background .2s}
+.directory-cta-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:#BA3B41;color:#FFFBF3;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-manrope),sans-serif;letter-spacing:.03em;text-decoration:none;transition:background .2s}
 .directory-cta-btn:hover{background:#9e3137}
 .directory-cta-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
 
@@ -325,7 +325,7 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:24p
 
 
 /* ===== PORTFOLIO PAGE STYLES (from portfolio-index.html) ===== */
-/* Note: 'Playfair Display' replaced with 'Manrope' throughout */
+/* Note: 'Playfair Display' replaced with var(--font-manrope) throughout */
 
 /* ── NAV (portfolio) ── */
 .nav-left{display:flex;align-items:center;gap:10px}
@@ -358,7 +358,7 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:24p
 .cohort-dot svg{width:10px;height:10px;fill:none;stroke:#FFFBF3;stroke-width:2.5}
 .cohort-text{font-size:11px;font-weight:700;color:#BA3B41;letter-spacing:0.07em;text-transform:uppercase}
 .hero-name{
-  font-family:'Manrope',serif;
+  font-family:var(--font-manrope),serif;
   font-size:clamp(44px,5.5vw,68px);font-weight:800;
   letter-spacing:-0.025em;line-height:1.0;color:#0F1919;margin-bottom:6px;
   animation:fadeUp 0.7s ease 0.1s both
@@ -424,7 +424,7 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:24p
 .on-white{background:#FFFBF3}
 .sec-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#BA3B41;margin-bottom:8px}
 .sec-tag.inv{color:#DFA396}
-.sec-h{font-family:'Manrope',serif;font-size:clamp(26px,3vw,40px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;color:#0F1919;margin-bottom:6px}
+.sec-h{font-family:var(--font-manrope),serif;font-size:clamp(26px,3vw,40px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;color:#0F1919;margin-bottom:6px}
 .sec-h em{font-style:normal;font-weight:300;color:rgba(15,25,25,0.3)}
 .sec-h.inv{color:#FFFBF3}
 .sec-h.inv em{color:rgba(255,251,243,0.28);font-style:normal}
@@ -441,7 +441,7 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:24p
 .product-photo svg{width:44px;height:44px;stroke:rgba(186,59,65,0.3);fill:none;stroke-width:1.3}
 .product-photo span{font-size:11px;font-weight:600;color:rgba(15,25,25,0.28);text-transform:uppercase;letter-spacing:0.07em}
 .product-info{display:flex;flex-direction:column;gap:14px}
-.p-name{font-family:'Manrope',serif;font-size:28px;font-weight:800;color:#0F1919;margin-bottom:4px}
+.p-name{font-family:var(--font-manrope),serif;font-size:28px;font-weight:800;color:#0F1919;margin-bottom:4px}
 .p-desc{font-size:13px;color:rgba(15,25,25,0.58);line-height:1.7;margin-bottom:4px}
 .info-chip{display:flex;align-items:flex-start;gap:10px;padding:13px 16px;background:#fff;border:0.5px solid rgba(15,25,25,0.08);border-radius:8px}
 .info-chip svg{width:15px;height:15px;stroke:#BA3B41;fill:none;stroke-width:2;flex-shrink:0;margin-top:2px}
@@ -586,13 +586,13 @@ section.awards-section{background:#0F1919;border-top:0.5px solid rgba(255,255,25
 }
 .award-v2-photo-placeholder span{
   font-size:10px;font-weight:700;color:rgba(255,251,243,0.18);
-  text-transform:uppercase;letter-spacing:.06em;font-family:'Manrope',sans-serif
+  text-transform:uppercase;letter-spacing:.06em;font-family:var(--font-manrope),sans-serif
 }
 .awards-expand-btn{
   display:inline-flex;align-items:center;gap:6px;margin-top:16px;
   padding:10px 20px;border-radius:8px;border:0.5px solid rgba(255,251,243,0.12);
   background:rgba(255,251,243,0.04);color:rgba(255,251,243,0.6);
-  font-size:12px;font-weight:700;font-family:'Manrope',sans-serif;
+  font-size:12px;font-weight:700;font-family:var(--font-manrope),sans-serif;
   letter-spacing:.03em;cursor:pointer;transition:background .2s,border-color .2s
 }
 .awards-expand-btn:hover{background:rgba(255,251,243,0.08);border-color:rgba(255,251,243,0.2)}
@@ -614,7 +614,7 @@ section.awards-section{background:#0F1919;border-top:0.5px solid rgba(255,255,25
 .cert-doc-title{font-size:13px;font-weight:700;color:#0F1919;margin-top:2px}
 .cert-divider{height:0.5px;background:rgba(15,25,25,0.08);margin:0 0 20px}
 .cert-issued-to{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:rgba(15,25,25,0.3);margin-bottom:5px}
-.cert-student-name{font-family:'Manrope',serif;font-size:26px;font-weight:800;color:#0F1919;margin-bottom:5px}
+.cert-student-name{font-family:var(--font-manrope),serif;font-size:26px;font-weight:800;color:#0F1919;margin-bottom:5px}
 .cert-program{font-size:12px;color:rgba(15,25,25,0.46);line-height:1.6;margin-bottom:24px}
 .cert-sigs{display:flex;gap:28px}
 .sig-line{width:80px;height:0.5px;background:rgba(15,25,25,0.22);margin-bottom:5px}
@@ -641,7 +641,7 @@ section.notes-section{background:#0F1919;border-top:0.5px solid rgba(255,255,255
 .ntb-mentor{background:rgba(229,229,90,0.12);color:#E5E55A}
 .ntb-peer{background:rgba(93,202,165,0.12);color:#5DCAA5}
 .note-quote-mark{
-  font-family:'Manrope',serif;font-size:64px;font-weight:700;
+  font-family:var(--font-manrope),serif;font-size:64px;font-weight:700;
   color:rgba(255,251,243,0.05);line-height:0.8;margin-bottom:8px
 }
 .note-message{font-size:13px;color:rgba(255,251,243,0.72);line-height:1.75;font-style:italic;flex:1;margin-bottom:20px}
@@ -659,7 +659,7 @@ section.notes-section{background:#0F1919;border-top:0.5px solid rgba(255,255,255
   background:#BA3B41;padding:60px 56px;
   display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center
 }
-.contact-title{font-family:'Manrope',serif;font-size:34px;font-weight:800;color:#FFFBF3;letter-spacing:-0.02em;margin-bottom:8px}
+.contact-title{font-family:var(--font-manrope),serif;font-size:34px;font-weight:800;color:#FFFBF3;letter-spacing:-0.02em;margin-bottom:8px}
 .contact-title em{font-style:normal;font-weight:300;color:rgba(255,251,243,0.42)}
 .contact-email{font-size:14px;color:rgba(255,251,243,0.58)}
 .contact-email a{color:#FBF4D7;font-weight:600;text-decoration:none}
@@ -705,7 +705,7 @@ section.notes-section{background:#0F1919;border-top:0.5px solid rgba(255,255,255
 .ma-video-slot iframe{width:100%;height:100%;border:none}
 .ma-ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .ma-ad-slot{
-  aspect-ratio:4/3;border-radius:10px;overflow:hidden;
+  position:relative;aspect-ratio:4/3;border-radius:10px;overflow:hidden;
   border:.5px solid rgba(15,25,25,0.08);background:#fff
 }
 .ma-ad-slot img{width:100%;height:100%;object-fit:cover;display:block}
@@ -715,7 +715,7 @@ section.notes-section{background:#0F1919;border-top:0.5px solid rgba(255,255,255
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px
 }
 .ma-ad-placeholder svg{width:28px;height:28px;stroke:rgba(186,59,65,0.18);fill:none;stroke-width:1.2}
-.ma-ad-placeholder span{font-size:10px;font-weight:600;color:rgba(15,25,25,0.25);text-transform:uppercase;letter-spacing:.06em;font-family:'Manrope',sans-serif}
+.ma-ad-placeholder span{font-size:10px;font-weight:600;color:rgba(15,25,25,0.25);text-transform:uppercase;letter-spacing:.06em;font-family:var(--font-manrope),sans-serif}
 
 /* ── AI TOOLS SPINNING WHEELS (portfolio) ── */
 .ai-wheels-section{background:#0F1919;padding:72px 56px;overflow:hidden;border-top:0.5px solid rgba(15,25,25,0.06)}
@@ -735,14 +735,14 @@ section.notes-section{background:#0F1919;border-top:0.5px solid rgba(255,255,255
 .ai-seg path:first-child{transition:filter .2s}
 .ai-seg:hover path:first-child{filter:brightness(1.4)}
 .ai-wheel-hub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;background:#0F1919;border:1px solid rgba(255,251,243,0.1);display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2}
-.ai-hub-label{font-size:14px;font-weight:800;color:rgba(255,251,243,0.3);font-family:'Manrope',sans-serif;letter-spacing:.08em}
-.ai-hub-name{font-size:9px;font-weight:700;color:#FFFBF3;font-family:'Manrope',sans-serif;letter-spacing:.03em;text-align:center;line-height:1.2;padding:0 4px}
+.ai-hub-label{font-size:14px;font-weight:800;color:rgba(255,251,243,0.3);font-family:var(--font-manrope),sans-serif;letter-spacing:.08em}
+.ai-hub-name{font-size:9px;font-weight:700;color:#FFFBF3;font-family:var(--font-manrope),sans-serif;letter-spacing:.03em;text-align:center;line-height:1.2;padding:0 4px}
 .ai-center{text-align:center;max-width:340px}
-.ai-center-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,251,243,0.35);font-family:'Manrope',sans-serif;margin-bottom:12px}
-.ai-center-heading{font-size:32px;font-weight:800;color:#FFFBF3;font-family:'Manrope',sans-serif;margin:0 0 12px;line-height:1.1}
+.ai-center-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,251,243,0.35);font-family:var(--font-manrope),sans-serif;margin-bottom:12px}
+.ai-center-heading{font-size:32px;font-weight:800;color:#FFFBF3;font-family:var(--font-manrope),sans-serif;margin:0 0 12px;line-height:1.1}
 .ai-center-heading em{font-style:normal;color:#BA3B41}
-.ai-center-sub{font-size:13px;color:rgba(255,251,243,0.5);line-height:1.6;font-family:'Manrope',sans-serif;margin:0 0 20px}
-.ai-tool-pill{display:inline-block;padding:6px 16px;border-radius:20px;background:rgba(186,59,65,0.15);color:#BA3B41;font-size:11px;font-weight:700;font-family:'Manrope',sans-serif;letter-spacing:.04em}
+.ai-center-sub{font-size:13px;color:rgba(255,251,243,0.5);line-height:1.6;font-family:var(--font-manrope),sans-serif;margin:0 0 20px}
+.ai-tool-pill{display:inline-block;padding:6px 16px;border-radius:20px;background:rgba(186,59,65,0.15);color:#BA3B41;font-size:11px;font-weight:700;font-family:var(--font-manrope),sans-serif;letter-spacing:.04em}
 
 /* ── CERTIFICATE REDESIGN (portfolio) ── */
 .cert-center{max-width:680px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:20px}
@@ -765,12 +765,12 @@ section.notes-section{background:#0F1919;border-top:0.5px solid rgba(255,255,255
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
   padding:48px 32px
 }
-.cert-pending-title{font-size:20px;font-weight:800;color:#0F1919;text-align:center;font-family:'Manrope',sans-serif}
-.cert-pending-sub{font-size:13px;color:rgba(15,25,25,0.4);text-align:center;font-family:'Manrope',sans-serif}
+.cert-pending-title{font-size:20px;font-weight:800;color:#0F1919;text-align:center;font-family:var(--font-manrope),sans-serif}
+.cert-pending-sub{font-size:13px;color:rgba(15,25,25,0.4);text-align:center;font-family:var(--font-manrope),sans-serif}
 .cert-download{
   display:inline-flex;align-items:center;gap:8px;
   padding:12px 24px;border-radius:8px;font-size:13px;font-weight:700;
-  font-family:'Manrope',sans-serif;letter-spacing:.03em;
+  font-family:var(--font-manrope),sans-serif;letter-spacing:.03em;
   text-decoration:none;cursor:pointer;transition:background .2s;border:none
 }
 .cert-download.active{background:#BA3B41;color:#FFFBF3}
@@ -798,7 +798,7 @@ section.notes-section{background:#0F1919;border-top:0.5px solid rgba(255,255,255
 
 /* ===== AI TOOLS — CHESS BOARDS ===== */
 .ai-chess-section{background:#0F1919;padding:72px 56px;border-top:0.5px solid rgba(15,25,25,0.06)}
-.chess-layout{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:40px;max-width:1140px;margin:0 auto;font-family:'Manrope',sans-serif}
+.chess-layout{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:40px;max-width:1140px;margin:0 auto;font-family:var(--font-manrope),sans-serif}
 .chess-center{text-align:center;max-width:320px;margin:0 auto}
 .chess-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,251,243,0.35);margin-bottom:12px}
 .chess-title{font-size:32px;font-weight:800;color:#FFFBF3;margin:0 0 12px;line-height:1.1;letter-spacing:-0.02em}
@@ -825,7 +825,7 @@ section.notes-section{background:#0F1919;border-top:0.5px solid rgba(255,255,255
   max-width:480px;margin:0 auto 40px;
   padding:14px 20px;width:100%;
   border:0.5px solid rgba(15,25,25,0.12);
-  border-radius:10px;font-size:14px;font-family:'Manrope',sans-serif;
+  border-radius:10px;font-size:14px;font-family:var(--font-manrope),sans-serif;
   background:#fff;color:#0F1919;outline:none;
   transition:border-color 0.2s
 }
@@ -854,7 +854,7 @@ section.notes-section{background:#0F1919;border-top:0.5px solid rgba(255,255,255
 .share-toast{
   position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);
   background:#0F1919;color:#FFFBF3;padding:12px 24px;border-radius:8px;
-  font-size:13px;font-weight:700;font-family:'Manrope',sans-serif;
+  font-size:13px;font-weight:700;font-family:var(--font-manrope),sans-serif;
   opacity:0;transition:opacity .3s,transform .3s;z-index:9999;
   box-shadow:0 4px 20px rgba(0,0,0,0.15)
 }

@@ -14,7 +14,7 @@
   min-height: 100vh;
   background: var(--a-bg);
   color: var(--a-text);
-  font-family: 'Manrope', system-ui, sans-serif;
+  font-family: var(--font-manrope), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   letter-spacing: -0.005em;
 }

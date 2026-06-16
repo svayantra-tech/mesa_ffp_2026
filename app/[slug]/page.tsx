@@ -1,6 +1,7 @@
 import { getAllStudentSlugs, getStudentBySlug, getStudentMeta } from '@/lib/data'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import Script from 'next/script'
 import MarketingAssets from './MarketingAssets'
 import AITools from './AITools'
@@ -188,7 +189,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
           <div className="event-card reveal d1">
             <div className="carousel-wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {fleaPhotos.length > 0 ? (
-                <img src={fleaPhotos[0]} alt="Flea market" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Image src={fleaPhotos[0]} alt="Flea market" fill sizes="(max-width: 768px) 100vw, 420px" style={{ objectFit: 'cover' }} />
               ) : (
                 <div className="c-slide active">
                   <svg viewBox="0 0 32 32"><path d="M4 22l6-6 4 4 5-7 5 5" /><rect x="2" y="4" width="28" height="22" rx="3" fill="none" strokeWidth="1.5" /></svg>
@@ -230,7 +231,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
             </div>
           ) : (
             <div className="cert-pending-card reveal d1">
-              <img src="/assets/mesa-logo.png" alt="Mesa School of Business" width="48" height="48" style={{ objectFit: 'contain' }} />
+              <Image src="/assets/mesa-logo.png" alt="Mesa School of Business" width={48} height={48} style={{ objectFit: 'contain' }} />
               <div className="cert-pending-title">Certificate of Entrepreneurship</div>
               <div className="cert-pending-sub">Issued by Mesa School of Business &middot; FFP 2026</div>
             </div>

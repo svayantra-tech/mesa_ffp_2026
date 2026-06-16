@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 const LEFT_TOOLS = [
   { name: 'Lovable', img: '/ai-tools/lovable.jpg' },
   { name: 'Canva AI', img: '/ai-tools/canva.png' },
@@ -32,7 +34,7 @@ function Board({ tools }: { tools: { name: string; img: string }[] }) {
               {tool && (
                 <>
                   <div className="chess-piece">
-                    <img src={tool.img} alt={tool.name} />
+                    <Image src={tool.img} alt={tool.name} width={28} height={28} style={{ objectFit: 'contain', maxWidth: '100%', maxHeight: '100%' }} />
                   </div>
                   <div className="chess-name">{tool.name}</div>
                 </>

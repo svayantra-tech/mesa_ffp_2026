@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 
 const CAMERA_ICON = (
   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="rgba(15,25,25,0.22)" strokeWidth="1.4">
@@ -23,7 +24,14 @@ function PhotoSlot({ src }: { src?: string }) {
 
   return (
     <div className="dd-photo-slot">
-      <img src={src} alt="Demo Day" onError={() => setFailed(true)} />
+      <Image
+        src={src}
+        alt="Demo Day"
+        fill
+        sizes="(max-width: 900px) 50vw, 320px"
+        style={{ objectFit: 'cover' }}
+        onError={() => setFailed(true)}
+      />
     </div>
   )
 }
