@@ -9,7 +9,7 @@ type Student = {
   brand: { name: string; description: string } | null
 }
 
-export default function DirectoryClient({ students }: { students: Student[] }) {
+export default function DirectoryClient({ students, ventureCount }: { students: Student[]; ventureCount: number }) {
   const [search, setSearch] = useState('')
 
   const filtered = students.filter(s => {
@@ -27,7 +27,7 @@ export default function DirectoryClient({ students }: { students: Student[] }) {
         <div className="section-num-small">Student Directory</div>
         <h1 className="section-title" style={{ marginBottom: '8px' }}>ALL <span className="light">Students</span></h1>
         <p className="section-sub" style={{ maxWidth: '500px', margin: '0 auto 32px' }}>
-          {students.length} students across 29 ventures. Search by name or venture to find a portfolio.
+          {students.length} students across {ventureCount} ventures. Search by name or venture to find a portfolio.
         </p>
         <input
           type="text"

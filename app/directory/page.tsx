@@ -3,17 +3,21 @@ import Image from 'next/image'
 import { getDirectoryStudents } from '@/lib/data'
 import DirectoryClient from './DirectoryClient'
 
-export const revalidate = 3600
+// Always read live DB so the directory never serves a stale build.
+export const dynamic = 'force-dynamic'
 
 export default async function DirectoryPage() {
   const students = await getDirectoryStudents()
+  const ventureCount = new Set(
+    students.map((s) => s.brand?.name).filter(Boolean)
+  ).size
 
   return (
     <div className="directory-page">
       <nav>
         <div className="nav-left">
           <Link href="/">
-            <Image src="/assets/mesa-logo.png" alt="Mesa School of Business" width={75} height={28} className="nav-logo" priority />
+            <Image src="/assets/mesa-logo.png" alt="Mesa School of Business" width={75} height={28} quality={100} className="nav-logo" priority />
           </Link>
         </div>
         <div className="nav-center">
@@ -26,7 +30,7 @@ export default async function DirectoryPage() {
         </Link>
       </nav>
 
-      <DirectoryClient students={students} />
+      <DirectoryClient students={students} ventureCount={ventureCount} />
 
       <footer>
         <div className="footer-l">

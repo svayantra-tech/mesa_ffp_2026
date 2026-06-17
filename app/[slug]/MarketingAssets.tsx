@@ -40,13 +40,10 @@ export default function MarketingAssets({ videos, adStatics }: Props) {
     .map((url) => extractYouTubeId(url))
     .filter(Boolean) as string[]
 
-  const adSlots = Array.from({ length: 2 }, (_, i) => {
-    const url = rawAds[i] || ''
-    return { url, isImage: isDirectImageUrl(url) }
-  })
+  const adImages = rawAds.filter((url) => url && isDirectImageUrl(url))
 
   const hasVideos = videoIds.length > 0
-  const hasAds = rawAds.length > 0
+  const hasAds = adImages.length > 0
 
   // Mount the YouTube iframes only once the grid is near the viewport (keeps
   // them off the initial page load) — but reliably, via IntersectionObserver
@@ -116,37 +113,33 @@ export default function MarketingAssets({ videos, adStatics }: Props) {
       )}
 
       {/* AD STATIC SLOTS */}
-      <div className="asset-cat reveal d2" style={{ marginBottom: 0 }}>
-        <div className="asset-cat-header">
-          <svg viewBox="0 0 13 13">
-            <rect x="1" y="1" width="11" height="11" rx="2" />
-            <circle cx="4" cy="4" r="1.5" />
-            <path d="M1 9l3-3 3 2 2-3 4 4" />
-          </svg>
-          Ad Statics
-        </div>
-        <div className="ma-ad-grid">
-          {adSlots.map((slot, i) => {
-            if (slot.url && slot.isImage) {
-              return (
-                <div key={i} className="ma-ad-slot">
-                  <Image src={slot.url} alt={`Ad creative ${i + 1}`} fill sizes="(max-width: 900px) 100vw, 420px" style={{ objectFit: 'cover' }} />
-                </div>
-              )
-            }
-            return (
-              <div key={i} className="ma-ad-placeholder">
-                <svg viewBox="0 0 24 24">
-                  <rect x="3" y="3" width="18" height="18" rx="3" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <path d="M21 15l-5-5L5 21" />
-                </svg>
-                <span>Ad creative coming soon</span>
+      {hasAds && (
+        <div className="asset-cat reveal d2" style={{ marginBottom: 0 }}>
+          <div className="asset-cat-header">
+            <svg viewBox="0 0 13 13">
+              <rect x="1" y="1" width="11" height="11" rx="2" />
+              <circle cx="4" cy="4" r="1.5" />
+              <path d="M1 9l3-3 3 2 2-3 4 4" />
+            </svg>
+            Ad Statics
+          </div>
+          <div className="ma-ad-grid">
+            {adImages.map((url, i) => (
+              <div key={i} className="ma-ad-slot">
+                <Image
+                  src={url}
+                  alt={`Ad creative ${i + 1}`}
+                  width={0}
+                  height={0}
+                  sizes="(max-width: 900px) 100vw, 420px"
+                  quality={100}
+                  style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }}
+                />
               </div>
-            )
-          })}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </section>
   )
 }

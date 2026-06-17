@@ -19,6 +19,7 @@ export default function NotFound() {
         alt="Mesa School of Business"
         width={64}
         height={64}
+        quality={100}
         style={{ objectFit: 'contain', marginBottom: '32px' }}
       />
       <h1 style={{

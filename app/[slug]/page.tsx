@@ -1,4 +1,4 @@
-import { getAllStudentSlugs, getStudentBySlug, getStudentMeta } from '@/lib/data'
+import { getStudentBySlug, getStudentMeta } from '@/lib/data'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -8,12 +8,8 @@ import AITools from './AITools'
 import Awards from './Awards'
 import CertificateViewer from './CertificateViewerClient'
 
-export const revalidate = 3600
-
-export async function generateStaticParams() {
-  const slugs = await getAllStudentSlugs()
-  return slugs.map(slug => ({ slug }))
-}
+// Always read live DB so portfolios never serve a stale build.
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -62,6 +58,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
   const adStatics: string[] = Array.isArray(brand?.ad_statics) ? brand.ad_statics.slice(0, 2) : []
   const fleaPhotos: string[] = Array.isArray(brand?.flea_photos) ? brand.flea_photos : []
   const demoPhotos: string[] = Array.isArray(brand?.demo_photos) ? brand.demo_photos : []
+  const productPhoto = brand?.product_photo || ''
 
   return (
     <>
@@ -150,11 +147,20 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
         <div className="sec-tag">04 — Business Built</div>
         <h2 className="sec-h">Business Built</h2>
         <p className="sec-sub">Designed, Built, and Scaled to Real Revenue in 2 Weeks</p>
-        <div className="product-grid">
-          <div className="product-photo reveal d1">
-            <svg viewBox="0 0 44 44"><rect x="4" y="8" width="36" height="28" rx="4" /><path d="M4 16h36" /><circle cx="16" cy="26" r="4" /><path d="M16 22v8M16 26h12" /></svg>
-            <span>Product photo</span>
-          </div>
+        <div className="product-grid" style={!productPhoto ? { gridTemplateColumns: '1fr' } : undefined}>
+          {productPhoto && (
+            <div className="product-photo reveal d1">
+              <Image
+                src={productPhoto}
+                alt={`${brand?.name || 'Product'} photo`}
+                width={0}
+                height={0}
+                sizes="(max-width: 768px) 100vw, 50vw"
+                quality={100}
+                style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }}
+              />
+            </div>
+          )}
           <div className="product-info">
             <div className="reveal d1">
               <div className="p-name">{brand?.name}</div>
@@ -185,30 +191,42 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
           <div className="pc acc reveal d1"><div className="pc-val">{formatRevenue(brand?.revenue || 0)}</div><div className="pc-lbl">Revenue generated</div></div>
           <div className="pc lite reveal d2"><div className="pc-val">{brand?.customers || 0}</div><div className="pc-lbl">Customers reached</div></div>
         </div>
-        <div className="event-grid">
-          <div className="event-card reveal d1">
-            <div className="carousel-wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {fleaPhotos.length > 0 ? (
-                <Image src={fleaPhotos[0]} alt="Flea market" fill sizes="(max-width: 768px) 100vw, 420px" style={{ objectFit: 'cover' }} />
-              ) : (
-                <div className="c-slide active">
-                  <svg viewBox="0 0 32 32"><path d="M4 22l6-6 4 4 5-7 5 5" /><rect x="2" y="4" width="28" height="22" rx="3" fill="none" strokeWidth="1.5" /></svg>
-                  <span>Flea market</span>
+        {(fleaPhotos.length > 0 || demoPhotos.length > 0) && (
+          <div className="event-grid">
+            {fleaPhotos.length > 0 && (
+              <div className="event-card reveal d1">
+                <div className="carousel-wrap">
+                  <Image
+                    src={fleaPhotos[0]}
+                    alt="Flea market"
+                    width={0}
+                    height={0}
+                    sizes="(max-width: 768px) 100vw, 420px"
+                    quality={100}
+                    style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }}
+                  />
                 </div>
-              )}
-            </div>
-            <div className="event-cap"><div className="event-cap-title">Students Sold to Real Customers in Vega City Mall, Bannerghatta</div></div>
-          </div>
-          <div className="event-card reveal d2">
-            <div className="carousel-wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div className="c-slide active">
-                <svg viewBox="0 0 32 32"><rect x="4" y="4" width="24" height="18" rx="2" fill="none" strokeWidth="1.5" /><path d="M12 28h8M16 22v6" /></svg>
-                <span>Demo day</span>
+                <div className="event-cap"><div className="event-cap-title">Students Sold to Real Customers in Vega City Mall, Bannerghatta</div></div>
               </div>
-            </div>
-            <div className="event-cap"><div className="event-cap-title">Students Took the Stage to Pitch Their Ventures to Venture Capitalists from Tier-1 VCs</div></div>
+            )}
+            {demoPhotos.length > 0 && (
+              <div className="event-card reveal d2">
+                <div className="carousel-wrap">
+                  <Image
+                    src={demoPhotos[0]}
+                    alt="Demo day"
+                    width={0}
+                    height={0}
+                    sizes="(max-width: 768px) 100vw, 420px"
+                    quality={100}
+                    style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }}
+                  />
+                </div>
+                <div className="event-cap"><div className="event-cap-title">Students Took the Stage to Pitch Their Ventures to Venture Capitalists from Tier-1 VCs</div></div>
+              </div>
+            )}
           </div>
-        </div>
+        )}
       </section>
 
       {/* ASSETS */}
@@ -231,7 +249,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
             </div>
           ) : (
             <div className="cert-pending-card reveal d1">
-              <Image src="/assets/mesa-logo.png" alt="Mesa School of Business" width={48} height={48} style={{ objectFit: 'contain' }} />
+              <Image src="/assets/mesa-logo.png" alt="Mesa School of Business" width={48} height={48} quality={100} style={{ objectFit: 'contain' }} />
               <div className="cert-pending-title">Certificate of Entrepreneurship</div>
               <div className="cert-pending-sub">Issued by Mesa School of Business &middot; FFP 2026</div>
             </div>

@@ -20,6 +20,7 @@ export type AdminBrand = {
   demo_photos: string[]
   website: string
   instagram: string
+  product_photo: string
 }
 
 export type AdminStudent = {
@@ -48,6 +49,7 @@ export function toAdminBrand(b: any): AdminBrand {
     demo_photos: b.demo_photos ?? [],
     website: b.website ?? '',
     instagram: b.instagram ?? '',
+    product_photo: b.product_photo ?? '',
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */

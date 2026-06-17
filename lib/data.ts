@@ -20,6 +20,7 @@ export type BrandShape = {
   demo_photos: string[]
   website: string
   instagram: string
+  product_photo: string
 }
 
 export type StudentShape = {
@@ -48,6 +49,7 @@ function serializeBrand(b: any): BrandShape {
     demo_photos: b.demo_photos ?? [],
     website: b.website ?? '',
     instagram: b.instagram ?? '',
+    product_photo: b.product_photo ?? '',
   }
 }
 

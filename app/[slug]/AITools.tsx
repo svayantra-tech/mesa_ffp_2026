@@ -41,7 +41,7 @@ function Board({ tools, slots }: { tools: Tool[]; slots: boolean[] }) {
               {tool && (
                 <>
                   <div className="chess-piece">
-                    <Image src={tool.img} alt={tool.name} width={28} height={28} style={{ objectFit: 'contain', maxWidth: '100%', maxHeight: '100%' }} />
+                    <Image src={tool.img} alt={tool.name} width={28} height={28} quality={100} style={{ objectFit: 'contain', maxWidth: '100%', maxHeight: '100%' }} />
                   </div>
                   <div className="chess-name">{tool.name}</div>
                 </>
@@ -64,7 +64,7 @@ export default function AITools() {
           <div className="chess-eyebrow">AI Tools &middot; FFP Curriculum</div>
           <h2 className="chess-title">AI Tools <span>Used</span></h2>
           <p className="chess-sub">
-            Every move calculated. Students played 11 AI tools to build brands, create content,
+            Every move calculated. Students played 10+ AI tools to build brands, create content,
             launch websites, and grow their real business.
           </p>
           <div className="chess-badge">AI Tools &middot; FFP Curriculum</div>

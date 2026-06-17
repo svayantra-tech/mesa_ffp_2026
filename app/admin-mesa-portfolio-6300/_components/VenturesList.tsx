@@ -6,6 +6,33 @@ import type { AdminBrand } from '@/lib/admin-data'
 
 const BASE = '/admin-mesa-portfolio-6300'
 
+function completionScore(b: AdminBrand): number {
+  return Math.round(
+    [!!b.product_photo, b.videos.length > 0, b.ad_statics.length > 0, b.flea_photos.length > 0, b.demo_photos.length > 0]
+      .filter(Boolean).length / 5 * 100
+  )
+}
+
+function CompletionRing({ pct }: { pct: number }) {
+  const r = 13
+  const circ = 2 * Math.PI * r
+  const dash = (pct / 100) * circ
+  const color = pct >= 80 ? '#22c55e' : pct >= 40 ? '#f59e0b' : '#ef4444'
+  return (
+    <svg width="34" height="34" viewBox="0 0 34 34" style={{ flexShrink: 0 }}>
+      <circle cx="17" cy="17" r={r} fill="none" stroke="#e8e0cc" strokeWidth="3" />
+      <circle
+        cx="17" cy="17" r={r} fill="none"
+        stroke={color} strokeWidth="3"
+        strokeDasharray={`${dash} ${circ - dash}`}
+        strokeLinecap="round"
+        transform="rotate(-90 17 17)"
+      />
+      <text x="17" y="21" textAnchor="middle" fontSize="7.5" fontWeight="700" fill={color}>{pct}%</text>
+    </svg>
+  )
+}
+
 export default function VenturesList({ brands }: { brands: AdminBrand[] }) {
   const [q, setQ] = useState('')
   const filtered = brands.filter((b) => {
@@ -25,11 +52,14 @@ export default function VenturesList({ brands }: { brands: AdminBrand[] }) {
       <div className="admin-list">
         {filtered.map((b) => (
           <div key={b.id} className="admin-list-item">
-            <div>
-              <Link href={`${BASE}/ventures/${b.id}`}>{b.name}</Link>
-              <div className="admin-list-meta">
-                /{b.slug} · ₹{b.revenue.toLocaleString('en-IN')} · {b.customers} customers ·{' '}
-                {b.flea_photos.length + b.demo_photos.length + b.ad_statics.length} images
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <CompletionRing pct={completionScore(b)} />
+              <div>
+                <Link href={`${BASE}/ventures/${b.id}`}>{b.name}</Link>
+                <div className="admin-list-meta">
+                  /{b.slug} · ₹{b.revenue.toLocaleString('en-IN')} · {b.customers} customers ·{' '}
+                  {b.flea_photos.length + b.demo_photos.length + b.ad_statics.length} images
+                </div>
               </div>
             </div>
             <Link href={`${BASE}/ventures/${b.id}`} className="admin-btn admin-btn-sm">Edit</Link>

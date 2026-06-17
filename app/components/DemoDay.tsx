@@ -28,6 +28,7 @@ function PhotoSlot({ src }: { src?: string }) {
         src={src}
         alt="Demo Day"
         fill
+        quality={100}
         sizes="(max-width: 900px) 50vw, 320px"
         style={{ objectFit: 'cover' }}
         onError={() => setFailed(true)}
