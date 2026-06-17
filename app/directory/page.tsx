@@ -5,6 +5,7 @@ import DirectoryClient from './DirectoryClient'
 
 // Always read live DB so the directory never serves a stale build.
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default async function DirectoryPage() {
   const students = await getDirectoryStudents()

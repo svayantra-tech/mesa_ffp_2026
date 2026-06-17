@@ -10,6 +10,7 @@ import CertificateViewer from './CertificateViewerClient'
 
 // Always read live DB so portfolios never serve a stale build.
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
