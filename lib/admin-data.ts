@@ -31,6 +31,7 @@ export type AdminStudent = {
   certificate_url: string
   brand_id: string | null
   brandName: string
+  mediaScore: number
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -68,10 +69,17 @@ export async function getBrand(id: string): Promise<AdminBrand | null> {
 
 export async function listStudents(): Promise<AdminStudent[]> {
   await connectDB()
-  const rows = await Student.find({}).populate('brand_id', 'name').sort({ name: 1 }).lean()
+  const rows = await Student.find({}).populate('brand_id', 'name product_photo videos ad_statics flea_photos demo_photos').sort({ name: 1 }).lean()
   return rows.map((s) => {
     /* eslint-disable @typescript-eslint/no-explicit-any */
     const brand = s.brand_id && typeof s.brand_id === 'object' ? (s.brand_id as any) : null
+    const mediaScore = brand ? [
+      !!brand.product_photo,
+      Array.isArray(brand.videos) && brand.videos.length > 0,
+      Array.isArray(brand.ad_statics) && brand.ad_statics.length > 0,
+      Array.isArray(brand.flea_photos) && brand.flea_photos.length > 0,
+      Array.isArray(brand.demo_photos) && brand.demo_photos.length > 0,
+    ].filter(Boolean).length : 0
     return {
       id: String(s._id),
       slug: (s.slug as string) ?? '',
@@ -80,6 +88,7 @@ export async function listStudents(): Promise<AdminStudent[]> {
       certificate_url: (s.certificate_url as string) ?? '',
       brand_id: brand ? String(brand._id) : s.brand_id ? String(s.brand_id) : null,
       brandName: brand?.name ?? '',
+      mediaScore,
     }
     /* eslint-enable @typescript-eslint/no-explicit-any */
   })

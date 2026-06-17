@@ -84,7 +84,7 @@ export default function MarketingAssets({ videos, adStatics }: Props) {
             <svg viewBox="0 0 13 13"><polygon points="2,2 11,6.5 2,11" /></svg>
             Video Creatives
           </div>
-          <div className="ma-video-grid" ref={videoRef}>
+          <div className="ma-video-grid" ref={videoRef} style={{ gridTemplateColumns: videoIds.length === 1 ? '1fr' : videoIds.length === 2 ? '1fr 1fr' : 'repeat(3, 1fr)', maxWidth: videoIds.length === 1 ? 320 : 'none' }}>
             {videoIds.map((id, i) => (
               <div key={i} className="ma-video-slot">
                 {loadVideos ? (
@@ -123,7 +123,7 @@ export default function MarketingAssets({ videos, adStatics }: Props) {
             </svg>
             Ad Statics
           </div>
-          <div className="ma-ad-grid">
+          <div className="ma-ad-grid" style={{ gridTemplateColumns: adImages.length === 1 ? '1fr' : '1fr 1fr', maxWidth: adImages.length === 1 ? 420 : 'none' }}>
             {adImages.map((url, i) => (
               <div key={i} className="ma-ad-slot">
                 <Image

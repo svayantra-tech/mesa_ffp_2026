@@ -7,7 +7,7 @@ import type { AdminStudent } from '@/lib/admin-data'
 const BASE = '/admin-mesa-portfolio-6300'
 
 function studentScore(s: AdminStudent): number {
-  return Math.round([!!s.brand_id, !!s.certificate_url].filter(Boolean).length / 2 * 100)
+  return Math.round((s.mediaScore + (s.certificate_url ? 1 : 0) + (s.email ? 1 : 0)) / 7 * 100)
 }
 
 function StudentRing({ pct }: { pct: number }) {
