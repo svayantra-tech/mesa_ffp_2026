@@ -32,7 +32,7 @@ export default function CertificateViewerClient({ certUrl }: { certUrl: string }
   }, [])
 
   return (
-    <div ref={ref} style={{ width: '100%', minHeight: 520 }}>
+    <div ref={ref} style={{ width: '100%', minHeight: inView ? undefined : 520 }}>
       {inView && <CertificateViewer certUrl={certUrl} />}
     </div>
   )

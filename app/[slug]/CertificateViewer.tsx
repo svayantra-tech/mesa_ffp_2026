@@ -22,7 +22,18 @@ export default function CertificateViewer({ certUrl }: { certUrl: string }) {
   const proxyUrl = `/api/cert?url=${encodeURIComponent(certUrl)}`
 
   return (
-    <div ref={containerRef} style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', background: '#FBF4D7', minHeight: loaded ? undefined : '520px' }}>
+    <div
+      ref={containerRef}
+      style={{
+        width: '100%',
+        borderRadius: 12,
+        overflow: 'hidden',
+        background: loaded ? 'transparent' : '#FBF4D7',
+        minHeight: loaded ? undefined : 520,
+        boxShadow: loaded ? '0 10px 40px rgba(0,0,0,0.12)' : undefined,
+        lineHeight: 0,
+      }}
+    >
       <Document
         file={proxyUrl}
         loading={null}
@@ -35,6 +46,7 @@ export default function CertificateViewer({ certUrl }: { certUrl: string }) {
           width={width}
           renderTextLayer={false}
           renderAnnotationLayer={false}
+          canvasBackground="transparent"
         />
       </Document>
     </div>
