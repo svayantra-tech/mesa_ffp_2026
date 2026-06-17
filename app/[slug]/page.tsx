@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: {
       title: `${student?.name} — FFP 2026 Portfolio · Mesa`,
       description: brandName ? `${brandName}` : 'Future Founder\'s Summer School 2026',
-      images: [{ url: '/assets/mesa-logo.png' }],
+      images: [{ url: '/mesa-logos/pfp.png', width: 1200, height: 630 }],
     },
   }
 }
@@ -127,7 +127,17 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
         <div className="hero-right">
           <div className="blob1"></div>
           <div className="blob2"></div>
-          <div className="avatar">{getInitials(student.name)}</div>
+          <div className="avatar" style={{ background: 'none', padding: 0, overflow: 'hidden' }}>
+              <Image
+                src="/mesa-logos/mesa-logomark.png"
+                alt="Mesa"
+                width={96}
+                height={96}
+                quality={100}
+                unoptimized
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            </div>
           <p className="avatar-name">{student.name}</p>
           <p className="avatar-sub">Mesa &middot; FFP Cohort 1 &middot; 2026</p>
           <div className="cert-pill">
