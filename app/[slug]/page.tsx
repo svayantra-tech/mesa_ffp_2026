@@ -66,9 +66,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
       {/* NAV */}
       <nav>
         <div className="nav-left">
-          <div className="nav-mark">
-            <svg viewBox="0 0 16 16" fill="white"><rect x="2" y="9" width="12" height="1.5" rx="0.75" /><rect x="2" y="6" width="12" height="1.5" rx="0.75" /><rect x="5" y="3" width="6" height="4" rx="1" fill="none" stroke="white" strokeWidth="1.2" /></svg>
-          </div>
+          <Image src="/mesa-logos/mesa-logomark.png" alt="Mesa" width={30} height={30} quality={100} unoptimized style={{ borderRadius: 7, display: 'block', flexShrink: 0 }} />
           <Link href="/" className="nav-wordmark">Mesa <span>FFP</span> &middot; 2026</Link>
         </div>
         <div className="nav-center">

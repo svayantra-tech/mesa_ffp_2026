@@ -283,8 +283,7 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:24p
 .footer-l{font-size:11px;color:rgba(255,251,243,0.28);display:flex;align-items:center;gap:10px}
 .footer-l a{color:#DFA396;text-decoration:none}
 .footer-l a:hover{text-decoration:underline}
-.footer-mark{width:22px;height:22px;background:#BA3B41;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.footer-mark svg{width:12px;height:12px}
+.footer-mark{display:flex;align-items:center;flex-shrink:0}
 .footer-r{font-size:11px;color:rgba(255,251,243,0.2);letter-spacing:.03em}
 
 /* ── ANIMATIONS ── */
@@ -329,11 +328,7 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:24p
 
 /* ── NAV (portfolio) ── */
 .nav-left{display:flex;align-items:center;gap:10px}
-.nav-mark{
-  width:30px;height:30px;background:#BA3B41;border-radius:7px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0
-}
-.nav-mark svg{width:16px;height:16px}
+.nav-mark{display:flex;align-items:center;flex-shrink:0}
 .nav-wordmark{font-size:13px;font-weight:700;color:#0F1919;letter-spacing:0.02em}
 .nav-wordmark span{color:#BA3B41}
 .nav-share{
