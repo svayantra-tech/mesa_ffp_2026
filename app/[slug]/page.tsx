@@ -151,33 +151,18 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
       {/* SLIDE 5 — AWARDS (hidden if no awards) */}
       {awards.length > 0 && <Awards awards={awards} award_descriptions={awardDescriptions} studentName={student.name} />}
 
-      {/* SLIDE 6 — CERTIFICATE */}
-      <section className="slide slide-butter" id="cert">
-        <div className="cert-slide-inner">
-          <h2 className="sec-heading" style={{ marginBottom: 6 }}>Programme Certification</h2>
-          <p className="sec-intro" style={{ marginBottom: 32 }}>
-            Issued by Mesa School of Business · FFP Cohort 1 · 2026
-          </p>
-          <div className="cert-center">
-            {hasCert ? (
+      {/* SLIDE 6 — CERTIFICATE (hidden when no URL) */}
+      {hasCert && (
+        <section className="slide slide-butter" id="cert">
+          <div className="cert-slide-inner">
+            <h2 className="sec-heading" style={{ marginBottom: 6 }}>Programme Certification</h2>
+            <p className="sec-intro" style={{ marginBottom: 32 }}>
+              Issued by Mesa School of Business · FFP Cohort 1 · 2026
+            </p>
+            <div className="cert-center">
               <div className="cert-frame">
                 <CertificateViewer certUrl={student.certificate_url} />
               </div>
-            ) : (
-              <div className="cert-pending-card">
-                <Image
-                  src="/assets/mesa-logo.png"
-                  alt="Mesa School of Business"
-                  width={48}
-                  height={48}
-                  quality={100}
-                  style={{ objectFit: 'contain' }}
-                />
-                <div className="cert-pending-title">Certificate of Entrepreneurship</div>
-                <div className="cert-pending-sub">Issued by Mesa School of Business · FFP 2026</div>
-              </div>
-            )}
-            {hasCert ? (
               <a
                 href={`/api/cert?url=${encodeURIComponent(student.certificate_url)}`}
                 download
@@ -186,15 +171,10 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
                 <svg viewBox="0 0 16 16"><path d="M8 2v9M4 8l4 4 4-4M2 13h12" /></svg>
                 Download Certificate
               </a>
-            ) : (
-              <span className="cert-download disabled">
-                <svg viewBox="0 0 16 16"><path d="M8 2v9M4 8l4 4 4-4M2 13h12" /></svg>
-                Certificate Pending
-              </span>
-            )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* SLIDE 7 — GET IN TOUCH + FOOTER */}
       <section className="slide contact-footer-slide" id="contact">
