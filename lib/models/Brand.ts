@@ -8,6 +8,7 @@ const BrandSchema = new Schema(
     revenue: { type: Number, default: 0 },
     customers: { type: Number, default: 0 },
     awards: { type: [String], default: [] },
+    award_descriptions: { type: [String], default: [] },
     videos: { type: [String], default: [] },
     ad_statics: { type: [String], default: [] },
     flea_photos: { type: [String], default: [] },

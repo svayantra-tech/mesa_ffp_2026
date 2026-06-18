@@ -17,6 +17,7 @@ const empty: AdminBrand = {
   revenue: 0,
   customers: 0,
   awards: [],
+  award_descriptions: [],
   videos: [],
   ad_statics: [],
   website: '',
@@ -112,7 +113,11 @@ export default function BrandForm({ brand }: { brand?: AdminBrand }) {
 
       <div className="admin-card">
         <h2 className="admin-card-title">Awards</h2>
-        <StringListField label="Awards" values={form.awards} onChange={(v) => set('awards', v)} placeholder="e.g. Best Pitch @ Demo Day" />
+        <StringListField label="Award titles" values={form.awards} onChange={(v) => set('awards', v)} placeholder="e.g. Best Pitch @ Demo Day" />
+        <p className="admin-sub" style={{ marginTop: 8, marginBottom: 4 }}>
+          Descriptions (one per award, same order — leave blank for generic fallback)
+        </p>
+        <StringListField label="Award descriptions" values={form.award_descriptions} onChange={(v) => set('award_descriptions', v)} placeholder="e.g. Judged by 12 VCs and industry mentors across 30 teams." />
       </div>
 
       <div className="admin-card">

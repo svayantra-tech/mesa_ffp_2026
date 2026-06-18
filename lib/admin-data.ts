@@ -14,6 +14,7 @@ export type AdminBrand = {
   revenue: number
   customers: number
   awards: string[]
+  award_descriptions: string[]
   videos: string[]
   ad_statics: string[]
   website: string
@@ -45,6 +46,7 @@ export function toAdminBrand(b: any): AdminBrand {
     revenue: b.revenue ?? 0,
     customers: b.customers ?? 0,
     awards: b.awards ?? [],
+    award_descriptions: b.award_descriptions ?? [],
     videos: b.videos ?? [],
     ad_statics: b.ad_statics ?? [],
     website: b.website ?? '',

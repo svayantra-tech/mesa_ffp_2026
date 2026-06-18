@@ -2,18 +2,26 @@
 
 import { useState } from 'react'
 
+const FALLBACK_DESC = 'Recognized during the Future Founder Program for standout performance.'
+
 type Props = {
   awards: string[]
+  award_descriptions: string[]
   studentName: string
 }
 
-export default function Awards({ awards, studentName: _studentName }: Props) {
+export default function Awards({ awards, award_descriptions, studentName: _studentName }: Props) {
   const [expanded, setExpanded] = useState(false)
 
   if (awards.length === 0) return null
 
-  const visibleAwards = expanded ? awards : awards.slice(0, 2)
-  const hasMore = awards.length > 2
+  const cards = awards.map((title, i) => ({
+    title,
+    description: award_descriptions[i]?.trim() || FALLBACK_DESC,
+  }))
+
+  const visibleCards = expanded ? cards : cards.slice(0, 3)
+  const hasMore = cards.length > 3
 
   return (
     <section
@@ -31,14 +39,20 @@ export default function Awards({ awards, studentName: _studentName }: Props) {
         </p>
 
         <div className="awards-stack">
-          {visibleAwards.map((award, i) => (
-            <div key={i} className={`award-card-v2 reveal d${i + 1}`}>
+          {visibleCards.map((card, i) => (
+            <div key={i} className={`award-card-v2 reveal d${Math.min(i + 1, 4)}`}>
               <div
                 className="award-lemon-stripe"
                 style={i > 0 ? { background: '#BA3B41' } : undefined}
               />
+              <div className="award-icon">
+                <svg viewBox="0 0 20 20">
+                  <path d="M10 2l2.2 4.5 5 .7-3.6 3.5.85 4.95L10 13.4l-4.45 2.25.85-4.95L2.8 7.2l5-.7z" />
+                </svg>
+              </div>
               <div className="award-v2-left">
-                <div className="award-title">{award}</div>
+                <div className="award-title">{card.title}</div>
+                <p className="award-desc">{card.description}</p>
               </div>
             </div>
           ))}
@@ -46,7 +60,7 @@ export default function Awards({ awards, studentName: _studentName }: Props) {
 
         {hasMore && (
           <button className="awards-expand-btn" onClick={() => setExpanded(!expanded)}>
-            {expanded ? 'Show less' : `View all ${awards.length} awards`}
+            {expanded ? 'Show less' : `View all ${cards.length} awards`}
             <svg
               viewBox="0 0 16 16"
               width="14"

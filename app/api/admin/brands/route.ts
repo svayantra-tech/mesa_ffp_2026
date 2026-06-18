@@ -28,6 +28,7 @@ export async function POST(request: Request) {
       revenue: Number(body.revenue) || 0,
       customers: Number(body.customers) || 0,
       awards: cleanArr(body.awards),
+      award_descriptions: cleanArr(body.award_descriptions),
       videos: cleanArr(body.videos).map(extractYouTubeId).filter(Boolean),
       ad_statics: cleanArr(body.ad_statics).map(normalizeImageUrl).filter(Boolean),
       website: body.website ?? '',

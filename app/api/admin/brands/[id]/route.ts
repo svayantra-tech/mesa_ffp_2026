@@ -10,7 +10,7 @@ type Ctx = { params: Promise<{ id: string }> }
 
 const STRING_FIELDS = ['slug', 'name', 'description', 'website', 'instagram'] as const
 const NUMBER_FIELDS = ['revenue', 'customers'] as const
-const ARRAY_FIELDS = ['awards', 'videos', 'ad_statics'] as const
+const ARRAY_FIELDS = ['awards', 'award_descriptions', 'videos', 'ad_statics'] as const
 
 export async function GET(_req: Request, { params }: Ctx) {
   const { id } = await params

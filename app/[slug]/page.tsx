@@ -7,6 +7,7 @@ import MarketingAssets from './MarketingAssets'
 import AITools from './AITools'
 import Awards from './Awards'
 import CertificateViewer from './CertificateViewerClient'
+import MomentGrid from './MomentGrid'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -44,16 +45,22 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
   const brand = student.brand
   const hasCert = !!student.certificate_url?.match(/\/file\/d\/[a-zA-Z0-9_-]+/)
   const awards: string[] = Array.isArray(brand?.awards) ? brand.awards : []
+  const awardDescriptions: string[] = Array.isArray(brand?.award_descriptions) ? brand.award_descriptions : []
   const videos: string[] = Array.isArray(brand?.videos) ? brand.videos.slice(0, 3) : []
 
   const hasProfile = !!student.profile_photo
 
+  // Discard junk values (bare filenames, placeholder text) — keep only real URLs
+  const cleanUrl = (u: string) => (u.startsWith('http') ? u : '')
+
   // Moment photos: convocation first, then flea market, then demo day
   const momentPhotos = [
-    { src: student.convocation_photo, caption: 'Convocation Ceremony' },
-    { src: student.flea_market_photo, caption: 'Flea Market · Vega City Mall' },
-    { src: student.demo_day_photo, caption: 'Demo Day Pitch' },
+    { src: cleanUrl(student.convocation_photo), caption: 'Convocation Ceremony' },
+    { src: cleanUrl(student.flea_market_photo), caption: 'Flea Market · Vega City Mall' },
+    { src: cleanUrl(student.demo_day_photo), caption: 'Demo Day Pitch' },
   ].filter((m) => !!m.src)
+
+  const isPlaceholderEmail = student.email.endsWith('@placeholder.ffp')
 
   return (
     <>
@@ -126,24 +133,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
               <h2 className="sec-heading">Moments</h2>
               <p className="sec-intro">Captured during FFP 2026 — Convocation, Flea Market, and Demo Day.</p>
             </div>
-            <div className={`moments-grid count-${momentPhotos.length}`}>
-              {momentPhotos.map((photo, i) => (
-                <div key={i} className="moment-item">
-                  <div className="moment-img">
-                    <Image
-                      src={photo.src}
-                      alt={photo.caption}
-                      width={0}
-                      height={0}
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      quality={100}
-                      style={{ width: '100%', height: 'auto', display: 'block' }}
-                    />
-                  </div>
-                  <div className="moment-caption">{photo.caption}</div>
-                </div>
-              ))}
-            </div>
+            <MomentGrid photos={momentPhotos} />
           </div>
         </section>
       )}
@@ -159,7 +149,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
       <AITools />
 
       {/* SLIDE 5 — AWARDS (hidden if no awards) */}
-      {awards.length > 0 && <Awards awards={awards} studentName={student.name} />}
+      {awards.length > 0 && <Awards awards={awards} award_descriptions={awardDescriptions} studentName={student.name} />}
 
       {/* SLIDE 6 — CERTIFICATE */}
       <section className="slide slide-butter" id="cert">
@@ -209,45 +199,40 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
       {/* SLIDE 7 — GET IN TOUCH + FOOTER */}
       <section className="slide contact-footer-slide" id="contact">
         <div className="contact-footer-top">
-          <div>
-            <h2 className="contact-heading">Get in touch</h2>
-            <div className="contact-details">
-              {student.email && <div>{student.email}</div>}
-              {brand?.instagram && (
-                <div>
-                  <a href={getInstagramUrl(brand.instagram)} target="_blank" rel="noopener noreferrer">
-                    {getInstagramHandle(brand.instagram)}
-                  </a>
-                </div>
-              )}
-              {brand?.website && (
-                <div>
-                  <a href={brand.website} target="_blank" rel="noopener noreferrer">
-                    {brand.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-                  </a>
-                </div>
-              )}
-            </div>
-            <div className="contact-btns">
-              {brand?.website && (
-                <a href={brand.website} target="_blank" rel="noopener noreferrer" className="cbtn-w">
-                  Website &#8599;
+          <h2 className="contact-heading">Get in touch</h2>
+          <div className="contact-details">
+            {!isPlaceholderEmail && student.email && <div>{student.email}</div>}
+            {brand?.instagram && (
+              <div>
+                <a href={getInstagramUrl(brand.instagram)} target="_blank" rel="noopener noreferrer">
+                  {getInstagramHandle(brand.instagram)}
                 </a>
-              )}
-              {brand?.instagram && (
-                <a href={getInstagramUrl(brand.instagram)} target="_blank" rel="noopener noreferrer" className="cbtn-o">
-                  Instagram &#8599;
+              </div>
+            )}
+            {brand?.website && (
+              <div>
+                <a href={brand.website} target="_blank" rel="noopener noreferrer">
+                  {brand.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
                 </a>
-              )}
-              {student.email && (
-                <a href={`mailto:${student.email}`} className="cbtn-o">
-                  Email
-                </a>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-          <div className="contact-photo-panel">
-            <div className="contact-photo-gradient" />
+          <div className="contact-btns">
+            {brand?.website && (
+              <a href={brand.website} target="_blank" rel="noopener noreferrer" className="cbtn-w">
+                Website &#8599;
+              </a>
+            )}
+            {brand?.instagram && (
+              <a href={getInstagramUrl(brand.instagram)} target="_blank" rel="noopener noreferrer" className="cbtn-o">
+                Instagram &#8599;
+              </a>
+            )}
+            {!isPlaceholderEmail && student.email && (
+              <a href={`mailto:${student.email}`} className="cbtn-o">
+                Email
+              </a>
+            )}
           </div>
         </div>
         <hr className="contact-footer-divider" />

@@ -14,6 +14,7 @@ export type BrandShape = {
   revenue: number
   customers: number
   awards: string[]
+  award_descriptions: string[]
   videos: string[]
   ad_statics: string[]
   flea_photos: string[]
@@ -47,6 +48,7 @@ function serializeBrand(b: any): BrandShape {
     revenue: b.revenue ?? 0,
     customers: b.customers ?? 0,
     awards: b.awards ?? [],
+    award_descriptions: b.award_descriptions ?? [],
     videos: b.videos ?? [],
     ad_statics: b.ad_statics ?? [],
     flea_photos: b.flea_photos ?? [],
