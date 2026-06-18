@@ -540,6 +540,10 @@ section.awards-section{background:#0F1919;border-top:0.5px solid rgba(255,255,25
   box-shadow:0 10px 40px rgba(0,0,0,0.12)
 }
 .cert-frame img{width:100%;display:block}
+/* Scale the 1100px fixed-resolution canvas down to fit the container */
+.cert-canvas{width:100%;max-width:820px;margin:0 auto;line-height:0}
+.cert-canvas canvas,
+.cert-canvas img{width:100%!important;height:auto!important;max-width:none!important;display:block}
 .react-pdf__Page{display:block!important;line-height:0!important}
 .react-pdf__Page canvas{display:block!important}
 .cert-pending-card{
