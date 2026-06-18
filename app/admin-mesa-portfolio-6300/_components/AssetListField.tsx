@@ -14,30 +14,39 @@ type Props = {
   allowPasteUrl?: boolean
 }
 
-// Multiple-image field (flea_photos, demo_photos, ad_statics): present assets
-// as a grid + an "upload asset" tile. Supports remove + reorder.
-export default function AssetListField({ label, values, onChange, accept = 'image/*', hint, max, allowPasteUrl }: Props) {
+export default function AssetListField({
+  label,
+  values,
+  onChange,
+  accept = 'image/*',
+  hint,
+  max,
+  allowPasteUrl,
+}: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [busy, setBusy] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [pasteUrl, setPasteUrl] = useState('')
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return
-    setBusy(true)
+    setUploading(true)
     setError('')
     try {
       const uploaded: string[] = []
       for (const file of Array.from(files)) {
-        uploaded.push(await uploadFile(file))
+        const url = await uploadFile(file)
+        uploaded.push(url)
       }
       let next = [...values, ...uploaded]
       if (max) next = next.slice(0, max)
       onChange(next)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Upload failed')
+      const msg = e instanceof Error ? e.message : 'Upload failed'
+      setError(msg)
+      console.error('[AssetListField] upload error:', msg)
     } finally {
-      setBusy(false)
+      setUploading(false)
       if (inputRef.current) inputRef.current.value = ''
     }
   }
@@ -45,12 +54,24 @@ export default function AssetListField({ label, values, onChange, accept = 'imag
   function remove(i: number) {
     onChange(values.filter((_, idx) => idx !== i))
   }
+
   function move(i: number, dir: -1 | 1) {
     const j = i + dir
     if (j < 0 || j >= values.length) return
     const next = [...values]
     ;[next[i], next[j]] = [next[j], next[i]]
     onChange(next)
+  }
+
+  function addPasteUrl() {
+    const raw = pasteUrl.trim()
+    if (!raw) return
+    const u = normalizeImageUrl(raw)
+    if (!u) return
+    let next = [...values, u]
+    if (max) next = next.slice(0, max)
+    onChange(next)
+    setPasteUrl('')
   }
 
   const atMax = max ? values.length >= max : false
@@ -64,8 +85,7 @@ export default function AssetListField({ label, values, onChange, accept = 'imag
         <div className="asset-grid">
           {values.map((url, i) => (
             <div key={`${url}-${i}`} className="asset-thumb">
-              {/* Admin preview of an arbitrary user-pasted url — next/image can't
-                  optimize unknown hosts, so a plain img is correct here. */}
+              {/* Plain <img> — admin previews arbitrary host URLs */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={url} alt={`asset ${i + 1}`} />
               <button type="button" className="asset-thumb-x" onClick={() => remove(i)} title="Remove">
@@ -77,44 +97,65 @@ export default function AssetListField({ label, values, onChange, accept = 'imag
               </div>
             </div>
           ))}
+
+          {/* Upload tile — shown while not at max */}
           {!atMax && (
-            <div className="asset-add-tile" onClick={() => !busy && inputRef.current?.click()}>
-              {busy ? <span className="admin-spinner" /> : <span style={{ fontSize: 22 }}>＋</span>}
-              <span>Upload asset</span>
+            <div
+              className="asset-add-tile"
+              onClick={() => !uploading && inputRef.current?.click()}
+              style={{ cursor: uploading ? 'default' : 'pointer', opacity: uploading ? 0.7 : 1 }}
+            >
+              {uploading ? (
+                <>
+                  <span className="admin-spinner" />
+                  <span style={{ fontSize: 11 }}>Uploading…</span>
+                </>
+              ) : (
+                <>
+                  <span style={{ fontSize: 22 }}>＋</span>
+                  <span>Upload</span>
+                </>
+              )}
             </div>
           )}
         </div>
+
+        {/* Paste-URL row */}
         {allowPasteUrl && !atMax && (
           <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
             <input
               className="admin-input"
               value={pasteUrl}
               onChange={(e) => setPasteUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') { e.preventDefault(); addPasteUrl() }
+              }}
               placeholder="Paste a direct image URL or Google Drive share link"
             />
             <button
               type="button"
               className="admin-btn admin-btn-sm"
-              onClick={() => {
-                const u = normalizeImageUrl(pasteUrl.trim())
-                if (!u) return
-                onChange([...values, u])
-                setPasteUrl('')
-              }}
+              onClick={addPasteUrl}
               disabled={!pasteUrl.trim()}
             >
-              Add url
+              Add URL
             </button>
           </div>
         )}
+
         {hint && <p className="asset-hint">{hint}</p>}
-        {error && <p className="admin-toast err" style={{ marginTop: 6 }}>{error}</p>}
+        {error && (
+          <p className="admin-toast err" style={{ marginTop: 6, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+            {error}
+          </p>
+        )}
+
         <input
           ref={inputRef}
           type="file"
           accept={accept}
           hidden
-          multiple
+          multiple={!max || max > 1}
           onChange={(e) => handleFiles(e.target.files)}
         />
       </div>
