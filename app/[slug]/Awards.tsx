@@ -5,10 +5,9 @@ import { useState } from 'react'
 type Props = {
   awards: string[]
   studentName: string
-  demoPhotos: string[]
 }
 
-export default function Awards({ awards, studentName, demoPhotos }: Props) {
+export default function Awards({ awards, studentName: _studentName }: Props) {
   const [expanded, setExpanded] = useState(false)
 
   if (awards.length === 0) return null
@@ -19,25 +18,21 @@ export default function Awards({ awards, studentName, demoPhotos }: Props) {
   return (
     <section
       id="awards"
-      className="awards-section on-dark"
-      style={{
-        position: 'relative',
-        overflow: 'hidden',
-      }}
+      className="slide awards-section"
+      style={{ position: 'relative', overflow: 'hidden' }}
     >
       <div className="awards-bg-text">Awards</div>
       <div className="awards-wrap">
-        <div className="sec-tag inv">13 &mdash; Awards &middot; earned during FFP</div>
-        <h2 className="sec-h inv" style={{ marginBottom: '6px' }}>
+        <h2 className="sec-h inv" style={{ marginBottom: 6 }}>
           Recognition &amp; Awards
         </h2>
+        <p className="sec-sub inv" style={{ marginBottom: 32 }}>
+          Earned during FFP 2026.
+        </p>
 
         <div className="awards-stack">
           {visibleAwards.map((award, i) => (
-            <div
-              key={i}
-              className={`award-card-v2 reveal d${i + 1}`}
-            >
+            <div key={i} className={`award-card-v2 reveal d${i + 1}`}>
               <div
                 className="award-lemon-stripe"
                 style={i > 0 ? { background: '#BA3B41' } : undefined}
@@ -50,13 +45,8 @@ export default function Awards({ awards, studentName, demoPhotos }: Props) {
         </div>
 
         {hasMore && (
-          <button
-            className="awards-expand-btn"
-            onClick={() => setExpanded(!expanded)}
-          >
-            {expanded
-              ? 'Show less'
-              : `View all ${awards.length} awards`}
+          <button className="awards-expand-btn" onClick={() => setExpanded(!expanded)}>
+            {expanded ? 'Show less' : `View all ${awards.length} awards`}
             <svg
               viewBox="0 0 16 16"
               width="14"
@@ -64,16 +54,9 @@ export default function Awards({ awards, studentName, demoPhotos }: Props) {
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              style={{
-                transform: expanded ? 'rotate(180deg)' : 'none',
-                transition: 'transform 0.2s',
-              }}
+              style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
             >
-              <path
-                d="M4 6l4 4 4-4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              <path d="M4 6l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         )}

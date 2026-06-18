@@ -19,9 +19,6 @@ const RIGHT_TOOLS = [
 
 type Tool = { name: string; img: string }
 
-// 3x3 board layouts. `true` = a tool sits here (filled in reading order),
-// `false` = an empty board square. Left is a rotationally-symmetric pinwheel
-// with the 3rd, centre and 7th squares left blank; right is a checkerboard.
 //   Left (6):  ■ ■ ·      Right (5): ■ · ■
 //              ■ · ■                 · ■ ·
 //              · ■ ■                 ■ · ■
@@ -41,7 +38,14 @@ function Board({ tools, slots }: { tools: Tool[]; slots: boolean[] }) {
               {tool && (
                 <>
                   <div className="chess-piece">
-                    <Image src={tool.img} alt={tool.name} width={28} height={28} quality={100} style={{ objectFit: 'contain', maxWidth: '100%', maxHeight: '100%' }} />
+                    <Image
+                      src={tool.img}
+                      alt={tool.name}
+                      width={28}
+                      height={28}
+                      quality={100}
+                      style={{ objectFit: 'contain', maxWidth: '100%', maxHeight: '100%' }}
+                    />
                   </div>
                   <div className="chess-name">{tool.name}</div>
                 </>
@@ -56,7 +60,7 @@ function Board({ tools, slots }: { tools: Tool[]; slots: boolean[] }) {
 
 export default function AITools() {
   return (
-    <section id="ai" className="ai-chess-section reveal">
+    <section id="ai" className="slide ai-chess-section reveal">
       <div className="chess-layout">
         <Board tools={LEFT_TOOLS} slots={LEFT_SLOTS} />
 
@@ -64,8 +68,7 @@ export default function AITools() {
           <div className="chess-eyebrow">AI Tools &middot; FFP Curriculum</div>
           <h2 className="chess-title">AI Tools <span>Used</span></h2>
           <p className="chess-sub">
-            Every move calculated. Students played 10+ AI tools to build brands, create content,
-            launch websites, and grow their real business.
+            Students used 11 AI tools to build brands, create content, launch websites, and grow their real business.
           </p>
           <div className="chess-badge">AI Tools &middot; FFP Curriculum</div>
         </div>
