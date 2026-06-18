@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { Student } from '@/lib/models/Student'
 import { getStudent, revalidatePublic } from '@/lib/admin-data'
+import { normalizeImageUrl } from '@/lib/normalize'
 
 export const runtime = 'nodejs'
 
@@ -22,6 +23,9 @@ export async function PUT(request: Request, { params }: Ctx) {
     if (key in body) update[key] = body[key]
   }
   if ('brand_id' in body) update.brand_id = body.brand_id || null
+  for (const key of ['profile_photo', 'convocation_photo', 'flea_market_photo', 'demo_day_photo'] as const) {
+    if (key in body) update[key] = body[key] ? normalizeImageUrl(String(body[key])) : ''
+  }
 
   await connectDB()
   try {

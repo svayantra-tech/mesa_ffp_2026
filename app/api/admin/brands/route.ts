@@ -30,11 +30,8 @@ export async function POST(request: Request) {
       awards: cleanArr(body.awards),
       videos: cleanArr(body.videos).map(extractYouTubeId).filter(Boolean),
       ad_statics: cleanArr(body.ad_statics).map(normalizeImageUrl).filter(Boolean),
-      flea_photos: cleanArr(body.flea_photos).map(normalizeImageUrl).filter(Boolean),
-      demo_photos: cleanArr(body.demo_photos).map(normalizeImageUrl).filter(Boolean),
       website: body.website ?? '',
       instagram: body.instagram ?? '',
-      product_photo: body.product_photo ? String(body.product_photo) : '',
     })
     revalidatePublic()
     return NextResponse.json({ id: String(doc._id) }, { status: 201 })

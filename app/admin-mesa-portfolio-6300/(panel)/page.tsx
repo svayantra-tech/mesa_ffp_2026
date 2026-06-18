@@ -7,11 +7,8 @@ export const dynamic = 'force-dynamic'
 const BASE = '/admin-mesa-portfolio-6300'
 
 const FIELD_LABELS: Record<string, string> = {
-  product_photo: 'product photo',
   videos: 'videos',
   ad_statics: 'ad statics',
-  flea_photos: 'flea photos',
-  demo_photos: 'demo photos',
 }
 
 function Pill({ pct }: { pct: number }) {
@@ -39,18 +36,15 @@ function StatRow({ label, value, color }: { label: string; value: number; color:
 export default async function DashboardPage() {
   const [students, brands] = await Promise.all([listStudents(), listBrands()])
 
-  // Per-brand completion
+  // Per-brand completion (videos + ad_statics = 2 brand fields)
   const brandStats = Object.fromEntries(brands.map((b) => {
     const fields: Record<string, boolean> = {
-      product_photo: !!b.product_photo,
       videos: b.videos.length > 0,
       ad_statics: b.ad_statics.length > 0,
-      flea_photos: b.flea_photos.length > 0,
-      demo_photos: b.demo_photos.length > 0,
     }
     const metCount = Object.values(fields).filter(Boolean).length
     const missing = Object.entries(fields).filter(([, v]) => !v).map(([k]) => FIELD_LABELS[k])
-    return [b.id, { metCount, pct: Math.round(metCount / 5 * 100), missing }]
+    return [b.id, { metCount, pct: Math.round(metCount / 2 * 100), missing }]
   }))
 
   // Group students by brand_id
@@ -74,20 +68,20 @@ export default async function DashboardPage() {
         name: s.name,
         email: s.email,
         hasCert: !!s.certificate_url,
-        pct: Math.round((stats.metCount + (s.certificate_url ? 1 : 0) + (s.email ? 1 : 0)) / 7 * 100),
+        pct: Math.round((stats.metCount + (s.certificate_url ? 1 : 0) + (s.email ? 1 : 0)) / 4 * 100),
       })),
     }
   }).sort((a, b) => a.pct - b.pct)
 
   // Summary stats
-  const complete100 = brands.filter((b) => brandStats[b.id].metCount === 5).length
+  const complete100 = brands.filter((b) => brandStats[b.id].metCount === 2).length
   const zero = brands.filter((b) => brandStats[b.id].metCount === 0).length
   const partial = brands.length - complete100 - zero
 
   // Overall %: (brand fields met + student cert/email met) / total possible
   const totalBrandMet = brands.reduce((acc, b) => acc + brandStats[b.id].metCount, 0)
   const totalStudentMet = students.reduce((acc, s) => acc + (s.certificate_url ? 1 : 0) + (s.email ? 1 : 0), 0)
-  const totalPossible = brands.length * 5 + students.length * 2
+  const totalPossible = brands.length * 2 + students.length * 2
   const overallPct = totalPossible > 0 ? Math.round((totalBrandMet + totalStudentMet) / totalPossible * 100) : 0
 
   return (
@@ -122,7 +116,7 @@ export default async function DashboardPage() {
           <div>
             <h2 className="admin-card-title" style={{ marginBottom: 4 }}>Overall completion</h2>
             <p className="admin-sub" style={{ marginBottom: 16 }}>
-              5 media fields per venture · cert + email per student
+              2 media fields per venture · cert + email per student
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <StatRow label="ventures 100% complete" value={complete100} color="#22c55e" />

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { AdminStudent } from '@/lib/admin-data'
+import AssetListField from './AssetListField'
 
 const BASE = '/admin-mesa-portfolio-6300'
 
@@ -20,6 +21,10 @@ export default function StudentForm({ student, brands }: Props) {
     email: student?.email ?? '',
     certificate_url: student?.certificate_url ?? '',
     brand_id: student?.brand_id ?? '',
+    profile_photo: student?.profile_photo ?? '',
+    convocation_photo: student?.convocation_photo ?? '',
+    flea_market_photo: student?.flea_market_photo ?? '',
+    demo_day_photo: student?.demo_day_photo ?? '',
   })
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
@@ -103,6 +108,42 @@ export default function StudentForm({ student, brands }: Props) {
           />
           <p className="asset-hint">Certificates are PDFs hosted on Google Drive — paste the share link.</p>
         </div>
+      </div>
+
+      <div className="admin-card">
+        <h2 className="admin-card-title">Photos</h2>
+        <AssetListField
+          label="Profile photo"
+          values={form.profile_photo ? [form.profile_photo] : []}
+          onChange={(v) => set('profile_photo', v[0] ?? '')}
+          max={1}
+          allowPasteUrl
+          hint="Upload a file, paste a direct image URL, or paste a Google Drive share link."
+        />
+        <AssetListField
+          label="Convocation photo"
+          values={form.convocation_photo ? [form.convocation_photo] : []}
+          onChange={(v) => set('convocation_photo', v[0] ?? '')}
+          max={1}
+          allowPasteUrl
+          hint="Upload a file, paste a direct image URL, or paste a Google Drive share link."
+        />
+        <AssetListField
+          label="Flea market photo"
+          values={form.flea_market_photo ? [form.flea_market_photo] : []}
+          onChange={(v) => set('flea_market_photo', v[0] ?? '')}
+          max={1}
+          allowPasteUrl
+          hint="Upload a file, paste a direct image URL, or paste a Google Drive share link."
+        />
+        <AssetListField
+          label="Demo day photo"
+          values={form.demo_day_photo ? [form.demo_day_photo] : []}
+          onChange={(v) => set('demo_day_photo', v[0] ?? '')}
+          max={1}
+          allowPasteUrl
+          hint="Upload a file, paste a direct image URL, or paste a Google Drive share link."
+        />
       </div>
 
       <div className="admin-actions">

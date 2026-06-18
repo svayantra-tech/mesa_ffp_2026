@@ -8,8 +8,8 @@ const BASE = '/admin-mesa-portfolio-6300'
 
 function completionScore(b: AdminBrand): number {
   return Math.round(
-    [!!b.product_photo, b.videos.length > 0, b.ad_statics.length > 0, b.flea_photos.length > 0, b.demo_photos.length > 0]
-      .filter(Boolean).length / 5 * 100
+    [b.videos.length > 0, b.ad_statics.length > 0]
+      .filter(Boolean).length / 2 * 100
   )
 }
 
@@ -58,7 +58,7 @@ export default function VenturesList({ brands }: { brands: AdminBrand[] }) {
                 <Link href={`${BASE}/ventures/${b.id}`}>{b.name}</Link>
                 <div className="admin-list-meta">
                   /{b.slug} · ₹{b.revenue.toLocaleString('en-IN')} · {b.customers} customers ·{' '}
-                  {b.flea_photos.length + b.demo_photos.length + b.ad_statics.length} images
+                  {b.ad_statics.length} ad statics
                 </div>
               </div>
             </div>

@@ -8,6 +8,10 @@ const StudentSchema = new Schema(
     email: { type: String, default: '' },
     certificate_url: { type: String, default: '' },
     brand_id: { type: Schema.Types.ObjectId, ref: 'Brand', index: true },
+    profile_photo: { type: String, default: '' },
+    convocation_photo: { type: String, default: '' },
+    flea_market_photo: { type: String, default: '' },
+    demo_day_photo: { type: String, default: '' },
   },
   { collection: 'students', timestamps: true }
 )

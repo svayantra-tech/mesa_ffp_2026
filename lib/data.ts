@@ -31,6 +31,10 @@ export type StudentShape = {
   certificate_url: string
   brand_id: string | null
   brand: BrandShape | null
+  profile_photo: string
+  convocation_photo: string
+  flea_market_photo: string
+  demo_day_photo: string
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -63,6 +67,10 @@ function serializeStudent(s: any): StudentShape {
     certificate_url: s.certificate_url ?? '',
     brand_id: s.brand_id ? String(brandDoc ? brandDoc._id : s.brand_id) : null,
     brand: brandDoc ? serializeBrand(brandDoc) : null,
+    profile_photo: s.profile_photo ?? '',
+    convocation_photo: s.convocation_photo ?? '',
+    flea_market_photo: s.flea_market_photo ?? '',
+    demo_day_photo: s.demo_day_photo ?? '',
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */

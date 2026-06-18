@@ -8,9 +8,9 @@ export const runtime = 'nodejs'
 
 type Ctx = { params: Promise<{ id: string }> }
 
-const STRING_FIELDS = ['slug', 'name', 'description', 'website', 'instagram', 'product_photo'] as const
+const STRING_FIELDS = ['slug', 'name', 'description', 'website', 'instagram'] as const
 const NUMBER_FIELDS = ['revenue', 'customers'] as const
-const ARRAY_FIELDS = ['awards', 'videos', 'ad_statics', 'flea_photos', 'demo_photos'] as const
+const ARRAY_FIELDS = ['awards', 'videos', 'ad_statics'] as const
 
 export async function GET(_req: Request, { params }: Ctx) {
   const { id } = await params

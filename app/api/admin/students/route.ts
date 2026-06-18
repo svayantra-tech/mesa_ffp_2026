@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { Student } from '@/lib/models/Student'
 import { listStudents, revalidatePublic } from '@/lib/admin-data'
+import { normalizeImageUrl } from '@/lib/normalize'
 
 export const runtime = 'nodejs'
 
@@ -23,6 +24,10 @@ export async function POST(request: Request) {
       email,
       certificate_url,
       brand_id: brand_id || null,
+      profile_photo: body.profile_photo ? normalizeImageUrl(String(body.profile_photo)) : '',
+      convocation_photo: body.convocation_photo ? normalizeImageUrl(String(body.convocation_photo)) : '',
+      flea_market_photo: body.flea_market_photo ? normalizeImageUrl(String(body.flea_market_photo)) : '',
+      demo_day_photo: body.demo_day_photo ? normalizeImageUrl(String(body.demo_day_photo)) : '',
     })
     revalidatePublic()
     return NextResponse.json({ id: String(doc._id) }, { status: 201 })

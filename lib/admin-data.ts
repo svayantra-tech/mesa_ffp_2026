@@ -16,11 +16,8 @@ export type AdminBrand = {
   awards: string[]
   videos: string[]
   ad_statics: string[]
-  flea_photos: string[]
-  demo_photos: string[]
   website: string
   instagram: string
-  product_photo: string
 }
 
 export type AdminStudent = {
@@ -32,6 +29,10 @@ export type AdminStudent = {
   brand_id: string | null
   brandName: string
   mediaScore: number
+  profile_photo: string
+  convocation_photo: string
+  flea_market_photo: string
+  demo_day_photo: string
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -46,11 +47,8 @@ export function toAdminBrand(b: any): AdminBrand {
     awards: b.awards ?? [],
     videos: b.videos ?? [],
     ad_statics: b.ad_statics ?? [],
-    flea_photos: b.flea_photos ?? [],
-    demo_photos: b.demo_photos ?? [],
     website: b.website ?? '',
     instagram: b.instagram ?? '',
-    product_photo: b.product_photo ?? '',
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -69,17 +67,18 @@ export async function getBrand(id: string): Promise<AdminBrand | null> {
 
 export async function listStudents(): Promise<AdminStudent[]> {
   await connectDB()
-  const rows = await Student.find({}).populate('brand_id', 'name product_photo videos ad_statics flea_photos demo_photos').sort({ name: 1 }).lean()
+  const rows = await Student.find({}).populate('brand_id', 'name videos ad_statics').sort({ name: 1 }).lean()
   return rows.map((s) => {
     /* eslint-disable @typescript-eslint/no-explicit-any */
     const brand = s.brand_id && typeof s.brand_id === 'object' ? (s.brand_id as any) : null
-    const mediaScore = brand ? [
-      !!brand.product_photo,
-      Array.isArray(brand.videos) && brand.videos.length > 0,
-      Array.isArray(brand.ad_statics) && brand.ad_statics.length > 0,
-      Array.isArray(brand.flea_photos) && brand.flea_photos.length > 0,
-      Array.isArray(brand.demo_photos) && brand.demo_photos.length > 0,
-    ].filter(Boolean).length : 0
+    const mediaScore = [
+      !!(s as any).profile_photo,
+      !!(s as any).convocation_photo,
+      !!(s as any).flea_market_photo,
+      !!(s as any).demo_day_photo,
+      Array.isArray(brand?.videos) && brand.videos.length > 0,
+      Array.isArray(brand?.ad_statics) && brand.ad_statics.length > 0,
+    ].filter(Boolean).length
     return {
       id: String(s._id),
       slug: (s.slug as string) ?? '',
@@ -89,6 +88,10 @@ export async function listStudents(): Promise<AdminStudent[]> {
       brand_id: brand ? String(brand._id) : s.brand_id ? String(s.brand_id) : null,
       brandName: brand?.name ?? '',
       mediaScore,
+      profile_photo: (s as any).profile_photo ?? '',
+      convocation_photo: (s as any).convocation_photo ?? '',
+      flea_market_photo: (s as any).flea_market_photo ?? '',
+      demo_day_photo: (s as any).demo_day_photo ?? '',
     }
     /* eslint-enable @typescript-eslint/no-explicit-any */
   })
@@ -96,17 +99,18 @@ export async function listStudents(): Promise<AdminStudent[]> {
 
 export async function getStudent(id: string): Promise<AdminStudent | null> {
   await connectDB()
-  const s = await Student.findById(id).populate('brand_id', 'name product_photo videos ad_statics flea_photos demo_photos').lean()
+  const s = await Student.findById(id).populate('brand_id', 'name videos ad_statics').lean()
   if (!s) return null
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const brand = s.brand_id && typeof s.brand_id === 'object' ? (s.brand_id as any) : null
-  const mediaScore = brand ? [
-    !!brand.product_photo,
-    Array.isArray(brand.videos) && brand.videos.length > 0,
-    Array.isArray(brand.ad_statics) && brand.ad_statics.length > 0,
-    Array.isArray(brand.flea_photos) && brand.flea_photos.length > 0,
-    Array.isArray(brand.demo_photos) && brand.demo_photos.length > 0,
-  ].filter(Boolean).length : 0
+  const mediaScore = [
+    !!(s as any).profile_photo,
+    !!(s as any).convocation_photo,
+    !!(s as any).flea_market_photo,
+    !!(s as any).demo_day_photo,
+    Array.isArray(brand?.videos) && brand.videos.length > 0,
+    Array.isArray(brand?.ad_statics) && brand.ad_statics.length > 0,
+  ].filter(Boolean).length
   return {
     id: String(s._id),
     slug: (s.slug as string) ?? '',
@@ -116,6 +120,10 @@ export async function getStudent(id: string): Promise<AdminStudent | null> {
     brand_id: brand ? String(brand._id) : s.brand_id ? String(s.brand_id) : null,
     brandName: brand?.name ?? '',
     mediaScore,
+    profile_photo: (s as any).profile_photo ?? '',
+    convocation_photo: (s as any).convocation_photo ?? '',
+    flea_market_photo: (s as any).flea_market_photo ?? '',
+    demo_day_photo: (s as any).demo_day_photo ?? '',
   }
   /* eslint-enable @typescript-eslint/no-explicit-any */
 }

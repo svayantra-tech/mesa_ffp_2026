@@ -19,11 +19,8 @@ const empty: AdminBrand = {
   awards: [],
   videos: [],
   ad_statics: [],
-  flea_photos: [],
-  demo_photos: [],
   website: '',
   instagram: '',
-  product_photo: '',
 }
 
 export default function BrandForm({ brand }: { brand?: AdminBrand }) {
@@ -131,29 +128,10 @@ export default function BrandForm({ brand }: { brand?: AdminBrand }) {
       <div className="admin-card">
         <h2 className="admin-card-title">Marketing & event images</h2>
         <AssetListField
-          label="Product photo"
-          values={form.product_photo ? [form.product_photo] : []}
-          onChange={(v) => set('product_photo', v[0] ?? '')}
-          max={1}
-          hint="Single product or brand photo shown on the portfolio overview."
-        />
-        <AssetListField
           label="Ad statics"
           values={form.ad_statics}
           onChange={(v) => set('ad_statics', v)}
-          hint="Portfolio shows the first 2. Upload an image, or paste an Instagram post url."
-          allowPasteUrl
-        />
-        <AssetListField
-          label="Flea market photos"
-          values={form.flea_photos}
-          onChange={(v) => set('flea_photos', v)}
-          allowPasteUrl
-        />
-        <AssetListField
-          label="Demo day photos"
-          values={form.demo_photos}
-          onChange={(v) => set('demo_photos', v)}
+          hint="Portfolio shows the first 2. Upload a file, paste a direct image URL, or paste a Google Drive share link."
           allowPasteUrl
         />
       </div>

@@ -90,7 +90,7 @@ export default function AssetListField({ label, values, onChange, accept = 'imag
               className="admin-input"
               value={pasteUrl}
               onChange={(e) => setPasteUrl(e.target.value)}
-              placeholder="...or paste an existing url (e.g. Instagram post)"
+              placeholder="Paste a direct image URL or Google Drive share link"
             />
             <button
               type="button"
