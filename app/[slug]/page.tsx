@@ -198,6 +198,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
 
       {/* SLIDE 7 — GET IN TOUCH + FOOTER */}
       <section className="slide contact-footer-slide" id="contact">
+        <div className="contact-watermark">{brand?.name ?? 'Mesa'}</div>
         <div className="contact-footer-top">
           <h2 className="contact-heading">Get in touch</h2>
           <div className="contact-details">
