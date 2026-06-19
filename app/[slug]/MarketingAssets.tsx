@@ -1,7 +1,8 @@
 'use client'
 
-// Videos only — the parent <section> slide is provided by page.tsx
+// Video creatives + static ad images — parent <section> slide is provided by page.tsx
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 
 function extractYouTubeId(url: string): string | null {
   if (!url) return null
@@ -19,14 +20,19 @@ function extractYouTubeId(url: string): string | null {
   return null
 }
 
-type Props = { videos: string[] }
+type Props = { videos: string[]; adStatics?: string[] }
 
-export default function MarketingAssets({ videos }: Props) {
+export default function MarketingAssets({ videos, adStatics = [] }: Props) {
   const rawVideos = (Array.isArray(videos) ? videos : []).slice(0, 3)
   const videoIds = rawVideos.map(extractYouTubeId).filter(Boolean) as string[]
 
+  const staticAds = (Array.isArray(adStatics) ? adStatics : [])
+    .filter((url) => url.startsWith('http'))
+    .slice(0, 2)
+
   const videoRef = useRef<HTMLDivElement>(null)
   const [loadVideos, setLoadVideos] = useState(false)
+  const [erroredAds, setErroredAds] = useState<Set<number>>(new Set())
 
   useEffect(() => {
     if (!videoIds.length) return
@@ -45,39 +51,73 @@ export default function MarketingAssets({ videos }: Props) {
     return () => observer.disconnect()
   }, [videoIds.length])
 
-  if (!videoIds.length) return null
+  const visibleAds = staticAds.filter((_, i) => !erroredAds.has(i))
+
+  if (!videoIds.length && !visibleAds.length) return null
 
   return (
     <div className="videos-inner">
-      <div className="videos-header">
-        <h2 className="sec-heading inv">Video Creatives</h2>
-        <p className="sec-intro inv">Portrait reels produced during the 2-week FFP program.</p>
-      </div>
-      <div className={`videos-grid count-${videoIds.length}`} ref={videoRef}>
-        {videoIds.map((id, i) => (
-          <div key={i} className="ma-video-slot">
-            {loadVideos ? (
-              <iframe
-                src={`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`}
-                allow="autoplay; encrypted-media"
-                allowFullScreen
-                title={`Video ${i + 1}`}
-              />
-            ) : (
-              <button
-                type="button"
-                className="ma-video-cover"
-                onClick={() => setLoadVideos(true)}
-                aria-label={`Play video ${i + 1}`}
-              >
-                <span className="ma-video-play">
-                  <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" /></svg>
-                </span>
-              </button>
-            )}
+      {videoIds.length > 0 && (
+        <>
+          <div className="videos-header">
+            <h2 className="sec-heading inv">Video Creatives</h2>
+            <p className="sec-intro inv">Portrait reels produced during the 2-week FFP program.</p>
           </div>
-        ))}
-      </div>
+          <div className={`videos-grid count-${videoIds.length}`} ref={videoRef}>
+            {videoIds.map((id, i) => (
+              <div key={i} className="ma-video-slot">
+                {loadVideos ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`}
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                    title={`Video ${i + 1}`}
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    className="ma-video-cover"
+                    onClick={() => setLoadVideos(true)}
+                    aria-label={`Play video ${i + 1}`}
+                  >
+                    <span className="ma-video-play">
+                      <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" /></svg>
+                    </span>
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {visibleAds.length > 0 && (
+        <div className={`ma-statics-block${videoIds.length > 0 ? ' ma-statics-block--spaced' : ''}`}>
+          <div className="videos-header">
+            <h2 className="sec-heading inv">Static Ads</h2>
+            <p className="sec-intro inv">Performance marketing images produced during the 2-week FFP program.</p>
+          </div>
+          <div className={`ma-statics-grid count-${visibleAds.length}`}>
+            {staticAds.map((src, i) => {
+              if (erroredAds.has(i)) return null
+              return (
+                <div key={i} className="ma-static-slot">
+                  <Image
+                    src={src}
+                    alt={`Static ad ${i + 1}`}
+                    width={0}
+                    height={0}
+                    sizes="(max-width: 768px) 100vw, 420px"
+                    quality={90}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    onError={() => setErroredAds((prev) => new Set([...prev, i]))}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

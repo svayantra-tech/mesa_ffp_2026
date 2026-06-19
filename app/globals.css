@@ -478,6 +478,12 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:24p
 .ma-video-cover{position:relative;display:block;width:100%;height:100%;padding:0;border:none;cursor:pointer;background:linear-gradient(135deg,#16201f,#0F1919)}
 .ma-video-play{position:absolute;inset:0;margin:auto;width:54px;height:54px;border-radius:50%;background:rgba(186,59,65,0.95);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,0.3)}
 .ma-video-play svg{width:22px;height:22px;fill:#fff;margin-left:3px}
+.ma-statics-block{width:100%}
+.ma-statics-block--spaced{margin-top:56px;padding-top:56px;border-top:0.5px solid rgba(255,255,255,0.08)}
+.ma-statics-grid{display:grid;gap:16px;align-items:start;width:100%;margin:0 auto}
+.ma-statics-grid.count-1{grid-template-columns:1fr;max-width:560px}
+.ma-statics-grid.count-2{grid-template-columns:1fr 1fr;max-width:860px}
+.ma-static-slot{aspect-ratio:16/9;width:100%;overflow:hidden;border-radius:12px;border:0.5px solid rgba(255,255,255,0.1);background:#16201f}
 
 /* ── AI TOOLS — CHESS BOARDS ── */
 .ai-chess-section{background:#0F1919;padding:72px 56px;border-top:0.5px solid rgba(255,255,255,0.04)}
@@ -639,6 +645,7 @@ section.awards-section{background:#0F1919;border-top:0.5px solid rgba(255,255,25
   .hs{min-width:45%}
   .hs-val{font-size:18px}
   .videos-grid.count-2,.videos-grid.count-3{grid-template-columns:1fr;max-width:280px}
+  .ma-statics-grid.count-2{grid-template-columns:1fr;max-width:560px}
 }
 @media(max-width:480px){
   .hero-name{font-size:42px}

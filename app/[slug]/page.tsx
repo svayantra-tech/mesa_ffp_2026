@@ -47,6 +47,8 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
   const awards: string[] = Array.isArray(brand?.awards) ? brand.awards : []
   const awardDescriptions: string[] = Array.isArray(brand?.award_descriptions) ? brand.award_descriptions : []
   const videos: string[] = Array.isArray(brand?.videos) ? brand.videos.slice(0, 3) : []
+  const adStatics: string[] = Array.isArray(brand?.ad_statics) ? brand.ad_statics.slice(0, 2) : []
+  const hasCreatives = videos.length > 0 || adStatics.some((url) => url.startsWith('http'))
 
   const hasProfile = !!student.profile_photo
 
@@ -82,7 +84,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
         </div>
         <div className="nav-center">
           {momentPhotos.length > 0 && <a href="#moments">Moments</a>}
-          {videos.length > 0 && <a href="#videos">Videos</a>}
+          {hasCreatives && <a href="#creatives">Creatives</a>}
           <a href="#ai">AI Tools</a>
           {awards.length > 0 && <a href="#awards">Awards</a>}
           <a href="#cert">Certificate</a>
@@ -138,10 +140,10 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
         </section>
       )}
 
-      {/* SLIDE 3 — VIDEO CREATIVES (hidden if no videos) */}
-      {videos.length > 0 && (
-        <section className="slide slide-teal" id="videos">
-          <MarketingAssets videos={videos} />
+      {/* SLIDE 3 — MARKETING CREATIVES (hidden if no videos or static ads) */}
+      {hasCreatives && (
+        <section className="slide slide-teal" id="creatives">
+          <MarketingAssets videos={videos} adStatics={adStatics} />
         </section>
       )}
 
