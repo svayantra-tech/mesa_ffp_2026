@@ -27,7 +27,7 @@ export default function MarketingAssets({ videos, adStatics = [] }: Props) {
 
   const staticAds = (Array.isArray(adStatics) ? adStatics : [])
     .filter((url) => url.startsWith('http'))
-    .slice(0, 2)
+    .slice(0, 5)
 
   const videoRef = useRef<HTMLDivElement>(null)
   const [loadVideos, setLoadVideos] = useState(false)
