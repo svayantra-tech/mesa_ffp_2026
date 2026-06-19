@@ -1,17 +1,24 @@
 'use client'
 
 import { useState } from 'react'
-import { Document, Page, pdfjs } from 'react-pdf'
 
-pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
+function extractDriveId(url: string): string | null {
+  if (!url) return null
+  // https://drive.google.com/file/d/<ID>/view
+  const m1 = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)
+  if (m1) return m1[1]
+  // https://drive.google.com/open?id=<ID>
+  const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/)
+  if (m2) return m2[1]
+  return null
+}
 
 export default function CertificateViewer({ certUrl }: { certUrl: string }) {
-  const [loaded, setLoaded] = useState(false)
   const [errored, setErrored] = useState(false)
 
-  const proxyUrl = `/api/cert?url=${encodeURIComponent(certUrl)}`
+  const fileId = extractDriveId(certUrl)
 
-  if (errored) {
+  if (!fileId || errored) {
     return (
       <div
         style={{
@@ -30,44 +37,21 @@ export default function CertificateViewer({ certUrl }: { certUrl: string }) {
           fontWeight: 600,
         }}
       >
-        Certificate unavailable — try the Download button below.
+        Certificate unavailable — use the Download button below.
       </div>
     )
   }
 
+  const thumbUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w2000`
+
   return (
-    <div
-      style={{
-        width: '100%',
-        display: 'block',
-        lineHeight: 0,
-        borderRadius: 12,
-        overflow: 'hidden',
-        background: loaded ? 'transparent' : '#FBF4D7',
-        minHeight: loaded ? undefined : 520,
-        boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
-      }}
-    >
-      <Document
-        file={proxyUrl}
-        loading={null}
-        error={null}
-        onLoadSuccess={() => setLoaded(true)}
-        onLoadError={(err) => {
-          console.error('PDF load error:', err)
-          setErrored(true)
-        }}
-      >
-        <div className="cert-canvas">
-          <Page
-            pageNumber={1}
-            width={1100}
-            renderTextLayer={false}
-            renderAnnotationLayer={false}
-            canvasBackground="transparent"
-          />
-        </div>
-      </Document>
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={thumbUrl}
+      alt="Programme Certificate"
+      className="cert-canvas"
+      loading="lazy"
+      onError={() => setErrored(true)}
+    />
   )
 }

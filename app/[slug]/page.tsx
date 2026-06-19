@@ -26,6 +26,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
+function extractDriveId(url: string): string | null {
+  if (!url) return null
+  const m1 = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)
+  if (m1) return m1[1]
+  const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/)
+  if (m2) return m2[1]
+  return null
+}
+
 function getInstagramUrl(instagram: string): string {
   if (instagram.startsWith('http')) return instagram
   return `https://instagram.com/${instagram.replace('@', '')}`
@@ -166,8 +175,9 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
                 <CertificateViewer certUrl={student.certificate_url} />
               </div>
               <a
-                href={`/api/cert?url=${encodeURIComponent(student.certificate_url)}`}
-                download
+                href={`https://drive.google.com/uc?export=download&id=${extractDriveId(student.certificate_url)}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="cert-download active"
               >
                 <svg viewBox="0 0 16 16"><path d="M8 2v9M4 8l4 4 4-4M2 13h12" /></svg>
