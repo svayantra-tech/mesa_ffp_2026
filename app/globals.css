@@ -483,7 +483,8 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:24p
 .ma-statics-grid{display:grid;gap:16px;align-items:start;width:100%;margin:0 auto}
 .ma-statics-grid.count-1{grid-template-columns:1fr;max-width:560px}
 .ma-statics-grid.count-2{grid-template-columns:1fr 1fr;max-width:860px}
-.ma-static-slot{aspect-ratio:16/9;width:100%;overflow:hidden;border-radius:12px;border:0.5px solid rgba(255,255,255,0.1);background:#16201f}
+.ma-static-slot{width:100%;overflow:hidden;border-radius:12px;border:0.5px solid rgba(255,255,255,0.1);background:#16201f;line-height:0}
+.ma-static-img{width:100%;height:auto;display:block}
 
 /* ── AI TOOLS — CHESS BOARDS ── */
 .ai-chess-section{background:#0F1919;padding:72px 56px;border-top:0.5px solid rgba(255,255,255,0.04)}

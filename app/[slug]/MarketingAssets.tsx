@@ -2,7 +2,6 @@
 
 // Video creatives + static ad images — parent <section> slide is provided by page.tsx
 import { useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
 
 function extractYouTubeId(url: string): string | null {
   if (!url) return null
@@ -102,14 +101,13 @@ export default function MarketingAssets({ videos, adStatics = [] }: Props) {
               if (erroredAds.has(i)) return null
               return (
                 <div key={i} className="ma-static-slot">
-                  <Image
+                  {/* Plain img so the frame follows each photo's natural aspect ratio */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={src}
                     alt={`Static ad ${i + 1}`}
-                    width={0}
-                    height={0}
-                    sizes="(max-width: 768px) 100vw, 420px"
-                    quality={90}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    className="ma-static-img"
+                    loading="lazy"
                     onError={() => setErroredAds((prev) => new Set([...prev, i]))}
                   />
                 </div>
