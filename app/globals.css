@@ -37,7 +37,7 @@ nav{
 
 /* ── HERO (full-width, no right panel) ── */
 .landing-hero{
-  padding:100px 56px 80px;background:#FFFBF3;
+  padding:100px 32px 80px;background:#FFFBF3;
   min-height:75vh;display:flex;flex-direction:column;justify-content:center
 }
 .hero-tag{
