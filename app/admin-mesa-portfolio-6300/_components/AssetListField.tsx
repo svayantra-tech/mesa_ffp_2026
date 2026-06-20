@@ -4,6 +4,122 @@ import { useRef, useState } from 'react'
 import { uploadFile } from './upload'
 import { normalizeImageUrl } from '@/lib/normalize'
 
+const MAX_LONG_EDGE = 2400
+const JPEG_QUALITY = 0.85
+const SKIP_RESIZE_UNDER_BYTES = 3 * 1024 * 1024 // skip re-encode if already <3MB
+
+/**
+ * Read EXIF orientation from a JPEG ArrayBuffer (only parses enough of the
+ * EXIF structure to find the Orientation tag — no dependency needed).
+ */
+function readExifOrientation(buf: ArrayBuffer): number {
+  const view = new DataView(buf)
+  if (view.getUint16(0) !== 0xFFD8) return 1              // not JPEG
+  let offset = 2
+  while (offset < view.byteLength - 2) {
+    const marker = view.getUint16(offset)
+    offset += 2
+    if (marker === 0xFFE1) {                               // APP1 = EXIF
+      offset += 2                                          // skip segment length
+      if (view.getUint32(offset) !== 0x45786966) return 1 // "Exif"
+      offset += 6                                          // skip "Exif\0\0"
+      const tiffStart = offset
+      const littleEndian = view.getUint16(offset) === 0x4949
+      const ifdOffset = view.getUint32(offset + 4, littleEndian)
+      const ifdStart = tiffStart + ifdOffset
+      const entries = view.getUint16(ifdStart, littleEndian)
+      for (let i = 0; i < entries; i++) {
+        const entryOffset = ifdStart + 2 + i * 12
+        if (view.getUint16(entryOffset, littleEndian) === 0x0112) {
+          return view.getUint16(entryOffset + 8, littleEndian)
+        }
+      }
+      return 1
+    }
+    if ((marker & 0xFF00) !== 0xFF00) break
+    offset += view.getUint16(offset)                       // skip this segment
+  }
+  return 1
+}
+
+/** Apply EXIF orientation to a canvas context before drawing the image. */
+function applyOrientation(
+  ctx: CanvasRenderingContext2D,
+  orientation: number,
+  w: number,
+  h: number,
+) {
+  switch (orientation) {
+    case 2: ctx.transform(-1, 0, 0, 1, w, 0); break
+    case 3: ctx.transform(-1, 0, 0, -1, w, h); break
+    case 4: ctx.transform(1, 0, 0, -1, 0, h); break
+    case 5: ctx.transform(0, 1, 1, 0, 0, 0); break
+    case 6: ctx.transform(0, 1, -1, 0, h, 0); break
+    case 7: ctx.transform(0, -1, -1, 0, h, w); break
+    case 8: ctx.transform(0, -1, 1, 0, 0, w); break
+    default: break
+  }
+}
+
+/**
+ * Resize a File to MAX_LONG_EDGE on the long edge, baking in EXIF rotation,
+ * and re-encode as JPEG at JPEG_QUALITY.
+ * Returns a new File (renamed .jpg), or the original File if it's already
+ * small enough that re-encoding would be wasteful.
+ */
+async function resizeImage(file: File): Promise<File> {
+  if (file.size < SKIP_RESIZE_UNDER_BYTES) return file
+
+  const buf = await file.arrayBuffer()
+  const orientation = file.type === 'image/jpeg' || file.name.match(/\.jpe?g$/i)
+    ? readExifOrientation(buf)
+    : 1
+
+  const blob = new Blob([buf], { type: file.type || 'image/jpeg' })
+  const url = URL.createObjectURL(blob)
+
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const el = new Image()
+      el.onload = () => resolve(el)
+      el.onerror = reject
+      el.src = url
+    })
+
+    const srcW = img.naturalWidth
+    const srcH = img.naturalHeight
+
+    // Determine output dimensions (don't upscale)
+    const longEdge = Math.max(srcW, srcH)
+    const scale = longEdge > MAX_LONG_EDGE ? MAX_LONG_EDGE / longEdge : 1
+    const outW = Math.round(srcW * scale)
+    const outH = Math.round(srcH * scale)
+
+    // Orientations 5–8 swap width/height
+    const swapped = orientation >= 5 && orientation <= 8
+    const canvasW = swapped ? outH : outW
+    const canvasH = swapped ? outW : outH
+
+    const canvas = document.createElement('canvas')
+    canvas.width = canvasW
+    canvas.height = canvasH
+    const ctx = canvas.getContext('2d')!
+
+    applyOrientation(ctx, orientation, canvasW, canvasH)
+    ctx.drawImage(img, 0, 0, outW, outH)
+
+    const resized = await new Promise<Blob | null>((res) =>
+      canvas.toBlob(res, 'image/jpeg', JPEG_QUALITY),
+    )
+
+    if (!resized) return file
+    const baseName = file.name.replace(/\.[^.]+$/, '')
+    return new File([resized], `${baseName}.jpg`, { type: 'image/jpeg' })
+  } finally {
+    URL.revokeObjectURL(url)
+  }
+}
+
 type Props = {
   label: string
   values: string[]
@@ -25,17 +141,22 @@ export default function AssetListField({
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
+  const [optimizing, setOptimizing] = useState(false)
   const [error, setError] = useState('')
   const [pasteUrl, setPasteUrl] = useState('')
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return
-    setUploading(true)
     setError('')
     try {
       const uploaded: string[] = []
       for (const file of Array.from(files)) {
-        const url = await uploadFile(file)
+        // Resize/re-encode large images client-side before upload
+        setOptimizing(true)
+        const ready = await resizeImage(file).catch(() => file)
+        setOptimizing(false)
+        setUploading(true)
+        const url = await uploadFile(ready)
         uploaded.push(url)
       }
       let next = [...values, ...uploaded]
@@ -47,6 +168,7 @@ export default function AssetListField({
       console.error('[AssetListField] upload error:', msg)
     } finally {
       setUploading(false)
+      setOptimizing(false)
       if (inputRef.current) inputRef.current.value = ''
     }
   }
@@ -102,10 +224,15 @@ export default function AssetListField({
           {!atMax && (
             <div
               className="asset-add-tile"
-              onClick={() => !uploading && inputRef.current?.click()}
-              style={{ cursor: uploading ? 'default' : 'pointer', opacity: uploading ? 0.7 : 1 }}
+              onClick={() => !uploading && !optimizing && inputRef.current?.click()}
+              style={{ cursor: (uploading || optimizing) ? 'default' : 'pointer', opacity: (uploading || optimizing) ? 0.7 : 1 }}
             >
-              {uploading ? (
+              {optimizing ? (
+                <>
+                  <span className="admin-spinner" />
+                  <span style={{ fontSize: 11 }}>Optimizing…</span>
+                </>
+              ) : uploading ? (
                 <>
                   <span className="admin-spinner" />
                   <span style={{ fontSize: 11 }}>Uploading…</span>
