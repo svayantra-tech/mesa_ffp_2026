@@ -7,9 +7,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Script from 'next/script'
 import DemoDay from '@/app/components/DemoDay'
-import ImageCarousel from '@/app/components/ImageCarousel'
 import HeroImage from '@/app/components/HeroImage'
 import FeatCardImage from '@/app/components/FeatCardImage'
+import YoutubeEmbed from '@/app/components/YoutubeEmbed'
 
 function parseJsonUrls(s?: string): string[] {
   if (!s) return []
@@ -50,7 +50,8 @@ export default async function HomePage() {
 
   const heroImage = parseJsonUrls(media.landing_hero_image)[0] ?? null
   const demoDayImages = parseJsonUrls(media.landing_demo_day)
-  const ffp2027Images = parseJsonUrls(media.landing_ffp2027)
+  // fallback to the hardcoded Mesa FFP promo video until admin overrides it
+  const ffp2027VideoId = media.landing_ffp2027_video_id || 'mIp5evPlruY'
 
   const ventureOrder = ['azuri', 'kintoken', 'tact', 'lysso']
   const sortedVentures = ventureOrder
@@ -239,18 +240,18 @@ export default async function HomePage() {
         <Image src="/assets/brand-element-concentric.png" alt="" width={280} height={365} quality={100} className="section-brand-el" style={{ right: '-140px', top: '50%', transform: 'translateY(-50%)', opacity: 0.06 }} />
         <div className="section-num reveal">03</div>
         <div className="section-num-small reveal">Know more</div>
-        <h2 className="section-title reveal">INTERESTED <span className="light">in FFP 2027?</span></h2>
+        <h2 className="section-title reveal">INTERESTED <span className="light">in Mesa Future Founders?</span></h2>
         <p className="section-sub reveal">
           The Future Founder&apos;s Summer School returns next year. If you&apos;re a student,
-          parent, or educator — find out how to apply for the next cohort.
+          parent, or educator, find out how to apply for the next cohort.
         </p>
-        <div className={`enquire-layout${ffp2027Images.length > 0 ? ' has-image' : ''}`}>
+        <div className="enquire-layout has-image">
           <div className="enquire-content">
             <div className="enquire-text reveal d1">
-              FFP is a 2-week intensive entrepreneurship programme by Mesa School of Business,
+              This programme is a 2-week intensive entrepreneurship experience by Mesa School of Business,
               Bangalore. Students form teams, build real products, sell to real customers,
-              and pitch to real investors — all before they turn 18.<br /><br />
-              Applications for Cohort 2 (Summer 2027) will open soon.
+              and pitch to real investors — all before they turn 18!<br /><br />
+              Applications for the next cohort will open soon.
               Visit the Mesa website for programme details, eligibility, and application timelines.
             </div>
             <a href="https://mesaschool.co/future-founders-summer-school/" target="_blank" rel="noopener noreferrer" className="enquire-cta reveal d2">
@@ -258,11 +259,9 @@ export default async function HomePage() {
               <svg viewBox="0 0 16 16"><path d="M4 12l8-8M6 4h6v6" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </a>
           </div>
-          {ffp2027Images.length > 0 && (
-            <div className="enquire-carousel reveal d3">
-              <ImageCarousel images={ffp2027Images} aspect="4/3" />
-            </div>
-          )}
+          <div className="enquire-carousel reveal d3">
+            <YoutubeEmbed videoId={ffp2027VideoId} />
+          </div>
         </div>
       </section>
 

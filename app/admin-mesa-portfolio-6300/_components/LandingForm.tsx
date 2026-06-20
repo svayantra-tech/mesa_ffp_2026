@@ -41,7 +41,7 @@ export default function LandingForm({
   const [demoPhotos, setDemoPhotos] = useState<string[]>(DEMO_KEYS.map((k) => map[k]).filter(Boolean))
   const [heroImage, setHeroImage] = useState<string[]>(parseJsonUrls(map['landing_hero_image']))
   const [demoDayImages, setDemoDayImages] = useState<string[]>(parseJsonUrls(map['landing_demo_day']))
-  const [ffp2027Images, setFfp2027Images] = useState<string[]>(parseJsonUrls(map['landing_ffp2027']))
+  const [ffp2027Video, setFfp2027Video] = useState(map['landing_ffp2027_video_id'] || '')
   const [photoMap, setPhotoMap] = useState<Record<string, string>>(
     () => Object.fromEntries(ventures.map((v) => [v.id, v.feature_photo]))
   )
@@ -57,7 +57,7 @@ export default function LandingForm({
       ...DEMO_KEYS.map((k, i) => ({ key: k, value: demoPhotos[i] || '' })),
       { key: 'landing_hero_image', value: JSON.stringify(heroImage) },
       { key: 'landing_demo_day', value: JSON.stringify(demoDayImages) },
-      { key: 'landing_ffp2027', value: JSON.stringify(ffp2027Images) },
+      { key: 'landing_ffp2027_video_id', value: ffp2027Video.trim() },
     ]
     try {
       const res = await fetch('/api/admin/landing', {
@@ -135,14 +135,17 @@ export default function LandingForm({
       </div>
 
       <div className="admin-card">
-        <h2 className="admin-card-title">FFP 2027 — side images</h2>
-        <AssetListField
-          label="FFP 2027 images"
-          values={ffp2027Images}
-          onChange={setFfp2027Images}
-          allowPasteUrl
-          hint="Shown beside the 'Interested in FFP 2027' CTA. 2-col desktop, stacked mobile. Hidden when empty."
-        />
+        <h2 className="admin-card-title">FFP 2027 — promo video</h2>
+        <div className="admin-field">
+          <label className="admin-label">YouTube link or video ID</label>
+          <input
+            className="admin-input"
+            value={ffp2027Video}
+            onChange={(e) => setFfp2027Video(e.target.value)}
+            placeholder="https://youtube.com/watch?v=... or mIp5evPlruY"
+          />
+          <p className="asset-hint">Shown as a click-to-play thumbnail beside the FFP 2027 CTA on the landing page.</p>
+        </div>
       </div>
 
       {ventures.length > 0 && (
