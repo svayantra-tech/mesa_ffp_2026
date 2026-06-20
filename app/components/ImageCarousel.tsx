@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-const ROTATE_MS = 5000
+const ROTATE_MS_FEW = 5000
+const ROTATE_MS_MANY = 3500
+const DOTS_THRESHOLD = 6
 
 export default function ImageCarousel({
   images: raw,
@@ -20,7 +22,9 @@ export default function ImageCarousel({
     .map((src, origIdx) => ({ src, origIdx }))
     .filter(({ origIdx }) => !errored.has(origIdx))
 
-  // detect prefers-reduced-motion client-side
+  const useDots = visible.length <= DOTS_THRESHOLD
+  const rotateMs = visible.length > DOTS_THRESHOLD ? ROTATE_MS_MANY : ROTATE_MS_FEW
+
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
     setReduced(mq.matches)
@@ -39,19 +43,18 @@ export default function ImageCarousel({
     el?.addEventListener('mouseleave', onLeave)
     const t = setInterval(() => {
       if (!paused) setIdx((c) => (c + 1) % visible.length)
-    }, ROTATE_MS)
+    }, rotateMs)
     return () => {
       clearInterval(t)
       el?.removeEventListener('mouseenter', onEnter)
       el?.removeEventListener('mouseleave', onLeave)
     }
-  }, [visible.length, reduced])
+  }, [visible.length, reduced, rotateMs])
 
   if (visible.length === 0) return null
 
   const safeIdx = idx % visible.length
 
-  // single image or reduced-motion → static, no animation
   if (visible.length === 1 || reduced) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
@@ -78,18 +81,25 @@ export default function ImageCarousel({
           onError={() => setErrored((prev) => new Set([...prev, origIdx]))}
         />
       ))}
-      <div className="img-carousel-dots" role="tablist">
-        {visible.map((_, i) => (
-          <button
-            key={i}
-            role="tab"
-            aria-selected={i === safeIdx}
-            aria-label={`Image ${i + 1}`}
-            className={`img-carousel-dot${i === safeIdx ? ' ic-dot-active' : ''}`}
-            onClick={() => setIdx(i)}
-          />
-        ))}
-      </div>
+
+      {useDots ? (
+        <div className="img-carousel-dots" role="tablist">
+          {visible.map((_, i) => (
+            <button
+              key={i}
+              role="tab"
+              aria-selected={i === safeIdx}
+              aria-label={`Image ${i + 1}`}
+              className={`img-carousel-dot${i === safeIdx ? ' ic-dot-active' : ''}`}
+              onClick={() => setIdx(i)}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="img-carousel-counter">
+          {safeIdx + 1} / {visible.length}
+        </div>
+      )}
     </div>
   )
 }
