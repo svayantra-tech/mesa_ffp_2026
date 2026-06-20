@@ -201,8 +201,24 @@ nav{
   font-family:var(--font-manrope),sans-serif
 }
 
+/* ── IMAGE CAROUSEL ── */
+.img-carousel{position:relative;width:100%;border-radius:12px;overflow:hidden;background:#1a2a2a}
+.img-carousel-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .6s ease}
+.img-carousel-img.ic-active{opacity:1}
+.img-carousel-static{width:100%;height:auto;display:block;border-radius:12px;object-fit:cover}
+.img-carousel-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2}
+.img-carousel-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.4);cursor:pointer;transition:background .2s,transform .2s;border:none;padding:0;flex-shrink:0}
+.img-carousel-dot.ic-dot-active{background:#fff;transform:scale(1.25)}
+
+/* ── TOP PERFORMERS SECTION ── */
+.top-performers-section{padding:80px 56px;background:#FFFBF3;position:relative}
+.top-performers-carousel{max-width:960px;margin:32px auto 0;border-radius:16px;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,0.1)}
+
 /* ── ENQUIRE ── */
-.enquire-content{position:relative;z-index:2}
+.enquire-layout{position:relative;z-index:2}
+.enquire-layout.has-image{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.enquire-content{position:relative}
+.enquire-carousel{border-radius:14px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.12)}
 .enquire-text{font-size:14px;color:rgba(15,25,25,0.52);line-height:1.75;margin-bottom:32px;max-width:560px;font-family:var(--font-manrope),sans-serif}
 .enquire-cta{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:#BA3B41;color:#FFFBF3;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-manrope),sans-serif;letter-spacing:.03em;text-decoration:none;transition:background .2s}
 .enquire-cta:hover{background:#9e3137}
@@ -301,6 +317,8 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:24p
   .stats-strip{flex-wrap:wrap}.stat{flex:1 1 45%;min-width:140px}
   .numbered-section{padding:56px 24px}
   .highlight-strip{flex-direction:column}
+  .top-performers-section{padding:56px 24px}
+  .enquire-layout.has-image{grid-template-columns:1fr}
   .dd-section{min-height:auto}
   .dd-diag{position:static;clip-path:none;padding:40px 24px 24px}
   .dd-diag-heading{font-size:42px}

@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
+import ImageCarousel from './ImageCarousel'
 
 const CAMERA_ICON = (
   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="rgba(15,25,25,0.22)" strokeWidth="1.4">
@@ -38,30 +39,12 @@ function PhotoSlot({ src }: { src?: string }) {
 }
 
 interface DemoDayProps {
-  demoVideoId?: string | null
+  demoDayImages: string[]
   demoPhotos?: string[]
 }
 
-export default function DemoDay({ demoVideoId, demoPhotos = [] }: DemoDayProps) {
-  const videoRef = useRef<HTMLDivElement>(null)
-  const [videoLoaded, setVideoLoaded] = useState(false)
-
-  useEffect(() => {
-    const el = videoRef.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting && !videoLoaded) {
-            setVideoLoaded(true)
-          }
-        })
-      },
-      { threshold: 0.4 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [videoLoaded])
+export default function DemoDay({ demoDayImages, demoPhotos = [] }: DemoDayProps) {
+  if (demoDayImages.length === 0) return null
 
   return (
     <section id="demo-day" className="dd-section" style={{ minHeight: '760px' }}>
@@ -84,26 +67,11 @@ export default function DemoDay({ demoVideoId, demoPhotos = [] }: DemoDayProps) 
         </div>
       </div>
 
-      {/* LAYER 2 — right side content */}
+      {/* LAYER 2 — dark right content */}
       <div className="dd-content">
-        {/* Video slot */}
-        <div className="dd-video" ref={videoRef}>
-          {!videoLoaded && (
-            <div className="dd-video-cover">
-              <div className="dd-video-play">
-                <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" /></svg>
-              </div>
-              <span className="dd-video-label">Demo Day Highlights</span>
-            </div>
-          )}
-          {videoLoaded && demoVideoId && (
-            <iframe
-              src={`https://www.youtube.com/embed/${demoVideoId}?enablejsapi=1&autoplay=1&mute=1&loop=1`}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="dd-video-iframe"
-            />
-          )}
+        {/* Carousel slot — replaces YouTube embed */}
+        <div className="dd-video">
+          <ImageCarousel images={demoDayImages} aspect="16/9" />
         </div>
 
         {/* Photo slots */}

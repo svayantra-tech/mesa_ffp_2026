@@ -5,6 +5,18 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Script from 'next/script'
 import DemoDay from '@/app/components/DemoDay'
+import ImageCarousel from '@/app/components/ImageCarousel'
+
+function parseJsonUrls(s?: string): string[] {
+  if (!s) return []
+  try {
+    const parsed = JSON.parse(s)
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter((u: unknown) => typeof u === 'string' && u.startsWith('http'))
+  } catch {
+    return []
+  }
+}
 
 function formatRevenue(amount: number) {
   if (amount >= 100000) return `₹${(amount / 100000).toFixed(2)}L`
@@ -31,6 +43,10 @@ export default async function HomePage() {
     media.flea_photo_5,
     media.flea_photo_6,
   ].filter(Boolean)
+
+  const topPerformersImages = parseJsonUrls(media.landing_top_performers)
+  const demoDayImages = parseJsonUrls(media.landing_demo_day)
+  const ffp2027Images = parseJsonUrls(media.landing_ffp2027)
 
   const ventureOrder = ['azuri', 'kintoken', 'tact', 'lysso']
   const sortedVentures = ventureOrder
@@ -143,7 +159,7 @@ export default async function HomePage() {
 
       {/* 02 — DEMO DAY */}
       <DemoDay
-        demoVideoId={media.demo_day_video_id}
+        demoDayImages={demoDayImages}
         demoPhotos={[
           media.demo_photo_1,
           media.demo_photo_2,
@@ -217,6 +233,20 @@ export default async function HomePage() {
         <AwardsCarousel awardBrands={awardBrands} allStudents={allStudents} />
       </section>
 
+      {/* TOP PERFORMERS & RECOGNITION */}
+      {topPerformersImages.length > 0 && (
+        <>
+          <hr className="section-divider" />
+          <section className="top-performers-section">
+            <div className="section-num-small reveal">Recognition &middot; FFP 2026</div>
+            <h2 className="section-title reveal d1">TOP <span className="light">Performers &amp; Recognition</span></h2>
+            <div className="top-performers-carousel reveal d2">
+              <ImageCarousel images={topPerformersImages} aspect="16/9" />
+            </div>
+          </section>
+        </>
+      )}
+
       {/* 03 — ENQUIRE */}
       <section id="enquire" className="numbered-section on-butter">
         <Image src="/assets/brand-element-concentric.png" alt="" width={280} height={365} quality={100} className="section-brand-el" style={{ right: '-140px', top: '50%', transform: 'translateY(-50%)', opacity: 0.06 }} />
@@ -227,18 +257,25 @@ export default async function HomePage() {
           The Future Founder&apos;s Summer School returns next year. If you&apos;re a student,
           parent, or educator — find out how to apply for the next cohort.
         </p>
-        <div className="enquire-content">
-          <div className="enquire-text reveal d1">
-            FFP is a 2-week intensive entrepreneurship programme by Mesa School of Business,
-            Bangalore. Students form teams, build real products, sell to real customers,
-            and pitch to real investors — all before they turn 18.<br /><br />
-            Applications for Cohort 2 (Summer 2027) will open soon.
-            Visit the Mesa website for programme details, eligibility, and application timelines.
+        <div className={`enquire-layout${ffp2027Images.length > 0 ? ' has-image' : ''}`}>
+          <div className="enquire-content">
+            <div className="enquire-text reveal d1">
+              FFP is a 2-week intensive entrepreneurship programme by Mesa School of Business,
+              Bangalore. Students form teams, build real products, sell to real customers,
+              and pitch to real investors — all before they turn 18.<br /><br />
+              Applications for Cohort 2 (Summer 2027) will open soon.
+              Visit the Mesa website for programme details, eligibility, and application timelines.
+            </div>
+            <a href="https://mesaschool.co/future-founders-summer-school/" target="_blank" rel="noopener noreferrer" className="enquire-cta reveal d2">
+              Learn More About FFP
+              <svg viewBox="0 0 16 16"><path d="M4 12l8-8M6 4h6v6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </a>
           </div>
-          <a href="https://mesaschool.co/future-founders-summer-school/" target="_blank" rel="noopener noreferrer" className="enquire-cta reveal d2">
-            Learn More About FFP
-            <svg viewBox="0 0 16 16"><path d="M4 12l8-8M6 4h6v6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </a>
+          {ffp2027Images.length > 0 && (
+            <div className="enquire-carousel reveal d3">
+              <ImageCarousel images={ffp2027Images} aspect="4/3" />
+            </div>
+          )}
         </div>
       </section>
 
