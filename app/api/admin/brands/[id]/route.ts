@@ -33,6 +33,10 @@ export async function PUT(request: Request, { params }: Ctx) {
     update[k] = arr
   }
 
+  if ('feature_photo' in body) {
+    update['feature_photo'] = normalizeImageUrl(String(body.feature_photo ?? ''))
+  }
+
   await connectDB()
   try {
     const doc = await Brand.findByIdAndUpdate(id, update, { new: true })

@@ -22,6 +22,7 @@ const empty: AdminBrand = {
   ad_statics: [],
   website: '',
   instagram: '',
+  feature_photo: '',
 }
 
 export default function BrandForm({ brand }: { brand?: AdminBrand }) {
@@ -127,6 +128,18 @@ export default function BrandForm({ brand }: { brand?: AdminBrand }) {
           values={form.videos}
           onChange={(v) => set('videos', v)}
           hint="The portfolio shows the first 3."
+        />
+      </div>
+
+      <div className="admin-card">
+        <h2 className="admin-card-title">Feature photo</h2>
+        <AssetListField
+          label="Landing page card photo (1 max)"
+          values={form.feature_photo ? [form.feature_photo] : []}
+          onChange={(urls) => set('feature_photo', urls[0] || '')}
+          max={1}
+          allowPasteUrl
+          hint="Shown on the landing page Top Performers and Recognition cards. 4:3 landscape photos work best."
         />
       </div>
 

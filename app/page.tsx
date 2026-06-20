@@ -48,7 +48,6 @@ export default async function HomePage() {
   ].filter(Boolean)
 
   const heroImage = parseJsonUrls(media.landing_hero_image)[0] ?? null
-  const topPerformersImages = parseJsonUrls(media.landing_top_performers)
   const demoDayImages = parseJsonUrls(media.landing_demo_day)
   const ffp2027Images = parseJsonUrls(media.landing_ffp2027)
 
@@ -196,32 +195,27 @@ export default async function HomePage() {
             const awards = Array.isArray(venture.awards) ? venture.awards : []
             const awardLabel = ventureAwardLabels[venture.slug] || (awards.length > 0 ? String(awards[0]) : '')
             return (
-              <div key={venture.slug} className={`venture-card reveal d${i + 1}`}>
-                <div className="venture-card-photo">
-                  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+              <div key={venture.slug} className={`feat-card reveal d${i + 1}`}>
+                <div className="feat-card-photo">
+                  {venture.feature_photo
+                    // eslint-disable-next-line @next/next/no-img-element
+                    ? <img src={venture.feature_photo} alt={venture.name} className="feat-card-img" />
+                    : null}
                 </div>
-                <div className="venture-card-header">
-                  <span className="venture-card-name">{venture.name}</span>
-                  {awardLabel && <span className="venture-card-award">{awardLabel}</span>}
-                </div>
-                <div className="venture-card-body">
-                  <div className="venture-card-product">{venture.description}</div>
-                  <div className="venture-card-stats">
-                    <div className="venture-card-stat">
-                      <div className="venture-card-stat-val red">{formatRevenue(venture.revenue)}</div>
-                      <div className="venture-card-stat-lbl">Revenue</div>
+                <div className="feat-card-body">
+                  <div className="feat-card-name">{venture.name}</div>
+                  {awardLabel && <span className="feat-card-award">{awardLabel}</span>}
+                  <div className="feat-card-stats">
+                    <div className="feat-card-stat">
+                      <div className="feat-card-stat-val red">{formatRevenue(venture.revenue)}</div>
+                      <div className="feat-card-stat-lbl">Revenue</div>
                     </div>
-                    <div className="venture-card-stat">
-                      <div className="venture-card-stat-val">{venture.customers}</div>
-                      <div className="venture-card-stat-lbl">Customers</div>
+                    <div className="feat-card-stat">
+                      <div className="feat-card-stat-val">{venture.customers}</div>
+                      <div className="feat-card-stat-lbl">Customers</div>
                     </div>
                   </div>
-                  {founderNames && (
-                    <div className="venture-card-team">
-                      <div className="venture-card-team-label">Founders</div>
-                      <div className="venture-card-team-names">{founderNames}</div>
-                    </div>
-                  )}
+                  {founderNames && <div className="feat-card-founders">{founderNames}</div>}
                 </div>
               </div>
             )
@@ -239,20 +233,6 @@ export default async function HomePage() {
 
         <AwardsCarousel awardBrands={awardBrands} allStudents={allStudents} />
       </section>
-
-      {/* TOP PERFORMERS & RECOGNITION */}
-      {topPerformersImages.length > 0 && (
-        <>
-          <hr className="section-divider" />
-          <section className="top-performers-section">
-            <div className="section-num-small reveal">Recognition &middot; FFP 2026</div>
-            <h2 className="section-title reveal d1">TOP <span className="light">Performers &amp; Recognition</span></h2>
-            <div className="top-performers-carousel reveal d2">
-              <ImageCarousel images={topPerformersImages} aspect="16/9" />
-            </div>
-          </section>
-        </>
-      )}
 
       {/* 03 — ENQUIRE */}
       <section id="enquire" className="numbered-section on-butter">
@@ -328,19 +308,23 @@ function AwardsCarousel({ awardBrands, allStudents }: { awardBrands: BrandShape[
             const founderNames = [...new Set(students.map((s) => s.name))].join(', ')
             const awards = Array.isArray(brand.awards) ? brand.awards : []
             return (
-              <div key={brand.slug} className="award-card-l">
-                <div className="award-lemon-stripe"></div>
-                <div className="award-card-photo">
-                  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+              <div key={brand.slug} className="feat-card feat-card-track">
+                <div className="feat-card-photo">
+                  {brand.feature_photo
+                    // eslint-disable-next-line @next/next/no-img-element
+                    ? <img src={brand.feature_photo} alt={brand.name} className="feat-card-img" />
+                    : null}
                 </div>
-                <div className="award-card-body">
-                  <div className="award-venture-name">{brand.name}</div>
-                  <div className="award-founders">{founderNames}</div>
-                  <div className="award-names">
-                    {awards.map((award: string, i: number) => (
-                      <span key={i} className="award-badge">{award}</span>
-                    ))}
-                  </div>
+                <div className="feat-card-body">
+                  <div className="feat-card-name">{brand.name}</div>
+                  {awards.length > 0 && (
+                    <div className="feat-card-awards">
+                      {awards.map((award: string, i: number) => (
+                        <span key={i} className="feat-card-award">{award}</span>
+                      ))}
+                    </div>
+                  )}
+                  {founderNames && <div className="feat-card-founders">{founderNames}</div>}
                 </div>
               </div>
             )
@@ -372,7 +356,7 @@ document.querySelectorAll('.reveal').forEach(function(el) { revealObserver.obser
   var track = document.getElementById('awardsTrack');
   if (!track) return;
   var dotsWrap = document.getElementById('awardsDots');
-  var cards = track.querySelectorAll('.award-card-l');
+  var cards = track.querySelectorAll('.feat-card-track');
   var total = cards.length;
   if (total === 0) return;
   var isMobile = function() { return window.innerWidth <= 900; };

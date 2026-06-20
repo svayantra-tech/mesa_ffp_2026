@@ -16,6 +16,7 @@ const BrandSchema = new Schema(
     website: { type: String, default: '' },
     instagram: { type: String, default: '' },
     product_photo: { type: String, default: '' },
+    feature_photo: { type: String, default: '' },
   },
   { collection: 'brands', timestamps: true }
 )

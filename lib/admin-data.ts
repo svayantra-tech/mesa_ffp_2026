@@ -19,6 +19,7 @@ export type AdminBrand = {
   ad_statics: string[]
   website: string
   instagram: string
+  feature_photo: string
 }
 
 export type AdminStudent = {
@@ -51,6 +52,7 @@ export function toAdminBrand(b: any): AdminBrand {
     ad_statics: b.ad_statics ?? [],
     website: b.website ?? '',
     instagram: b.instagram ?? '',
+    feature_photo: b.feature_photo ?? '',
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
