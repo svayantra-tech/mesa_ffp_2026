@@ -16,6 +16,60 @@ type VentureRow = {
 
 const DEMO_KEYS = [1, 2, 3, 4, 5, 6].map((n) => `demo_photo_${n}`)
 
+function DriveFolderImport({ onImport }: { onImport: (urls: string[]) => void }) {
+  const [folderUrl, setFolderUrl] = useState('')
+  const [status, setStatus] = useState<{ type: 'idle' | 'loading' | 'ok' | 'err'; msg: string }>({ type: 'idle', msg: '' })
+
+  async function importFolder() {
+    const url = folderUrl.trim()
+    if (!url) return
+    setStatus({ type: 'loading', msg: 'Fetching folder contents…' })
+    try {
+      const res = await fetch(`/api/admin/drive-folder?url=${encodeURIComponent(url)}`)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Import failed')
+      onImport(data.urls as string[])
+      setFolderUrl('')
+      setStatus({ type: 'ok', msg: `Added ${data.count} photo${data.count === 1 ? '' : 's'} — click Save to publish.` })
+    } catch (e) {
+      setStatus({ type: 'err', msg: e instanceof Error ? e.message : 'Import failed' })
+    }
+  }
+
+  return (
+    <div style={{ marginTop: 16, paddingTop: 16, borderTop: '.5px solid rgba(15,25,25,0.08)' }}>
+      <div className="admin-label" style={{ marginBottom: 6 }}>Import from Google Drive folder</div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <input
+          className="admin-input"
+          style={{ flex: 1 }}
+          placeholder="https://drive.google.com/drive/folders/..."
+          value={folderUrl}
+          onChange={(e) => setFolderUrl(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), importFolder())}
+        />
+        <button
+          type="button"
+          className="admin-btn admin-btn-primary"
+          onClick={importFolder}
+          disabled={status.type === 'loading' || !folderUrl.trim()}
+          style={{ flexShrink: 0 }}
+        >
+          {status.type === 'loading' ? <span className="admin-spinner" /> : 'Import'}
+        </button>
+      </div>
+      {status.type !== 'idle' && status.msg && (
+        <p className={`asset-hint`} style={{ marginTop: 6, color: status.type === 'err' ? '#BA3B41' : status.type === 'ok' ? '#2a7a4f' : undefined }}>
+          {status.msg}
+        </p>
+      )}
+      <p className="asset-hint" style={{ marginTop: 4 }}>
+        Folder must be shared as &quot;Anyone with the link can view&quot;. Requires <code>GOOGLE_API_KEY</code> in Vercel env.
+      </p>
+    </div>
+  )
+}
+
 function parseJsonUrls(s?: string): string[] {
   if (!s) return []
   try {
@@ -135,6 +189,7 @@ export default function LandingForm({
           allowPasteUrl
           hint="Shown in the infinite scrolling strip on the landing page. Add as many as you like — the strip loops them all."
         />
+        <DriveFolderImport onImport={(urls) => setFleaPhotos((prev) => [...prev, ...urls])} />
       </div>
 
       <div className="admin-card">
