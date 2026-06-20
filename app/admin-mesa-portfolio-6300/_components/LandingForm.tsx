@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import AssetListField from './AssetListField'
 
@@ -51,6 +51,22 @@ export default function LandingForm({
   )
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
+
+  // One-time migration: if the new landing_flea_photos key doesn't exist yet in DB,
+  // silently write the legacy photos to it so the page immediately shows all of them.
+  const migrated = useRef(false)
+  useEffect(() => {
+    if (migrated.current) return
+    migrated.current = true
+    if (map['landing_flea_photos']) return // already migrated, nothing to do
+    if (fleaPhotos.length === 0) return
+    fetch('/api/admin/landing', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: [{ key: 'landing_flea_photos', value: JSON.stringify(fleaPhotos) }] }),
+    }).catch(() => {})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function save(e: React.FormEvent) {
     e.preventDefault()
