@@ -7,6 +7,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Script from 'next/script'
 import DemoDay from '@/app/components/DemoDay'
+import ImageCarousel from '@/app/components/ImageCarousel'
 import HeroImage from '@/app/components/HeroImage'
 import FeatCardImage from '@/app/components/FeatCardImage'
 import YoutubeEmbed from '@/app/components/YoutubeEmbed'
@@ -51,6 +52,7 @@ export default async function HomePage() {
 
   const heroImage = parseJsonUrls(media.landing_hero_image)[0] ?? null
   const demoDayImages = parseJsonUrls(media.landing_demo_day)
+  const highlightPhotos = parseJsonUrls(media.landing_highlights)
   // fallback to the hardcoded Mesa FFP promo video until admin overrides it
   const ffp2027VideoId = media.landing_ffp2027_video_id || 'mIp5evPlruY'
 
@@ -184,6 +186,22 @@ export default async function HomePage() {
           media.demo_photo_4,
         ].filter(Boolean)}
       />
+
+      <hr className="section-divider" />
+
+      {/* HIGHLIGHTS & MOMENTS */}
+      {highlightPhotos.length > 0 && (
+        <section className="highlights-section on-butter">
+          <div className="highlights-header">
+            <div className="section-num-small reveal">Life at FFP</div>
+            <h2 className="section-title reveal">HIGHLIGHTS <span className="light">&amp; Moments</span></h2>
+            <p className="section-sub reveal">Talent Night, Scribble Day, and everything in between.</p>
+          </div>
+          <div className="highlights-carousel reveal d2">
+            <ImageCarousel images={highlightPhotos} aspect="16/9" />
+          </div>
+        </section>
+      )}
 
       <hr className="section-divider" />
 

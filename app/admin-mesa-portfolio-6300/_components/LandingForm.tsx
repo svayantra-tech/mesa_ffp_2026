@@ -122,6 +122,7 @@ export default function LandingForm({
   const map = Object.fromEntries(media.map((m) => [m.key, m.value]))
 
   // new unlimited JSON array; seeds from legacy flea_photo_1..6 if new key is empty
+  const [highlightPhotos, setHighlightPhotos] = useState<string[]>(parseJsonUrls(map['landing_highlights']))
   const [fleaPhotos, setFleaPhotos] = useState<string[]>(() => {
     const fromNew = parseJsonUrls(map['landing_flea_photos'])
     if (fromNew.length > 0) return fromNew
@@ -142,6 +143,7 @@ export default function LandingForm({
     setBusy(true)
     setMsg(null)
     const items: Media[] = [
+      { key: 'landing_highlights', value: JSON.stringify(highlightPhotos) },
       { key: 'landing_flea_photos', value: JSON.stringify(fleaPhotos) },
       ...DEMO_KEYS.map((k, i) => ({ key: k, value: demoPhotos[i] || '' })),
       { key: 'landing_hero_image', value: JSON.stringify(heroImage) },
@@ -209,6 +211,18 @@ export default function LandingForm({
           allowPasteUrl
           hint="Small portrait-style photo slots to the right of the carousel. Only the first 2 appear on the page."
         />
+      </div>
+
+      <div className="admin-card">
+        <h2 className="admin-card-title">Highlights &amp; Moments</h2>
+        <AssetListField
+          label="Photos"
+          values={highlightPhotos}
+          onChange={setHighlightPhotos}
+          allowPasteUrl
+          hint="Auto-rotating carousel shown between Demo Day and Top Performers. Talent Night, Scribble Day, etc. Section is hidden when empty."
+        />
+        <DriveImport onImport={(urls) => setHighlightPhotos((prev) => [...prev, ...urls])} />
       </div>
 
       <div className="admin-card">

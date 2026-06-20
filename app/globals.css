@@ -228,6 +228,13 @@ nav{
 .img-carousel-dot.ic-dot-active{background:#fff;transform:scale(1.25)}
 .img-carousel-counter{position:absolute;bottom:10px;right:12px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);letter-spacing:.04em;background:rgba(0,0,0,0.38);border-radius:20px;padding:3px 9px;z-index:2;pointer-events:none}
 
+/* ── HIGHLIGHTS ── */
+.highlights-section{padding:72px clamp(20px,5vw,80px) 80px;max-width:1200px;margin:0 auto}
+.highlights-header{text-align:center;margin-bottom:32px}
+.highlights-header .section-title{margin:6px 0 10px}
+.highlights-header .section-sub{max-width:520px;margin:0 auto}
+.highlights-carousel{width:100%;max-width:900px;margin:0 auto;border-radius:14px;overflow:hidden;box-shadow:0 4px 32px rgba(15,25,25,0.12)}
+
 /* ── ENQUIRE ── */
 .enquire-layout{position:relative;z-index:2}
 .enquire-layout.has-image{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
