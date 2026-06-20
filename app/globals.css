@@ -556,7 +556,7 @@ section.awards-section{background:#0F1919;border-top:0.5px solid rgba(255,255,25
   box-shadow:0 10px 40px rgba(0,0,0,0.12)
 }
 .cert-frame img{width:100%;display:block}
-.cert-canvas{width:100%;height:auto;display:block}
+
 .cert-pending-card{
   width:100%;min-height:360px;border-radius:16px;background:#fff;
   border:0.5px dashed rgba(186,59,65,0.3);

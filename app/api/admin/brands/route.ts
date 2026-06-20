@@ -33,6 +33,7 @@ export async function POST(request: Request) {
       ad_statics: cleanArr(body.ad_statics).map(normalizeImageUrl).filter(Boolean),
       website: body.website ?? '',
       instagram: body.instagram ?? '',
+      feature_photo: normalizeImageUrl(String(body.feature_photo ?? '')),
     })
     revalidatePublic()
     return NextResponse.json({ id: String(doc._id) }, { status: 201 })

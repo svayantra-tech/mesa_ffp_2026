@@ -53,7 +53,6 @@ export async function POST(request: Request) {
     const filename = `${baseName}.${ext}`
 
     const url = await uploadAsset(buf, filename, contentType)
-    console.log('[upload route] returning url:', url)
     return NextResponse.json({ url })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Upload failed'

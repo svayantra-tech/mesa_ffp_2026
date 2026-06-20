@@ -9,6 +9,7 @@ import Script from 'next/script'
 import DemoDay from '@/app/components/DemoDay'
 import ImageCarousel from '@/app/components/ImageCarousel'
 import HeroImage from '@/app/components/HeroImage'
+import FeatCardImage from '@/app/components/FeatCardImage'
 
 function parseJsonUrls(s?: string): string[] {
   if (!s) return []
@@ -198,8 +199,7 @@ export default async function HomePage() {
               <div key={venture.slug} className={`feat-card reveal d${i + 1}`}>
                 <div className="feat-card-photo">
                   {venture.feature_photo
-                    // eslint-disable-next-line @next/next/no-img-element
-                    ? <img src={venture.feature_photo} alt={venture.name} className="feat-card-img" />
+                    ? <FeatCardImage src={venture.feature_photo} alt={venture.name} />
                     : null}
                 </div>
                 <div className="feat-card-body">
@@ -311,8 +311,7 @@ function AwardsCarousel({ awardBrands, allStudents }: { awardBrands: BrandShape[
               <div key={brand.slug} className="feat-card feat-card-track">
                 <div className="feat-card-photo">
                   {brand.feature_photo
-                    // eslint-disable-next-line @next/next/no-img-element
-                    ? <img src={brand.feature_photo} alt={brand.name} className="feat-card-img" />
+                    ? <FeatCardImage src={brand.feature_photo} alt={brand.name} />
                     : null}
                 </div>
                 <div className="feat-card-body">

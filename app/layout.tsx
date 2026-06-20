@@ -27,6 +27,10 @@ export const metadata: Metadata = {
     description: '113 students. 29 ventures. 2 weeks.',
     images: ['/mesa-logos/pfp.png'],
   },
+  icons: {
+    icon: '/mesa-logos/icon.png',
+    apple: '/mesa-logos/apple-icon.png',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
