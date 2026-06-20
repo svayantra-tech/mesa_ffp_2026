@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Script from 'next/script'
 import DemoDay from '@/app/components/DemoDay'
 import ImageCarousel from '@/app/components/ImageCarousel'
+import HeroImage from '@/app/components/HeroImage'
 
 function parseJsonUrls(s?: string): string[] {
   if (!s) return []
@@ -44,6 +45,7 @@ export default async function HomePage() {
     media.flea_photo_6,
   ].filter(Boolean)
 
+  const heroImage = parseJsonUrls(media.landing_hero_image)[0] ?? null
   const topPerformersImages = parseJsonUrls(media.landing_top_performers)
   const demoDayImages = parseJsonUrls(media.landing_demo_day)
   const ffp2027Images = parseJsonUrls(media.landing_ffp2027)
@@ -83,24 +85,27 @@ export default async function HomePage() {
 
       {/* HERO */}
       <section className="landing-hero">
-        <div className="hero-tag fade-up">
-          <span className="hero-tag-line"></span>
-          Future Founder&apos;s Summer School &middot; Cohort 1
-        </div>
-        <h1 className="hero-headline fade-up d1">
-          BUILT <span className="light">Real Ventures.</span><br />
-          EARNED <span className="light">Real Revenue.</span>
-        </h1>
-        <p className="hero-sub fade-up d2">
-          113 students. 29 ventures. 2 weeks. Every product designed, built, and
-          sold to real customers — from perfumes to protein bars to bamboo socks.
-          This is what entrepreneurship looks like at 15.
-        </p>
-        <div className="stats-strip fade-up d3">
-          <div className="stat"><div className="stat-val red">113</div><div className="stat-lbl">Students</div></div>
-          <div className="stat"><div className="stat-val">29</div><div className="stat-lbl">Ventures</div></div>
-          <div className="stat"><div className="stat-val red">₹16L+</div><div className="stat-lbl">Total Revenue</div></div>
-          <div className="stat"><div className="stat-val">2 Weeks</div><div className="stat-lbl">Program Duration</div></div>
+        {heroImage && <HeroImage src={heroImage} />}
+        <div className="hero-text">
+          <div className="hero-tag fade-up">
+            <span className="hero-tag-line"></span>
+            Future Founder&apos;s Summer School &middot; Cohort 1
+          </div>
+          <h1 className="hero-headline fade-up d1">
+            BUILT <span className="light">Real Ventures.</span><br />
+            EARNED <span className="light">Real Revenue.</span>
+          </h1>
+          <p className="hero-sub fade-up d2">
+            113 students. 29 ventures. 2 weeks. Every product designed, built, and
+            sold to real customers — from perfumes to protein bars to bamboo socks.
+            This is what entrepreneurship looks like at 15.
+          </p>
+          <div className="stats-strip fade-up d3">
+            <div className="stat"><div className="stat-val red">113</div><div className="stat-lbl">Students</div></div>
+            <div className="stat"><div className="stat-val">29</div><div className="stat-lbl">Ventures</div></div>
+            <div className="stat"><div className="stat-val red">₹16L+</div><div className="stat-lbl">Total Revenue</div></div>
+            <div className="stat"><div className="stat-val">2 Weeks</div><div className="stat-lbl">Program Duration</div></div>
+          </div>
         </div>
       </section>
 

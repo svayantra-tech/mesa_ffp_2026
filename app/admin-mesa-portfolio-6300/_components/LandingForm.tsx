@@ -28,6 +28,7 @@ export default function LandingForm({ media }: { media: Media[] }) {
   const [fleaVideo, setFleaVideo] = useState(map['flea_market_video_id'] || '')
   const [fleaPhotos, setFleaPhotos] = useState<string[]>(FLEA_KEYS.map((k) => map[k]).filter(Boolean))
   const [demoPhotos, setDemoPhotos] = useState<string[]>(DEMO_KEYS.map((k) => map[k]).filter(Boolean))
+  const [heroImage, setHeroImage] = useState<string[]>(parseJsonUrls(map['landing_hero_image']))
   const [topPerformers, setTopPerformers] = useState<string[]>(parseJsonUrls(map['landing_top_performers']))
   const [demoDayImages, setDemoDayImages] = useState<string[]>(parseJsonUrls(map['landing_demo_day']))
   const [ffp2027Images, setFfp2027Images] = useState<string[]>(parseJsonUrls(map['landing_ffp2027']))
@@ -43,6 +44,7 @@ export default function LandingForm({ media }: { media: Media[] }) {
       { key: 'flea_market_video_id', value: extractYouTubeId(fleaVideo) },
       ...FLEA_KEYS.map((k, i) => ({ key: k, value: fleaPhotos[i] || '' })),
       ...DEMO_KEYS.map((k, i) => ({ key: k, value: demoPhotos[i] || '' })),
+      { key: 'landing_hero_image', value: JSON.stringify(heroImage) },
       { key: 'landing_top_performers', value: JSON.stringify(topPerformers) },
       { key: 'landing_demo_day', value: JSON.stringify(demoDayImages) },
       { key: 'landing_ffp2027', value: JSON.stringify(ffp2027Images) },
@@ -66,6 +68,18 @@ export default function LandingForm({ media }: { media: Media[] }) {
 
   return (
     <form onSubmit={save}>
+      <div className="admin-card">
+        <h2 className="admin-card-title">Hero Background Image</h2>
+        <AssetListField
+          label="Hero image (1 max)"
+          values={heroImage}
+          onChange={setHeroImage}
+          max={1}
+          allowPasteUrl
+          hint="Shown full-bleed behind the headline, masked to dissolve left. Landscape photos work best."
+        />
+      </div>
+
       <div className="admin-card">
         <h2 className="admin-card-title">Demo Day</h2>
         <div className="admin-field">

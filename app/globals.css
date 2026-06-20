@@ -37,9 +37,18 @@ nav{
 
 /* ── HERO (full-width, no right panel) ── */
 .landing-hero{
-  padding:32px 32px 80px;background:#FFFBF3;
-  min-height:75vh;display:flex;flex-direction:column;justify-content:center
+  padding:32px 32px 80px;
+  background:linear-gradient(120deg,#FFFBF3 0%,#FBF4D7 55%,rgba(186,59,65,0.08) 100%);
+  min-height:75vh;display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden
 }
+.hero-img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  display:block;z-index:0;pointer-events:none;
+  mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,0.5) 45%,#000 75%);
+  -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,0.5) 45%,#000 75%)
+}
+.hero-text{position:relative;z-index:1;max-width:55%}
 .hero-tag{
   font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
   color:#BA3B41;margin-bottom:20px;display:flex;align-items:center;gap:8px
@@ -313,6 +322,8 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:24p
   nav{padding:0 24px}
   .nav-center{display:none}
   .landing-hero{padding:60px 24px 50px;min-height:auto}
+  .hero-img{display:none}
+  .hero-text{max-width:100%}
   .hero-headline{font-size:clamp(36px,8vw,52px)}
   .stats-strip{flex-wrap:wrap}.stat{flex:1 1 45%;min-width:140px}
   .numbered-section{padding:56px 24px}
