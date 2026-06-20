@@ -1,4 +1,6 @@
 import { listProgramMedia, listBrands } from '@/lib/admin-data'
+import { connectDB } from '@/lib/mongodb'
+import { ProgramMedia } from '@/lib/models/ProgramMedia'
 import LandingForm from '../../_components/LandingForm'
 
 export const dynamic = 'force-dynamic'
@@ -10,6 +12,25 @@ export default async function LandingPage() {
     listProgramMedia(),
     listBrands(),
   ])
+
+  // One-time migration: write legacy flea_photo_1..6 into the new unlimited JSON key
+  // if it doesn't exist yet. Runs on every admin load but is a no-op once migrated.
+  const mediaMap = Object.fromEntries(media.map((m) => [m.key, m.value]))
+  if (!mediaMap['landing_flea_photos']) {
+    const legacyPhotos = [1, 2, 3, 4, 5, 6]
+      .map((n) => mediaMap[`flea_photo_${n}`])
+      .filter(Boolean) as string[]
+    if (legacyPhotos.length > 0) {
+      await connectDB()
+      await ProgramMedia.updateOne(
+        { key: 'landing_flea_photos' },
+        { $set: { value: JSON.stringify(legacyPhotos) } },
+        { upsert: true }
+      )
+      // patch the in-memory media array so LandingForm loads the migrated value immediately
+      media.push({ key: 'landing_flea_photos', value: JSON.stringify(legacyPhotos) })
+    }
+  }
 
   // Top performer ventures first (in defined order), then any award-only ventures
   const topBrands = TOP_PERFORMER_SLUGS
