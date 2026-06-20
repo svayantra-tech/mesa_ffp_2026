@@ -6,7 +6,16 @@ import { extractYouTubeId, normalizeImageUrl } from '@/lib/normalize'
 
 export const runtime = 'nodejs'
 
+// Keys whose values are JSON arrays — must not be run through normalizeImageUrl.
+const JSON_ARRAY_KEYS = new Set([
+  'landing_hero_image',
+  'landing_top_performers',
+  'landing_demo_day',
+  'landing_ffp2027',
+])
+
 function normalizeMedia(key: string, value: string): string {
+  if (JSON_ARRAY_KEYS.has(key)) return value          // already-normalized JSON array
   if (/video_id$/.test(key)) return extractYouTubeId(value)
   if (/(photo|image|img|poster|thumb)/i.test(key)) return normalizeImageUrl(value)
   return value

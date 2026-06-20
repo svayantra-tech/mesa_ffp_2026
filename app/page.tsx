@@ -1,5 +1,7 @@
 import { getBrandsBySlugs, getAwardBrands, getAllStudentsBasic, getProgramMedia, type BrandShape } from '@/lib/data'
 
+export const dynamic = 'force-dynamic'
+
 type StudentBasic = { name: string; brand_id: string | null }
 import Link from 'next/link'
 import Image from 'next/image'
