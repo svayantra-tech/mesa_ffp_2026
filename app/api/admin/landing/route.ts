@@ -9,7 +9,6 @@ export const runtime = 'nodejs'
 // Keys whose values are JSON arrays — must not be run through normalizeImageUrl.
 const JSON_ARRAY_KEYS = new Set([
   'landing_hero_image',
-  'landing_top_performers',
   'landing_demo_day',
   'landing_ffp2027',
 ])

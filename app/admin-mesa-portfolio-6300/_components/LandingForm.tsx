@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AssetListField from './AssetListField'
-import { extractYouTubeId } from '@/lib/normalize'
 
 type Media = { key: string; value: string }
 
@@ -38,8 +37,6 @@ export default function LandingForm({
   const router = useRouter()
   const map = Object.fromEntries(media.map((m) => [m.key, m.value]))
 
-  const [demoVideo, setDemoVideo] = useState(map['demo_day_video_id'] || '')
-  const [fleaVideo, setFleaVideo] = useState(map['flea_market_video_id'] || '')
   const [fleaPhotos, setFleaPhotos] = useState<string[]>(FLEA_KEYS.map((k) => map[k]).filter(Boolean))
   const [demoPhotos, setDemoPhotos] = useState<string[]>(DEMO_KEYS.map((k) => map[k]).filter(Boolean))
   const [heroImage, setHeroImage] = useState<string[]>(parseJsonUrls(map['landing_hero_image']))
@@ -56,8 +53,6 @@ export default function LandingForm({
     setBusy(true)
     setMsg(null)
     const items: Media[] = [
-      { key: 'demo_day_video_id', value: extractYouTubeId(demoVideo) },
-      { key: 'flea_market_video_id', value: extractYouTubeId(fleaVideo) },
       ...FLEA_KEYS.map((k, i) => ({ key: k, value: fleaPhotos[i] || '' })),
       ...DEMO_KEYS.map((k, i) => ({ key: k, value: demoPhotos[i] || '' })),
       { key: 'landing_hero_image', value: JSON.stringify(heroImage) },
@@ -73,7 +68,6 @@ export default function LandingForm({
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error || 'Save failed')
 
-      // Save each venture's feature_photo via the brands API
       await Promise.all(
         ventures.map((v) =>
           fetch(`/api/admin/brands/${v.id}`, {
@@ -111,35 +105,32 @@ export default function LandingForm({
 
       <div className="admin-card">
         <h2 className="admin-card-title">Demo Day</h2>
-        <div className="admin-field">
-          <label className="admin-label">Demo Day video (YouTube link or id)</label>
-          <input className="admin-input" value={demoVideo} onChange={(e) => setDemoVideo(e.target.value)} placeholder="https://youtube.com/watch?v=..." />
-          {extractYouTubeId(demoVideo) && (
-            <div className="video-embed">
-              <iframe src={`https://www.youtube.com/embed/${extractYouTubeId(demoVideo)}`} title="demo day" allow="encrypted-media" />
-            </div>
-          )}
-        </div>
-        <AssetListField label="Demo Day photos" values={demoPhotos} onChange={setDemoPhotos} max={6} allowPasteUrl hint="Up to 6. The landing shows the first 4." />
+        <AssetListField
+          label="Carousel images"
+          values={demoDayImages}
+          onChange={setDemoDayImages}
+          allowPasteUrl
+          hint="Auto-rotating carousel shown in the Demo Day section. Section is hidden when empty — add at least one image to make it visible."
+        />
+        <AssetListField
+          label="Side panel photos (optional — first 2 shown)"
+          values={demoPhotos}
+          onChange={setDemoPhotos}
+          max={6}
+          allowPasteUrl
+          hint="Small portrait-style photo slots to the right of the carousel. Only the first 2 appear on the page."
+        />
       </div>
 
       <div className="admin-card">
         <h2 className="admin-card-title">Flea Market</h2>
-        <div className="admin-field">
-          <label className="admin-label">Flea Market video (YouTube link or id)</label>
-          <input className="admin-input" value={fleaVideo} onChange={(e) => setFleaVideo(e.target.value)} placeholder="https://youtube.com/watch?v=..." />
-        </div>
-        <AssetListField label="Flea Market photos" values={fleaPhotos} onChange={setFleaPhotos} max={6} allowPasteUrl hint="Up to 6, shown in the landing marquee." />
-      </div>
-
-      <div className="admin-card">
-        <h2 className="admin-card-title">Demo Day carousel (replaces YouTube embed)</h2>
         <AssetListField
-          label="Demo Day images"
-          values={demoDayImages}
-          onChange={setDemoDayImages}
+          label="Photos"
+          values={fleaPhotos}
+          onChange={setFleaPhotos}
+          max={6}
           allowPasteUrl
-          hint="Shown as a crossfade carousel in the Demo Day section. Section is hidden when empty."
+          hint="Up to 6, shown in the scrolling marquee on the landing page."
         />
       </div>
 
