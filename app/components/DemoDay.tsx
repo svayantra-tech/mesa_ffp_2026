@@ -47,41 +47,24 @@ export default function DemoDay({ demoDayImages, demoPhotos = [] }: DemoDayProps
   if (demoDayImages.length === 0) return null
 
   return (
-    <section id="demo-day" className="dd-section" style={{ minHeight: '760px' }}>
+    <section id="demo-day" className="dd-section">
       {/* LAYER 1 — diagonal cream panel */}
       <div className="dd-diag">
-        <div style={{ paddingTop: '80px' }}>
-          <div className="section-num">02</div>
-          <div className="section-num-small">How they pitched</div>
-          <h2 className="section-title">DEMO DAY <span className="light">to Tier-1 VCs</span></h2>
-          <p className="dd-desc">
-            Students took the stage to pitch their ventures to venture
-            capitalists from Tier-1 VCs — defending their numbers,
-            business models, and growth strategy.
-          </p>
-          <div className="dd-quote">
-            Every team had 5 minutes to pitch, 3 minutes for Q&amp;A.
-            Judges scored on revenue, presentation quality, and growth
-            strategy. Winners earned recognition across the entire cohort.
-          </div>
+        <div className="section-num">02</div>
+        <div className="section-num-small">How they pitched</div>
+        <h2 className="section-title">DEMO DAY <span className="light">to Tier-1 VCs</span></h2>
+        <p className="dd-desc">
+          Students took the stage to pitch their ventures to venture
+          capitalists from Tier-1 VCs — defending their numbers,
+          business models, and growth strategy.
+        </p>
+        <div className="dd-quote">
+          Every team had 5 minutes to pitch, 3 minutes for Q&amp;A.
+          Judges scored on revenue, presentation quality, and growth
+          strategy. Winners earned recognition across the entire cohort.
         </div>
-      </div>
-
-      {/* LAYER 2 — dark right content */}
-      <div className="dd-content">
-        {/* Carousel slot — replaces YouTube embed */}
-        <div className="dd-video">
-          <ImageCarousel images={demoDayImages} aspect="16/9" />
-        </div>
-
-        {/* Photo slots */}
-        <div className="dd-photos-row">
-          <PhotoSlot src={demoPhotos[0]} />
-          <PhotoSlot src={demoPhotos[1]} />
-        </div>
-
-        {/* Stats bar */}
-        <div className="dd-stats">
+        {/* Stats moved to left panel, under text */}
+        <div className="dd-stats dd-stats-light">
           <div className="dd-chip">
             <span className="dd-chip-val">29</span>
             <span className="dd-chip-lbl">Ventures</span>
@@ -98,6 +81,17 @@ export default function DemoDay({ demoDayImages, demoPhotos = [] }: DemoDayProps
             <span className="dd-chip-val">3</span>
             <span className="dd-chip-lbl">VC Judges</span>
           </div>
+        </div>
+      </div>
+
+      {/* LAYER 2 — dark right content (carousel + photos only) */}
+      <div className="dd-content">
+        <div className="dd-video">
+          <ImageCarousel images={demoDayImages} aspect="16/9" />
+        </div>
+        <div className="dd-photos-row">
+          <PhotoSlot src={demoPhotos[0]} />
+          <PhotoSlot src={demoPhotos[1]} />
         </div>
       </div>
     </section>

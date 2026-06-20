@@ -10,6 +10,7 @@ export const runtime = 'nodejs'
 const JSON_ARRAY_KEYS = new Set([
   'landing_hero_image',
   'landing_demo_day',
+  'landing_flea_photos',
 ])
 
 function normalizeMedia(key: string, value: string): string {

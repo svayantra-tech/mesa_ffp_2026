@@ -39,14 +39,15 @@ export default async function HomePage() {
     programMedia.map(({ key, value }) => [key, value])
   )
 
-  const fleaPhotos = [
-    media.flea_photo_1,
-    media.flea_photo_2,
-    media.flea_photo_3,
-    media.flea_photo_4,
-    media.flea_photo_5,
-    media.flea_photo_6,
-  ].filter(Boolean)
+  // new unlimited JSON array; fall back to legacy 6-slot keys so existing photos still show
+  const fleaPhotos = (() => {
+    const fromNew = parseJsonUrls(media.landing_flea_photos)
+    if (fromNew.length > 0) return fromNew
+    return ([
+      media.flea_photo_1, media.flea_photo_2, media.flea_photo_3,
+      media.flea_photo_4, media.flea_photo_5, media.flea_photo_6,
+    ] as (string | undefined)[]).filter((s): s is string => !!s)
+  })()
 
   const heroImage = parseJsonUrls(media.landing_hero_image)[0] ?? null
   const demoDayImages = parseJsonUrls(media.landing_demo_day)
@@ -125,21 +126,29 @@ export default async function HomePage() {
           Every rupee earned was real. Every customer was a stranger. No safety nets.
         </p>
 
-        <div className="marquee-wrap reveal d1">
-          <div className="marquee-track">
-            {['Flea Market', 'Stall Setup', 'Customers', 'Products', 'Packaging', 'Vega City', 'Team Work', 'Selling',
-              'Flea Market', 'Stall Setup', 'Customers', 'Products', 'Packaging', 'Vega City', 'Team Work', 'Selling'].map((label, i) => (
-              <div key={i} className="marquee-slot">
-                {fleaPhotos[i % fleaPhotos.length] ? (
-                  <Image src={fleaPhotos[i % fleaPhotos.length]} alt={label} fill quality={100} sizes="(max-width: 768px) 320px, 420px" style={{ objectFit: 'cover' }} />
-                ) : (
-                  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
-                )}
-                <span>{label}</span>
+        {(() => {
+          // Duplicate for seamless CSS loop (–50% keyframe trick).
+          // With no photos show 8 placeholder slots so the strip still renders.
+          const base = fleaPhotos.length > 0 ? fleaPhotos : Array(8).fill('')
+          const track = [...base, ...base]
+          // speed: ~100 px/s, each slot ≈ 434 px (420 width + 14 gap)
+          const dur = `${Math.max(14, base.length * 4.5)}s`
+          return (
+            <div className="marquee-wrap reveal d1">
+              <div className="marquee-track" style={{ animationDuration: dur }}>
+                {track.map((src, i) => (
+                  <div key={i} className="marquee-slot">
+                    {src ? (
+                      <Image src={src} alt="Flea Market" fill quality={85} sizes="(max-width: 768px) 320px, 420px" style={{ objectFit: 'cover' }} />
+                    ) : (
+                      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          )
+        })()}
 
         <div className="highlight-strip">
           <div className="highlight-item reveal d3">

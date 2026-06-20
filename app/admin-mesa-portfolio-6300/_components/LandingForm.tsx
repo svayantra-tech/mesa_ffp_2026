@@ -14,7 +14,6 @@ type VentureRow = {
   feature_photo: string
 }
 
-const FLEA_KEYS = [1, 2, 3, 4, 5, 6].map((n) => `flea_photo_${n}`)
 const DEMO_KEYS = [1, 2, 3, 4, 5, 6].map((n) => `demo_photo_${n}`)
 
 function parseJsonUrls(s?: string): string[] {
@@ -37,7 +36,12 @@ export default function LandingForm({
   const router = useRouter()
   const map = Object.fromEntries(media.map((m) => [m.key, m.value]))
 
-  const [fleaPhotos, setFleaPhotos] = useState<string[]>(FLEA_KEYS.map((k) => map[k]).filter(Boolean))
+  // new unlimited JSON array; seeds from legacy flea_photo_1..6 if new key is empty
+  const [fleaPhotos, setFleaPhotos] = useState<string[]>(() => {
+    const fromNew = parseJsonUrls(map['landing_flea_photos'])
+    if (fromNew.length > 0) return fromNew
+    return [1,2,3,4,5,6].map(n => map[`flea_photo_${n}`]).filter(Boolean) as string[]
+  })
   const [demoPhotos, setDemoPhotos] = useState<string[]>(DEMO_KEYS.map((k) => map[k]).filter(Boolean))
   const [heroImage, setHeroImage] = useState<string[]>(parseJsonUrls(map['landing_hero_image']))
   const [demoDayImages, setDemoDayImages] = useState<string[]>(parseJsonUrls(map['landing_demo_day']))
@@ -53,7 +57,7 @@ export default function LandingForm({
     setBusy(true)
     setMsg(null)
     const items: Media[] = [
-      ...FLEA_KEYS.map((k, i) => ({ key: k, value: fleaPhotos[i] || '' })),
+      { key: 'landing_flea_photos', value: JSON.stringify(fleaPhotos) },
       ...DEMO_KEYS.map((k, i) => ({ key: k, value: demoPhotos[i] || '' })),
       { key: 'landing_hero_image', value: JSON.stringify(heroImage) },
       { key: 'landing_demo_day', value: JSON.stringify(demoDayImages) },
@@ -128,9 +132,8 @@ export default function LandingForm({
           label="Photos"
           values={fleaPhotos}
           onChange={setFleaPhotos}
-          max={6}
           allowPasteUrl
-          hint="Up to 6, shown in the scrolling marquee on the landing page."
+          hint="Shown in the infinite scrolling strip on the landing page. Add as many as you like — the strip loops them all."
         />
       </div>
 
