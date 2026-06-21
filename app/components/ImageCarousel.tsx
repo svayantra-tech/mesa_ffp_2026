@@ -36,18 +36,41 @@ export default function ImageCarousel({
   useEffect(() => {
     if (visible.length < 2 || reduced) return
     const el = containerRef.current
-    let paused = false
-    const onEnter = () => { paused = true }
-    const onLeave = () => { paused = false }
-    el?.addEventListener('mouseenter', onEnter)
-    el?.addEventListener('mouseleave', onLeave)
-    const t = setInterval(() => {
-      if (!paused) setIdx((c) => (c + 1) % visible.length)
-    }, rotateMs)
+    if (!el) return
+
+    let inView = false
+    let hovered = false
+    let t: ReturnType<typeof setInterval> | null = null
+
+    function startTimer() {
+      if (t) return
+      t = setInterval(() => {
+        if (!hovered) setIdx((c) => (c + 1) % visible.length)
+      }, rotateMs)
+    }
+    function stopTimer() {
+      if (t) { clearInterval(t); t = null }
+    }
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting
+        inView ? startTimer() : stopTimer()
+      },
+      { threshold: 0.3 }
+    )
+    io.observe(el)
+
+    const onEnter = () => { hovered = true }
+    const onLeave = () => { hovered = false }
+    el.addEventListener('mouseenter', onEnter)
+    el.addEventListener('mouseleave', onLeave)
+
     return () => {
-      clearInterval(t)
-      el?.removeEventListener('mouseenter', onEnter)
-      el?.removeEventListener('mouseleave', onLeave)
+      stopTimer()
+      io.disconnect()
+      el.removeEventListener('mouseenter', onEnter)
+      el.removeEventListener('mouseleave', onLeave)
     }
   }, [visible.length, reduced, rotateMs])
 
