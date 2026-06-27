@@ -68,6 +68,11 @@ function applyOrientation(
  * small enough that re-encoding would be wasteful.
  */
 async function resizeImage(file: File): Promise<File> {
+  // Reject HEIC early — browser canvas cannot decode it; server magic-byte check will 415.
+  const isHeic = file.type === 'image/heic' || file.type === 'image/heif'
+    || /\.hei[cf]$/i.test(file.name)
+  if (isHeic) throw new Error('HEIC/HEIF photos must be converted to JPEG or PNG first.\nOn iPhone: Settings → Camera → Formats → Most Compatible.')
+
   if (file.size < SKIP_RESIZE_UNDER_BYTES) return file
 
   const buf = await file.arrayBuffer()

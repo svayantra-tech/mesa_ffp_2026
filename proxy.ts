@@ -1,33 +1,71 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { ADMIN_BASE, ADMIN_COOKIE, verifySession } from '@/lib/admin-auth'
+import { ADMIN_COOKIE, verifySession } from '@/lib/admin-auth'
+import { isValidCohort, LATEST_COHORT } from '@/lib/cohorts'
 
-const LOGIN_PATH = `${ADMIN_BASE}/login`
+const ADMIN_SUFFIX = '/admin-mesa-portfolio-6300'
 const LOGIN_API = '/api/admin/login'
 
-export async function proxy(req: NextRequest) {
-  const { pathname } = req.nextUrl
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl
 
-  const isAdminPage = pathname.startsWith(ADMIN_BASE)
-  const isAdminApi = pathname.startsWith('/api/admin')
-  if (!isAdminPage && !isAdminApi) return NextResponse.next()
-
-  // Always allow the login page and login endpoint through.
-  if (pathname === LOGIN_PATH || pathname === LOGIN_API) return NextResponse.next()
-
-  const session = await verifySession(req.cookies.get(ADMIN_COOKIE)?.value)
-  if (session) return NextResponse.next()
-
-  // Unauthenticated: APIs get 401, pages redirect to login.
-  if (isAdminApi) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  // ── API auth gate (always allow login endpoint) ───────────────────────────
+  if (pathname.startsWith('/api/admin')) {
+    if (pathname === LOGIN_API) return NextResponse.next()
+    const session = await verifySession(request.cookies.get(ADMIN_COOKIE)?.value)
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.next()
   }
-  const url = req.nextUrl.clone()
-  url.pathname = LOGIN_PATH
-  url.search = ''
-  return NextResponse.redirect(url)
+
+  const segments = pathname.split('/').filter(Boolean)
+
+  // ── Root: / → /{latest-cohort} ───────────────────────────────────────────
+  if (segments.length === 0) {
+    return NextResponse.redirect(new URL(`/${LATEST_COHORT}`, request.url), 308)
+  }
+
+  const first = segments[0]
+
+  // ── Known cohort: enforce admin auth, then pass through ──────────────────
+  if (isValidCohort(first)) {
+    const rest = pathname.slice(`/${first}`.length) || '/'
+    if (rest.startsWith(ADMIN_SUFFIX)) {
+      const isLoginPage = rest === `${ADMIN_SUFFIX}/login` || rest.startsWith(`${ADMIN_SUFFIX}/login/`)
+      if (!isLoginPage) {
+        const session = await verifySession(request.cookies.get(ADMIN_COOKIE)?.value)
+        if (!session) {
+          return NextResponse.redirect(
+            new URL(`/${first}${ADMIN_SUFFIX}/login`, request.url)
+          )
+        }
+      }
+    }
+    return NextResponse.next()
+  }
+
+  // ── Backwards-compat redirects for old single-cohort URLs ────────────────
+
+  // /admin-mesa-portfolio-6300/* → /cohort-1/admin-mesa-portfolio-6300/*
+  if (first === 'admin-mesa-portfolio-6300') {
+    return NextResponse.redirect(new URL(`/cohort-1${pathname}`, request.url), 308)
+  }
+
+  // /directory or /directory/* → /cohort-1/directory/*
+  if (first === 'directory') {
+    return NextResponse.redirect(new URL(`/cohort-1${pathname}`, request.url), 308)
+  }
+
+  // /{slug} (any other single segment) → /cohort-1/{slug}
+  // These are old shared portfolio links that must keep working.
+  if (segments.length === 1) {
+    return NextResponse.redirect(new URL(`/cohort-1/${first}`, request.url), 308)
+  }
+
+  return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/admin-mesa-portfolio-6300/:path*', '/api/admin/:path*'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon\\.ico|assets/|mesa-logos/|ai-tools/|.*\\.png$|.*\\.svg$|.*\\.ico$).*)',
+  ],
 }

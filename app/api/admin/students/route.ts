@@ -1,35 +1,33 @@
 import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import { Student } from '@/lib/models/Student'
-import { listStudents, revalidatePublic } from '@/lib/admin-data'
-import { normalizeImageUrl } from '@/lib/normalize'
+import { createStudent, listStudents, revalidatePublic } from '@/lib/db/queries'
 
 export const runtime = 'nodejs'
 
-export async function GET() {
-  return NextResponse.json(await listStudents())
+export async function GET(request: Request) {
+  const cohort = new URL(request.url).searchParams.get('cohort') ?? ''
+  if (!cohort) return NextResponse.json({ error: 'cohort required' }, { status: 400 })
+  return NextResponse.json(await listStudents(cohort))
 }
 
 export async function POST(request: Request) {
+  const cohort = new URL(request.url).searchParams.get('cohort') ?? ''
+  if (!cohort) return NextResponse.json({ error: 'cohort required' }, { status: 400 })
+
   const body = await request.json().catch(() => ({}))
   const { slug, name, email = '', certificate_url = '', brand_id = null } = body
   if (!slug || !name) {
     return NextResponse.json({ error: 'slug and name are required' }, { status: 400 })
   }
-  await connectDB()
   try {
-    const doc = await Student.create({
-      slug,
-      name,
-      email,
-      certificate_url,
+    const doc = await createStudent(cohort, {
+      slug, name, email, certificate_url,
       brand_id: brand_id || null,
-      profile_photo: body.profile_photo ? normalizeImageUrl(String(body.profile_photo)) : '',
-      convocation_photo: body.convocation_photo ? normalizeImageUrl(String(body.convocation_photo)) : '',
-      flea_market_photo: body.flea_market_photo ? normalizeImageUrl(String(body.flea_market_photo)) : '',
-      demo_day_photo: body.demo_day_photo ? normalizeImageUrl(String(body.demo_day_photo)) : '',
+      profile_photo: body.profile_photo,
+      convocation_photo: body.convocation_photo,
+      flea_market_photo: body.flea_market_photo,
+      demo_day_photo: body.demo_day_photo,
     })
-    revalidatePublic()
+    revalidatePublic(cohort)
     return NextResponse.json({ id: String(doc._id) }, { status: 201 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Create failed'

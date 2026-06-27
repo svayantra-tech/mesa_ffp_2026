@@ -3,6 +3,7 @@ import './Brand' // ensure Brand model is registered for populate()
 
 const StudentSchema = new Schema(
   {
+    cohort: { type: String, required: true, index: true },
     slug: { type: String, required: true, unique: true, index: true },
     name: { type: String, required: true },
     email: { type: String, default: '' },

@@ -47,7 +47,7 @@ export default function DemoDay({ demoDayImages, demoPhotos = [] }: DemoDayProps
   if (demoDayImages.length === 0) return null
 
   return (
-    <section id="demo-day" className="dd-section">
+    <section id="demo-day" className="dd-section" role="region" aria-label="Demo Day">
       {/* LAYER 1 — diagonal cream panel */}
       <div className="dd-diag">
         <div className="section-num">02</div>

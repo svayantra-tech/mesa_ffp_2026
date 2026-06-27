@@ -1,26 +1,32 @@
-import { getStudentBySlug, getStudentMeta, type StudentShape, type BrandShape } from '@/lib/data'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import Script from 'next/script'
-import MarketingAssets from './MarketingAssets'
-import AITools from './AITools'
-import Awards from './Awards'
-import CertificateViewer from './CertificateViewerClient'
-import MomentGrid from './MomentGrid'
+import { isValidCohort, getCohort } from '@/lib/cohorts'
+import { getStudentBySlug, getStudentMeta, type StudentShape, type BrandShape } from '@/lib/db/queries'
+import MarketingAssets from '@/app/[slug]/MarketingAssets'
+import AITools from '@/app/[slug]/AITools'
+import Awards from '@/app/[slug]/Awards'
+import CertificateViewer from '@/app/[slug]/CertificateViewerClient'
+import MomentGrid from '@/app/[slug]/MomentGrid'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
-  const student = await getStudentMeta(slug)
+type Params = { cohort: string; slug: string }
+
+export async function generateMetadata({ params }: { params: Promise<Params> }) {
+  const { cohort, slug } = await params
+  if (!isValidCohort(cohort)) return {}
+  const student = await getStudentMeta(cohort, slug)
   const brandName = student?.brand?.name
+  const year = getCohort(cohort)?.year ?? 2026
+  const title = `${student?.name} — FFP ${year} Portfolio · Mesa`
   return {
-    title: `${student?.name} — FFP 2026 Portfolio · Mesa`,
+    title,
     openGraph: {
-      title: `${student?.name} — FFP 2026 Portfolio · Mesa`,
-      description: brandName ? `${brandName}` : "Future Founder's Summer School 2026",
+      title,
+      description: brandName ? `${brandName}` : `Future Founder's Summer School ${year}`,
       images: [{ url: '/mesa-logos/pfp.png', width: 1200, height: 630 }],
     },
   }
@@ -46,9 +52,11 @@ function getInstagramHandle(instagram: string): string {
   return instagram.startsWith('@') ? instagram : `@${instagram}`
 }
 
-export default async function PortfolioPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
-  const student = await getStudentBySlug(slug)
+export default async function PortfolioPage({ params }: { params: Promise<Params> }) {
+  const { cohort, slug } = await params
+  if (!isValidCohort(cohort)) notFound()
+
+  const student = await getStudentBySlug(cohort, slug)
   if (!student) notFound()
 
   const brand = student.brand
@@ -58,19 +66,13 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
   const videos: string[] = Array.isArray(brand?.videos) ? brand.videos.slice(0, 3) : []
   const adStatics: string[] = Array.isArray(brand?.ad_statics) ? brand.ad_statics.slice(0, 2) : []
   const hasCreatives = videos.length > 0 || adStatics.some((url) => url.startsWith('http'))
-
   const hasProfile = !!student.profile_photo
-
-  // Discard junk values (bare filenames, placeholder text) — keep only real URLs
   const cleanUrl = (u: string) => (u.startsWith('http') ? u : '')
-
-  // Moment photos: convocation first, then flea market, then demo day
   const momentPhotos = [
     { src: cleanUrl(student.convocation_photo), caption: 'Convocation Ceremony' },
     { src: cleanUrl(student.flea_market_photo), caption: 'Flea Market · Vega City Mall' },
     { src: cleanUrl(student.demo_day_photo), caption: 'Demo Day Pitch' },
   ].filter((m) => !!m.src)
-
   const isPlaceholderEmail = student.email.endsWith('@placeholder.ffp')
 
   return (
@@ -87,7 +89,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
             unoptimized
             style={{ borderRadius: 7, display: 'block', flexShrink: 0 }}
           />
-          <Link href="/" className="nav-wordmark">
+          <Link href={`/${cohort}`} className="nav-wordmark">
             Mesa <span>FFP</span> &middot; 2026
           </Link>
         </div>
@@ -98,7 +100,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
           {awards.length > 0 && <a href="#awards">Awards</a>}
           <a href="#cert">Certificate</a>
         </div>
-        <button className="nav-share" id="share-btn" data-name={student.name}>
+        <button className="nav-share" id="share-btn" data-name={student.name} data-cohort={cohort} data-slug={slug}>
           <svg viewBox="0 0 16 16">
             <path d="M4 8V4h4M8 4l4 4M10 10v4H2V6" />
           </svg>
@@ -111,7 +113,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
         {hasProfile ? (
           <div className="hero-2col">
             <div className="hero-left">
-              <HeroContent student={student} brand={brand} />
+              <HeroContent student={student} brand={brand} cohort={cohort} />
             </div>
             <div className="hero-photo-panel">
               <div className="hero-photo-frame">
@@ -130,13 +132,13 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
         ) : (
           <div className="hero-1col">
             <div className="hero-left">
-              <HeroContent student={student} brand={brand} />
+              <HeroContent student={student} brand={brand} cohort={cohort} />
             </div>
           </div>
         )}
       </section>
 
-      {/* SLIDE 2 — MOMENTS (hidden if all photos missing) */}
+      {/* SLIDE 2 — MOMENTS */}
       {momentPhotos.length > 0 && (
         <section className="slide slide-ivory" id="moments">
           <div className="moments-inner">
@@ -149,7 +151,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
         </section>
       )}
 
-      {/* SLIDE 3 — MARKETING CREATIVES (hidden if no videos or static ads) */}
+      {/* SLIDE 3 — MARKETING CREATIVES */}
       {hasCreatives && (
         <section className="slide slide-teal" id="creatives">
           <MarketingAssets videos={videos} adStatics={adStatics} />
@@ -159,10 +161,10 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
       {/* SLIDE 4 — AI TOOLS */}
       <AITools />
 
-      {/* SLIDE 5 — AWARDS (hidden if no awards) */}
+      {/* SLIDE 5 — AWARDS */}
       {awards.length > 0 && <Awards awards={awards} award_descriptions={awardDescriptions} studentName={student.name} />}
 
-      {/* SLIDE 6 — CERTIFICATE (hidden when no URL) */}
+      {/* SLIDE 6 — CERTIFICATE */}
       {hasCert && (
         <section className="slide slide-butter" id="cert">
           <div className="cert-slide-inner">
@@ -235,20 +237,38 @@ export default async function PortfolioPage({ params }: { params: Promise<{ slug
             <Link href="https://mesaschool.co">Mesa School of Business</Link>
             {' '}&middot; FFP 2026 &middot; Not student-editable
           </div>
-          <div className="footer-row-r">ffp.mesaschool.co/{slug}</div>
+          <div className="footer-row-r">ffp.mesaschool.co/{cohort}/{slug}</div>
         </div>
       </section>
 
-      <PortfolioScripts />
+      <PortfolioScripts cohort={cohort} slug={slug} studentName={student.name} />
     </>
   )
 }
 
-// Hero inner content — shared between 1-col and 2-col layouts
-function HeroContent({ student, brand }: { student: StudentShape; brand: BrandShape | null }) {
+function HeroContent({
+  student,
+  brand,
+  cohort,
+}: {
+  student: StudentShape
+  brand: BrandShape | null
+  cohort: string
+}) {
   const nameParts = student.name.split(' ')
   const firstName = nameParts[0]
   const lastName = nameParts.slice(1).join(' ')
+
+  function getInstagramUrl(instagram: string): string {
+    if (instagram.startsWith('http')) return instagram
+    return `https://instagram.com/${instagram.replace('@', '')}`
+  }
+
+  function getInstagramHandle(instagram: string): string {
+    const match = instagram.match(/instagram\.com\/([^/]+)/)
+    if (match) return `@${match[1]}`
+    return instagram.startsWith('@') ? instagram : `@${instagram}`
+  }
 
   return (
     <>
@@ -327,7 +347,7 @@ function HeroContent({ student, brand }: { student: StudentShape; brand: BrandSh
   )
 }
 
-function PortfolioScripts() {
+function PortfolioScripts({ cohort, slug, studentName }: { cohort: string; slug: string; studentName: string }) {
   return (
     <Script id="portfolio-scripts" strategy="afterInteractive">{`
 var observer = new IntersectionObserver(function(entries) {
@@ -338,9 +358,9 @@ document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el)
 var shareBtn = document.getElementById('share-btn');
 if (shareBtn) {
   shareBtn.addEventListener('click', function() {
-    var name = shareBtn.getAttribute('data-name') || 'Student';
+    var name = ${JSON.stringify(studentName)};
     var title = name + " FFP Portfolio \\u00b7 Mesa 2026";
-    var url = window.location.href;
+    var url = "https://ffp.mesaschool.co/${cohort}/${slug}";
     if (navigator.share) {
       navigator.share({ title: title, url: url }).catch(function(){});
     } else {

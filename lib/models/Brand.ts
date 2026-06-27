@@ -2,6 +2,7 @@ import { Schema, model, models, type Model, type InferSchemaType } from 'mongoos
 
 const BrandSchema = new Schema(
   {
+    cohort: { type: String, required: true, index: true },
     slug: { type: String, required: true, unique: true, index: true },
     name: { type: String, required: true },
     description: { type: String, default: '' },

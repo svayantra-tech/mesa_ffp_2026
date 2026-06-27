@@ -11,7 +11,7 @@ export default function HeroImage({ src }: { src: string }) {
       src={src}
       alt=""
       className="hero-img"
-      loading="lazy"
+      loading="eager"
       onError={() => setHidden(true)}
     />
   )

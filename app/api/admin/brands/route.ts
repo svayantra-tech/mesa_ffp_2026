@@ -1,41 +1,25 @@
 import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import { Brand } from '@/lib/models/Brand'
-import { listBrands, revalidatePublic } from '@/lib/admin-data'
-import { extractYouTubeId, normalizeImageUrl } from '@/lib/normalize'
+import { createBrand, listBrands, revalidatePublic } from '@/lib/db/queries'
 
 export const runtime = 'nodejs'
 
-const cleanArr = (v: unknown): string[] =>
-  Array.isArray(v) ? v.filter((x) => x != null && x !== '').map(String) : []
-
-export async function GET() {
-  return NextResponse.json(await listBrands())
+export async function GET(request: Request) {
+  const cohort = new URL(request.url).searchParams.get('cohort') ?? ''
+  if (!cohort) return NextResponse.json({ error: 'cohort required' }, { status: 400 })
+  return NextResponse.json(await listBrands(cohort))
 }
 
 export async function POST(request: Request) {
+  const cohort = new URL(request.url).searchParams.get('cohort') ?? ''
+  if (!cohort) return NextResponse.json({ error: 'cohort required' }, { status: 400 })
+
   const body = await request.json().catch(() => ({}))
-  const { slug, name } = body
-  if (!slug || !name) {
+  if (!body.slug || !body.name) {
     return NextResponse.json({ error: 'slug and name are required' }, { status: 400 })
   }
-  await connectDB()
   try {
-    const doc = await Brand.create({
-      slug,
-      name,
-      description: body.description ?? '',
-      revenue: Number(body.revenue) || 0,
-      customers: Number(body.customers) || 0,
-      awards: cleanArr(body.awards),
-      award_descriptions: cleanArr(body.award_descriptions),
-      videos: cleanArr(body.videos).map(extractYouTubeId).filter(Boolean),
-      ad_statics: cleanArr(body.ad_statics).map(normalizeImageUrl).filter(Boolean),
-      website: body.website ?? '',
-      instagram: body.instagram ?? '',
-      feature_photo: normalizeImageUrl(String(body.feature_photo ?? '')),
-    })
-    revalidatePublic()
+    const doc = await createBrand(cohort, body)
+    revalidatePublic(cohort)
     return NextResponse.json({ id: String(doc._id) }, { status: 201 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Create failed'

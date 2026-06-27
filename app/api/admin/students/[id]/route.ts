@@ -1,37 +1,28 @@
 import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import { Student } from '@/lib/models/Student'
-import { getStudent, revalidatePublic } from '@/lib/admin-data'
-import { normalizeImageUrl } from '@/lib/normalize'
+import { getStudent, updateStudent, deleteStudent, revalidatePublic } from '@/lib/db/queries'
 
 export const runtime = 'nodejs'
 
 type Ctx = { params: Promise<{ id: string }> }
 
-export async function GET(_req: Request, { params }: Ctx) {
+export async function GET(request: Request, { params }: Ctx) {
   const { id } = await params
-  const student = await getStudent(id)
+  const cohort = new URL(request.url).searchParams.get('cohort') ?? ''
+  if (!cohort) return NextResponse.json({ error: 'cohort required' }, { status: 400 })
+  const student = await getStudent(cohort, id)
   if (!student) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json(student)
 }
 
 export async function PUT(request: Request, { params }: Ctx) {
   const { id } = await params
+  const cohort = new URL(request.url).searchParams.get('cohort') ?? ''
+  if (!cohort) return NextResponse.json({ error: 'cohort required' }, { status: 400 })
   const body = await request.json().catch(() => ({}))
-  const update: Record<string, unknown> = {}
-  for (const key of ['slug', 'name', 'email', 'certificate_url'] as const) {
-    if (key in body) update[key] = body[key]
-  }
-  if ('brand_id' in body) update.brand_id = body.brand_id || null
-  for (const key of ['profile_photo', 'convocation_photo', 'flea_market_photo', 'demo_day_photo'] as const) {
-    if (key in body) update[key] = body[key] ? normalizeImageUrl(String(body[key])) : ''
-  }
-
-  await connectDB()
   try {
-    const doc = await Student.findByIdAndUpdate(id, update, { new: true })
+    const doc = await updateStudent(cohort, id, body)
     if (!doc) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-    revalidatePublic()
+    revalidatePublic(cohort)
     return NextResponse.json({ ok: true })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Update failed'
@@ -39,11 +30,12 @@ export async function PUT(request: Request, { params }: Ctx) {
   }
 }
 
-export async function DELETE(_req: Request, { params }: Ctx) {
+export async function DELETE(request: Request, { params }: Ctx) {
   const { id } = await params
-  await connectDB()
-  const doc = await Student.findByIdAndDelete(id)
+  const cohort = new URL(request.url).searchParams.get('cohort') ?? ''
+  if (!cohort) return NextResponse.json({ error: 'cohort required' }, { status: 400 })
+  const doc = await deleteStudent(cohort, id)
   if (!doc) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  revalidatePublic()
+  revalidatePublic(cohort)
   return NextResponse.json({ ok: true })
 }
