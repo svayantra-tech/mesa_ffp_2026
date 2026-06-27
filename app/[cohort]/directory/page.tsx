@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { isValidCohort } from '@/lib/cohorts'
 import { getDirectoryStudents } from '@/lib/db/queries'
 import DirectoryClient from './DirectoryClient'
+import CohortSwitcher from '@/app/components/CohortSwitcher'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -31,6 +32,7 @@ export default async function DirectoryPage({ params }: { params: Promise<Params
           <Link href={`/${cohort}`}>Home</Link>
           <a href="#" style={{ color: '#BA3B41' }}>Directory</a>
         </div>
+        <CohortSwitcher currentCohort={cohort} pageType="directory" />
         <Link href={`/${cohort}`} className="nav-cta">
           <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" /></svg>
           Back to Home

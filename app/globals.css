@@ -371,6 +371,19 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:24p
 .nav-share:hover{background:#BA3B41}
 .nav-share svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2}
 
+/* ── COHORT SWITCHER ── */
+.cohort-switcher{display:flex;align-items:center;gap:6px}
+.cs-pill{
+  padding:5px 14px;border-radius:999px;font-size:11px;font-weight:700;
+  font-family:var(--font-manrope),sans-serif;letter-spacing:.04em;
+  text-decoration:none;border:1.5px solid #BA3B41;
+  cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;
+  line-height:1
+}
+.cs-pill.active{background:#BA3B41;color:#FFFBF3}
+.cs-pill:not(.active){background:transparent;color:#BA3B41}
+.cs-pill:not(.active):hover{background:rgba(186,59,65,0.08)}
+
 /* ── SLIDE DECK ── */
 /* Each section is a card at 1918:957 (≈2:1). Content taller than the ratio  */
 /* simply expands the card — never clips. Below 768 px the ratio drops to auto. */
@@ -688,6 +701,10 @@ section.awards-section{background:#0F1919;border-top:0.5px solid rgba(255,255,25
   .contact-heading{font-size:42px}
   .nav-cta{padding:6px 12px;font-size:11px;gap:4px}
   .nav-cta svg{display:none}
+  .nav-share{padding:6px 10px}
+  .nav-share-text{display:none}
+  .cohort-switcher{gap:4px}
+  .cs-pill{padding:4px 9px;font-size:10px}
 }
 
 /* ===== DIRECTORY PAGE STYLES ===== */

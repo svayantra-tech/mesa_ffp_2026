@@ -9,6 +9,7 @@ import AITools from '@/app/[slug]/AITools'
 import Awards from '@/app/[slug]/Awards'
 import CertificateViewer from '@/app/[slug]/CertificateViewerClient'
 import MomentGrid from '@/app/[slug]/MomentGrid'
+import CohortSwitcher from '@/app/components/CohortSwitcher'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -100,11 +101,12 @@ export default async function PortfolioPage({ params }: { params: Promise<Params
           {awards.length > 0 && <a href="#awards">Awards</a>}
           <a href="#cert">Certificate</a>
         </div>
+        <CohortSwitcher currentCohort={cohort} pageType="slug" slug={slug} />
         <button className="nav-share" id="share-btn" data-name={student.name} data-cohort={cohort} data-slug={slug}>
           <svg viewBox="0 0 16 16">
             <path d="M4 8V4h4M8 4l4 4M10 10v4H2V6" />
           </svg>
-          Share portfolio
+          <span className="nav-share-text">Share portfolio</span>
         </button>
       </nav>
 
