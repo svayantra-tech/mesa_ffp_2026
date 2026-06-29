@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Script from 'next/script'
 import { isValidCohort, getCohort } from '@/lib/cohorts'
+import { getEnabledCohorts } from '@/lib/cohort-visibility'
 import { getStudentBySlug, getStudentMeta, type StudentShape, type BrandShape } from '@/lib/db/queries'
 import MarketingAssets from '@/app/[slug]/MarketingAssets'
 import AITools from '@/app/[slug]/AITools'
@@ -57,7 +58,10 @@ export default async function PortfolioPage({ params }: { params: Promise<Params
   const { cohort, slug } = await params
   if (!isValidCohort(cohort)) notFound()
 
-  const student = await getStudentBySlug(cohort, slug)
+  const [student, enabledCohorts] = await Promise.all([
+    getStudentBySlug(cohort, slug),
+    getEnabledCohorts(),
+  ])
   if (!student) notFound()
 
   const brand = student.brand
@@ -101,7 +105,7 @@ export default async function PortfolioPage({ params }: { params: Promise<Params
           {awards.length > 0 && <a href="#awards">Awards</a>}
           <a href="#cert">Certificate</a>
         </div>
-        <CohortSwitcher currentCohort={cohort} pageType="slug" slug={slug} />
+        <CohortSwitcher cohorts={enabledCohorts} currentCohort={cohort} pageType="slug" slug={slug} />
         <button className="nav-share" id="share-btn" data-name={student.name} data-cohort={cohort} data-slug={slug}>
           <svg viewBox="0 0 16 16">
             <path d="M4 8V4h4M8 4l4 4M10 10v4H2V6" />

@@ -9,6 +9,7 @@ import FeatCardImage from '@/app/components/FeatCardImage'
 import YoutubeEmbed from '@/app/components/YoutubeEmbed'
 import CohortSwitcher from '@/app/components/CohortSwitcher'
 import { isValidCohort } from '@/lib/cohorts'
+import { getEnabledCohorts } from '@/lib/cohort-visibility'
 import {
   getBrandsBySlugs,
   getAwardBrands,
@@ -43,11 +44,12 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
   const { cohort } = await params
   if (!isValidCohort(cohort)) notFound()
 
-  const [topVentures, awardBrands, allStudents, programMedia] = await Promise.all([
+  const [topVentures, awardBrands, allStudents, programMedia, enabledCohorts] = await Promise.all([
     getBrandsBySlugs(cohort, ['azuri', 'kintoken', 'tact', 'lysso']),
     getAwardBrands(cohort),
     getAllStudentsBasic(cohort),
     getProgramMedia(cohort),
+    getEnabledCohorts(),
   ])
 
   const media: Record<string, string> = Object.fromEntries(
@@ -95,7 +97,7 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
           <a href="#enquire">FFP 2027</a>
           <a href="#ventures">Ventures</a>
         </div>
-        <CohortSwitcher currentCohort={cohort} pageType="landing" />
+        <CohortSwitcher cohorts={enabledCohorts} currentCohort={cohort} pageType="landing" />
         <Link href={`/${cohort}/directory`} className="nav-cta">
           <svg viewBox="0 0 16 16"><path d="M6 2h8M6 6h8M6 10h8M6 14h8M2 2h0M2 6h0M2 10h0M2 14h0" strokeLinecap="round" /></svg>
           Browse Students

@@ -1,10 +1,16 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { ADMIN_COOKIE, verifySession } from '@/lib/admin-auth'
-import { isValidCohort, LATEST_COHORT } from '@/lib/cohorts'
+import { isValidCohort } from '@/lib/cohorts'
 
 const ADMIN_SUFFIX = '/admin-mesa-portfolio-6300'
 const LOGIN_API = '/api/admin/login'
+
+function withPathname(request: NextRequest, pathname: string): NextResponse {
+  const headers = new Headers(request.headers)
+  headers.set('x-pathname', pathname)
+  return NextResponse.next({ request: { headers } })
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -19,9 +25,9 @@ export async function proxy(request: NextRequest) {
 
   const segments = pathname.split('/').filter(Boolean)
 
-  // ── Root: / → /{latest-cohort} ───────────────────────────────────────────
+  // ── Root: / → app/page.tsx handles DB-aware redirect to latest enabled cohort
   if (segments.length === 0) {
-    return NextResponse.redirect(new URL(`/${LATEST_COHORT}`, request.url), 308)
+    return NextResponse.next()
   }
 
   const first = segments[0]
@@ -40,7 +46,8 @@ export async function proxy(request: NextRequest) {
         }
       }
     }
-    return NextResponse.next()
+    // Forward pathname so [cohort]/layout.tsx can detect admin vs public routes
+    return withPathname(request, pathname)
   }
 
   // ── Backwards-compat redirects for old single-cohort URLs ────────────────

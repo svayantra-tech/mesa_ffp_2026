@@ -1,8 +1,12 @@
-// Root / is handled by middleware (→ /cohort-1).
-// This page is never reached in normal operation.
+// Root / — redirect to the latest enabled cohort.
+// Handled here (not middleware) so we can do a DB check.
 import { redirect } from 'next/navigation'
-import { LATEST_COHORT } from '@/lib/cohorts'
+import { getEnabledCohorts } from '@/lib/cohort-visibility'
 
-export default function RootPage() {
-  redirect(`/${LATEST_COHORT}`)
+export const dynamic = 'force-dynamic'
+
+export default async function RootPage() {
+  const enabled = await getEnabledCohorts()
+  const target = enabled.length > 0 ? enabled[enabled.length - 1].slug : 'cohort-1'
+  redirect(`/${target}`)
 }

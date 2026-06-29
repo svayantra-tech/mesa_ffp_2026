@@ -2,9 +2,11 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { COHORTS } from '@/lib/cohorts'
+
+type CohortEntry = { slug: string; name: string }
 
 type Props = {
+  cohorts: CohortEntry[]
   currentCohort: string
   pageType: 'landing' | 'directory' | 'slug'
   slug?: string
@@ -16,7 +18,7 @@ function targetUrl(cohortSlug: string, pageType: Props['pageType'], slug?: strin
   return `/${cohortSlug}`
 }
 
-export default function CohortSwitcher({ currentCohort, pageType, slug }: Props) {
+export default function CohortSwitcher({ cohorts, currentCohort, pageType, slug }: Props) {
   const router = useRouter()
   const [loadingCohort, setLoadingCohort] = useState<string | null>(null)
 
@@ -44,7 +46,7 @@ export default function CohortSwitcher({ currentCohort, pageType, slug }: Props)
 
   return (
     <div className="cohort-switcher" role="group" aria-label="Switch cohort">
-      {COHORTS.map((c) => {
+      {cohorts.map((c) => {
         const isActive = c.slug === currentCohort
         const isLoading = loadingCohort === c.slug
         return (

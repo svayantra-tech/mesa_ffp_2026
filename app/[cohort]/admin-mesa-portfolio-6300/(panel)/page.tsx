@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { isValidCohort } from '@/lib/cohorts'
+import { isValidCohort, getCohort } from '@/lib/cohorts'
+import { getCohortEnabled } from '@/lib/cohort-visibility'
 import { listStudents, listBrands } from '@/lib/db/queries'
 import CompletionDonut from '@/app/admin-mesa-portfolio-6300/_components/CompletionDonut'
+import CohortVisibilityToggle from '@/app/admin-mesa-portfolio-6300/_components/CohortVisibilityToggle'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,7 +42,12 @@ export default async function DashboardPage({ params }: { params: Promise<Params
   if (!isValidCohort(cohort)) notFound()
 
   const BASE = `/${cohort}/admin-mesa-portfolio-6300`
-  const [students, brands] = await Promise.all([listStudents(cohort), listBrands(cohort)])
+  const cohortMeta = getCohort(cohort)
+  const [students, brands, cohortEnabled] = await Promise.all([
+    listStudents(cohort),
+    listBrands(cohort),
+    getCohortEnabled(cohort),
+  ])
 
   const brandStats = Object.fromEntries(brands.map((b) => {
     const fields: Record<string, boolean> = {
@@ -94,6 +101,15 @@ export default async function DashboardPage({ params }: { params: Promise<Params
 
   return (
     <>
+      <div className="admin-card" style={{ marginBottom: 24, borderLeft: '3px solid', borderColor: cohortEnabled ? '#22c55e' : '#ef4444' }}>
+        <h2 className="admin-card-title" style={{ marginBottom: 12 }}>Cohort Visibility</h2>
+        <CohortVisibilityToggle
+          cohort={cohort}
+          cohortName={cohortMeta?.name ?? cohort}
+          initialEnabled={cohortEnabled}
+        />
+      </div>
+
       <div className="admin-topbar">
         <div>
           <h1 className="admin-h1">Dashboard</h1>
