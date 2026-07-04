@@ -19,11 +19,33 @@ function extractYouTubeId(url: string): string | null {
   return null
 }
 
+function extractVideoId(entry: string): string | null {
+  const ytId = extractYouTubeId(entry)
+  if (ytId) return ytId
+  if (/^[a-zA-Z0-9_-]+$/.test(entry) && entry.length > 15) return entry
+  return null
+}
+
+function getVideoEmbed(id: string): { embedUrl: string; title: string } {
+  if (id.length > 15) {
+    // Drive file ID
+    return {
+      embedUrl: `https://drive.google.com/file/d/${id}/preview`,
+      title: 'Video creative',
+    }
+  }
+  // YouTube ID
+  return {
+    embedUrl: `https://www.youtube.com/embed/${id}?rel=0`,
+    title: 'Video creative',
+  }
+}
+
 type Props = { videos: string[]; adStatics?: string[] }
 
 export default function MarketingAssets({ videos, adStatics = [] }: Props) {
   const rawVideos = (Array.isArray(videos) ? videos : []).slice(0, 3)
-  const videoIds = rawVideos.map(extractYouTubeId).filter(Boolean) as string[]
+  const videoIds = rawVideos.map(extractVideoId).filter(Boolean) as string[]
 
   const staticAds = (Array.isArray(adStatics) ? adStatics : [])
     .filter((url) => url.startsWith('http'))
@@ -63,14 +85,17 @@ export default function MarketingAssets({ videos, adStatics = [] }: Props) {
             <p className="sec-intro inv">Portrait reels produced during the 2-week FFP program.</p>
           </div>
           <div className={`videos-grid count-${videoIds.length}`} ref={videoRef}>
-            {videoIds.map((id, i) => (
+            {videoIds.map((id, i) => {
+              const { embedUrl, title } = getVideoEmbed(id)
+              return (
               <div key={i} className="ma-video-slot">
                 {loadVideos ? (
                   <iframe
-                    src={`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`}
-                    allow="autoplay; encrypted-media"
+                    src={embedUrl}
+                    title={title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
-                    title={`Video ${i + 1}`}
+                    style={{ border: 'none', width: '100%', aspectRatio: '9/16' }}
                   />
                 ) : (
                   <button
@@ -85,7 +110,8 @@ export default function MarketingAssets({ videos, adStatics = [] }: Props) {
                   </button>
                 )}
               </div>
-            ))}
+              )
+            })}
           </div>
         </>
       )}
