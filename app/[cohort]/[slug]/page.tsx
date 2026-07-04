@@ -300,14 +300,18 @@ function HeroContent({
       )}
 
       <div className="hero-stats">
-        <div className="hs">
-          <div className="hs-val crimson">{`₹${(brand?.revenue || 0).toLocaleString('en-IN')}`}</div>
-          <div className="hs-lbl">Revenue</div>
-        </div>
-        <div className="hs">
-          <div className="hs-val">{brand?.customers || 0}</div>
-          <div className="hs-lbl">Customers</div>
-        </div>
+        {Boolean(brand?.revenue) && (
+          <div className="hs">
+            <div className="hs-val crimson">{`₹${(brand!.revenue as number).toLocaleString('en-IN')}`}</div>
+            <div className="hs-lbl">Revenue</div>
+          </div>
+        )}
+        {Boolean(brand?.customers) && (
+          <div className="hs">
+            <div className="hs-val">{brand!.customers}</div>
+            <div className="hs-lbl">Customers</div>
+          </div>
+        )}
         <div className="hs">
           <div className="hs-val">Pan India</div>
           <div className="hs-lbl">Markets</div>

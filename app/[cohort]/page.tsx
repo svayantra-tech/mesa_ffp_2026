@@ -68,7 +68,7 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
   const heroImage = parseJsonUrls(media.landing_hero_image)[0] ?? null
   const demoDayImages = parseJsonUrls(media.landing_demo_day)
   const highlightPhotos = parseJsonUrls(media.landing_highlights)
-  const ffp2027VideoId = media.landing_ffp2027_video_id || 'mIp5evPlruY'
+  const ffp2027VideoId = media.landing_ffp2027_video_id || null
 
   const ventureOrder = ['azuri', 'kintoken', 'tact', 'lysso']
   const sortedVentures = ventureOrder
@@ -133,58 +133,55 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
       <hr className="section-divider" />
 
       {/* 01 — FLEA MARKET */}
-      <section id="what-they-built" className="numbered-section on-cream">
-        <Image src="/assets/brand-element-solid.png" alt="" width={280} height={361} quality={100} className="section-brand-el" style={{ right: '-120px', bottom: '-100px', opacity: 0.05 }} />
-        <div className="section-num reveal">01</div>
-        <div className="section-num-small reveal">What they built</div>
-        <h2 className="section-title reveal">FLEA MARKET <span className="light">at Vega City Mall</span></h2>
-        <p className="section-sub reveal">
-          Students sold directly to real customers inside Vega City Mall, Bannerghatta Road, Bangalore.
-          Every rupee earned was real. Every customer was a stranger. No safety nets.
-        </p>
+      {fleaPhotos.length > 0 && (
+        <section id="what-they-built" className="numbered-section on-cream">
+          <Image src="/assets/brand-element-solid.png" alt="" width={280} height={361} quality={100} className="section-brand-el" style={{ right: '-120px', bottom: '-100px', opacity: 0.05 }} />
+          <div className="section-num reveal">01</div>
+          <div className="section-num-small reveal">What they built</div>
+          <h2 className="section-title reveal">FLEA MARKET <span className="light">at Vega City Mall</span></h2>
+          <p className="section-sub reveal">
+            Students sold directly to real customers inside Vega City Mall, Bannerghatta Road, Bangalore.
+            Every rupee earned was real. Every customer was a stranger. No safety nets.
+          </p>
 
-        {(() => {
-          const base = fleaPhotos.length > 0 ? fleaPhotos : Array(8).fill('')
-          const track = [...base, ...base]
-          const dur = `${Math.max(14, base.length * 4.5)}s`
-          return (
-            <div className="marquee-wrap reveal d1">
-              <div className="marquee-track" style={{ animationDuration: dur }}>
-                {track.map((src, i) => (
-                  <div key={i} className="marquee-slot">
-                    {src ? (
+          {(() => {
+            const track = [...fleaPhotos, ...fleaPhotos]
+            const dur = `${Math.max(14, fleaPhotos.length * 4.5)}s`
+            return (
+              <div className="marquee-wrap reveal d1">
+                <div className="marquee-track" style={{ animationDuration: dur }}>
+                  {track.map((src, i) => (
+                    <div key={i} className="marquee-slot">
                       <Image src={src} alt="Flea Market" fill quality={85} sizes="(max-width: 768px) 320px, 420px" style={{ objectFit: 'cover' }} />
-                    ) : (
-                      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )
-        })()}
+            )
+          })()}
 
-        <div className="highlight-strip">
-          <div className="highlight-item reveal d3">
-            <div className="highlight-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
+          <div className="highlight-strip">
+            <div className="highlight-item reveal d3">
+              <div className="highlight-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
+              </div>
+              <div><div className="highlight-label">Venue</div><div className="highlight-val">Vega City Mall, Bannerghatta</div></div>
             </div>
-            <div><div className="highlight-label">Venue</div><div className="highlight-val">Vega City Mall, Bannerghatta</div></div>
-          </div>
-          <div className="highlight-item reveal d3">
-            <div className="highlight-icon">
-              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
+            <div className="highlight-item reveal d3">
+              <div className="highlight-icon">
+                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
+              </div>
+              <div><div className="highlight-label">Duration</div><div className="highlight-val">2-Day Mega Flea Market</div></div>
             </div>
-            <div><div className="highlight-label">Duration</div><div className="highlight-val">2-Day Mega Flea Market</div></div>
-          </div>
-          <div className="highlight-item reveal d4">
-            <div className="highlight-icon">
-              <svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="6" /><path d="M18.09 10.37A6 6 0 1110.34 18" /><path d="M7 6h2v4" /></svg>
+            <div className="highlight-item reveal d4">
+              <div className="highlight-icon">
+                <svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="6" /><path d="M18.09 10.37A6 6 0 1110.34 18" /><path d="M7 6h2v4" /></svg>
+              </div>
+              <div><div className="highlight-label">Highest Revenue</div><div className="highlight-val">₹3,04,550 — Azuri</div></div>
             </div>
-            <div><div className="highlight-label">Highest Revenue</div><div className="highlight-val">₹3,04,550 — Azuri</div></div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <hr className="section-divider" />
 
@@ -284,7 +281,7 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
           The Future Founder&apos;s Summer School returns next year. If you&apos;re a student,
           parent, or educator, find out how to apply for the next cohort.
         </p>
-        <div className="enquire-layout has-image">
+        <div className={`enquire-layout${ffp2027VideoId ? ' has-image' : ''}`}>
           <div className="enquire-content">
             <div className="enquire-text reveal d1">
               This programme is a 2-week intensive entrepreneurship experience by Mesa School of Business,
@@ -298,9 +295,11 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
               <svg viewBox="0 0 16 16"><path d="M4 12l8-8M6 4h6v6" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </a>
           </div>
-          <div className="enquire-carousel reveal d3">
-            <YoutubeEmbed videoId={ffp2027VideoId} />
-          </div>
+          {ffp2027VideoId && (
+            <div className="enquire-carousel reveal d3">
+              <YoutubeEmbed videoId={ffp2027VideoId} />
+            </div>
+          )}
         </div>
       </section>
 
