@@ -435,8 +435,13 @@ document.querySelectorAll('.reveal').forEach(function(el) { revealObserver.obser
 
   document.getElementById('awardsNext').addEventListener('click', function() { next(); startAuto(); });
   document.getElementById('awardsPrev').addEventListener('click', function() { prev(); startAuto(); });
-  carousel.addEventListener('mouseenter', stopAuto);
-  carousel.addEventListener('mouseleave', startAuto);
+  // Pause-on-hover only where a real pointer hovers. On touch, a tap fires a
+  // phantom mouseenter with no matching mouseleave, which would stop the
+  // auto-rotate permanently — so skip these listeners on touch devices.
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    carousel.addEventListener('mouseenter', stopAuto);
+    carousel.addEventListener('mouseleave', startAuto);
+  }
 
   buildDots();
   startAuto();

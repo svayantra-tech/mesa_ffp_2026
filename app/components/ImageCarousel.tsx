@@ -61,16 +61,24 @@ export default function ImageCarousel({
     )
     io.observe(el)
 
+    // Pause-on-hover ONLY on devices with a real hover (mouse/trackpad). Touch
+    // devices fire a phantom mouseenter on tap and never a matching mouseleave,
+    // which would latch `hovered` true and freeze the carousel forever.
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches
     const onEnter = () => { hovered = true }
     const onLeave = () => { hovered = false }
-    el.addEventListener('mouseenter', onEnter)
-    el.addEventListener('mouseleave', onLeave)
+    if (canHover) {
+      el.addEventListener('mouseenter', onEnter)
+      el.addEventListener('mouseleave', onLeave)
+    }
 
     return () => {
       stopTimer()
       io.disconnect()
-      el.removeEventListener('mouseenter', onEnter)
-      el.removeEventListener('mouseleave', onLeave)
+      if (canHover) {
+        el.removeEventListener('mouseenter', onEnter)
+        el.removeEventListener('mouseleave', onLeave)
+      }
     }
   }, [visible.length, reduced, rotateMs])
 

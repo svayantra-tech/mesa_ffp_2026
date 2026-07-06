@@ -99,7 +99,11 @@ nav{
   display:flex;gap:14px;padding:14px 0 14px 14px;
   animation:marqueeScroll 40s linear infinite;width:max-content
 }
-.marquee-wrap:hover .marquee-track{animation-play-state:paused}
+/* Pause the marquee on hover only where a real pointer can hover — touch devices
+   simulate a stuck :hover after a tap, which would freeze the marquee forever. */
+@media (hover: hover) and (pointer: fine){
+  .marquee-wrap:hover .marquee-track{animation-play-state:paused}
+}
 @keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .marquee-slot{
   position:relative;flex-shrink:0;width:420px;height:320px;
@@ -519,11 +523,19 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:24p
 .videos-grid.count-1{grid-template-columns:1fr;max-width:280px}
 .videos-grid.count-2{grid-template-columns:1fr 1fr;max-width:580px}
 .videos-grid.count-3{grid-template-columns:repeat(3,1fr);max-width:860px}
-.ma-video-slot{aspect-ratio:9/16;width:100%;overflow:hidden;border-radius:12px}
-.ma-video-slot iframe{width:100%;height:100%;border:none}
-.ma-video-cover{position:relative;display:block;width:100%;height:100%;padding:0;border:none;cursor:pointer;background:linear-gradient(135deg,#16201f,#0F1919)}
+.ma-video-slot{position:relative;aspect-ratio:9/16;width:100%;overflow:hidden;border-radius:12px}
+.ma-video-slot iframe,.ma-video-frame{width:100%;height:100%;border:none;display:block}
+.ma-video-cover{position:absolute;inset:0;display:block;width:100%;height:100%;padding:0;border:none;cursor:pointer;background:linear-gradient(135deg,#16201f,#0F1919)}
 .ma-video-play{position:absolute;inset:0;margin:auto;width:54px;height:54px;border-radius:50%;background:rgba(186,59,65,0.95);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,0.3)}
 .ma-video-play svg{width:22px;height:22px;fill:#fff;margin-left:3px}
+/* Muted-by-default toggle (YouTube tiles) + best-effort tap-to-play (Drive tiles) */
+.ma-mute-btn{position:absolute;bottom:8px;right:8px;z-index:3;width:34px;height:34px;border-radius:50%;border:none;background:rgba(0,0,0,0.55);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.ma-mute-btn:hover{background:rgba(0,0,0,0.75)}
+.ma-mute-btn svg{width:17px;height:17px;fill:#fff}
+.ma-video-tap{position:absolute;bottom:8px;left:8px;z-index:3;width:34px;height:34px;border-radius:50%;border:none;background:rgba(186,59,65,0.9);cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:.9;transition:opacity .2s,background .2s}
+.ma-video-tap:hover{opacity:1;background:#BA3B41}
+.ma-video-tap svg{width:14px;height:14px;fill:#fff;margin-left:1px}
+.ma-video-hint{font-size:11px;color:rgba(255,251,243,0.4);text-align:center;margin:14px 0 0;font-family:var(--font-manrope),sans-serif}
 .ma-statics-block{width:100%}
 .ma-statics-block--spaced{margin-top:56px;padding-top:56px;border-top:0.5px solid rgba(255,255,255,0.08)}
 .ma-statics-grid{display:grid;gap:16px;align-items:start;width:100%;margin:0 auto}
