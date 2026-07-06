@@ -11,6 +11,8 @@ type Props = {
 export default function CohortVisibilityToggle({ cohort, cohortName, initialEnabled }: Props) {
   const [enabled, setEnabled] = useState(initialEnabled)
   const [loading, setLoading] = useState(false)
+  const [previewBusy, setPreviewBusy] = useState(false)
+  const [previewMsg, setPreviewMsg] = useState('')
 
   async function toggle() {
     setLoading(true)
@@ -27,12 +29,39 @@ export default function CohortVisibilityToggle({ cohort, cohortName, initialEnab
     }
   }
 
+  async function copyPreviewLink(action: 'get' | 'reset') {
+    if (action === 'reset' && !window.confirm('Reset the preview link? Any link shared earlier will stop working.')) {
+      return
+    }
+    setPreviewBusy(true)
+    setPreviewMsg('')
+    try {
+      const res = await fetch('/api/admin/preview-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cohort, action }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setPreviewMsg('Failed — try again'); return }
+      const url = `${window.location.origin}/${cohort}?preview=${data.token}`
+      try {
+        await navigator.clipboard.writeText(url)
+        setPreviewMsg(action === 'reset' ? 'New link reset & copied ✓' : 'Preview link copied ✓')
+      } catch {
+        setPreviewMsg(url) // clipboard blocked — show it so it can be copied manually
+      }
+    } finally {
+      setPreviewBusy(false)
+    }
+  }
+
   const isLive = enabled
   const statusColor = isLive ? '#22c55e' : '#ef4444'
   const statusBg = isLive ? '#22c55e18' : '#ef444418'
   const statusText = isLive ? 'LIVE' : 'HIDDEN'
 
   return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       gap: 16, flexWrap: 'wrap',
@@ -75,6 +104,52 @@ export default function CohortVisibilityToggle({ cohort, cohortName, initialEnab
       >
         {loading ? 'Saving…' : isLive ? 'Take offline' : 'Publish'}
       </button>
+    </div>
+
+    {/* Preview link — share a still-hidden cohort for pre-launch review */}
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+      paddingTop: 14, borderTop: '0.5px solid rgba(15,25,25,0.08)',
+    }}>
+      <div style={{ flex: 1, minWidth: 220 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#0F1919', marginBottom: 2 }}>
+          Preview link
+        </div>
+        <p style={{ fontSize: 11, color: 'rgba(15,25,25,0.5)', margin: 0 }}>
+          Opens {cohortName} for anyone with the link, even while hidden — for pre-launch review.
+          It stays 404 for the public and is not shown in the cohort switcher. Treat it as secret.
+        </p>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
+        {previewMsg && (
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(15,25,25,0.6)', maxWidth: 260, wordBreak: 'break-all' }}>
+            {previewMsg}
+          </span>
+        )}
+        <button
+          onClick={() => copyPreviewLink('get')}
+          disabled={previewBusy}
+          style={{
+            padding: '7px 16px', borderRadius: 8, fontWeight: 700, fontSize: 12,
+            cursor: previewBusy ? 'not-allowed' : 'pointer', opacity: previewBusy ? 0.6 : 1,
+            border: '1.5px solid #0F1919', background: '#0F1919', color: '#fff', flexShrink: 0,
+          }}
+        >
+          {previewBusy ? '…' : 'Copy preview link'}
+        </button>
+        <button
+          onClick={() => copyPreviewLink('reset')}
+          disabled={previewBusy}
+          style={{
+            padding: '7px 14px', borderRadius: 8, fontWeight: 700, fontSize: 12,
+            cursor: previewBusy ? 'not-allowed' : 'pointer', opacity: previewBusy ? 0.6 : 1,
+            border: '1.5px solid rgba(15,25,25,0.2)', background: 'transparent', color: 'rgba(15,25,25,0.6)', flexShrink: 0,
+          }}
+        >
+          Reset link
+        </button>
+      </div>
+    </div>
     </div>
   )
 }

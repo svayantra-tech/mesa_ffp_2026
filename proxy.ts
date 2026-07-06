@@ -5,10 +5,21 @@ import { isValidCohort } from '@/lib/cohorts'
 
 const ADMIN_SUFFIX = '/admin-mesa-portfolio-6300'
 const LOGIN_API = '/api/admin/login'
+const PREVIEW_COOKIE_MAX_AGE = 6 * 60 * 60 // 6 hours
 
-function withPathname(request: NextRequest, pathname: string): NextResponse {
+function previewCookieName(cohort: string) {
+  return `ffp_preview_${cohort}`
+}
+
+/**
+ * Forward the request to the app with a pinned x-pathname (so the layout can
+ * tell admin from public routes) and a server-computed x-preview-token. Both
+ * headers are always overwritten here so a client can't spoof them.
+ */
+function withPathname(request: NextRequest, pathname: string, previewToken = ''): NextResponse {
   const headers = new Headers(request.headers)
   headers.set('x-pathname', pathname)
+  headers.set('x-preview-token', previewToken)
   return NextResponse.next({ request: { headers } })
 }
 
@@ -46,8 +57,29 @@ export async function proxy(request: NextRequest) {
         }
       }
     }
-    // Forward pathname so [cohort]/layout.tsx can detect admin vs public routes
-    return withPathname(request, pathname)
+
+    // Preview access: a ?preview=TOKEN query (or a previously-set preview cookie)
+    // lets the layout render a still-hidden cohort. The middleware can't reach the
+    // DB (Edge), so it only forwards the candidate token; the layout validates it.
+    const cookieName = previewCookieName(first)
+    const queryToken = request.nextUrl.searchParams.get('preview') ?? ''
+    const cookieToken = request.cookies.get(cookieName)?.value ?? ''
+    const effectiveToken = queryToken || cookieToken
+
+    // Forward pathname (admin-vs-public) + the candidate preview token to the layout
+    const res = withPathname(request, pathname, effectiveToken)
+
+    // On first use via the query param, drop a short-lived cookie so the visitor
+    // keeps preview access as they click around without re-appending ?preview=.
+    if (queryToken) {
+      res.cookies.set(cookieName, queryToken, {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        maxAge: PREVIEW_COOKIE_MAX_AGE,
+      })
+    }
+    return res
   }
 
   // ── Backwards-compat redirects for old single-cohort URLs ────────────────
