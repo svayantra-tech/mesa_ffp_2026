@@ -13,6 +13,8 @@ const StudentSchema = new Schema(
     convocation_photo: { type: String, default: '' },
     flea_market_photo: { type: String, default: '' },
     demo_day_photo: { type: String, default: '' },
+    personal_growth: { type: String, default: '' },
+    award_photo: { type: String, default: '' },
   },
   { collection: 'students', timestamps: true }
 )

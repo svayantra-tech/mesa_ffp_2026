@@ -8,6 +8,7 @@ import { getStudentBySlug, getStudentMeta, type StudentShape, type BrandShape } 
 import MarketingAssets from '@/app/[slug]/MarketingAssets'
 import AITools from '@/app/[slug]/AITools'
 import Awards from '@/app/[slug]/Awards'
+import PersonalGrowth from '@/app/[slug]/PersonalGrowth'
 import CertificateViewer from '@/app/[slug]/CertificateViewerClient'
 import MomentGrid from '@/app/[slug]/MomentGrid'
 import CohortSwitcher from '@/app/components/CohortSwitcher'
@@ -167,8 +168,18 @@ export default async function PortfolioPage({ params }: { params: Promise<Params
       {/* SLIDE 4 — AI TOOLS */}
       <AITools />
 
+      {/* SLIDE 4.5 — PERSONAL GROWTH (hidden when empty) */}
+      <PersonalGrowth text={student.personal_growth} studentName={student.name} />
+
       {/* SLIDE 5 — AWARDS */}
-      {awards.length > 0 && <Awards awards={awards} award_descriptions={awardDescriptions} studentName={student.name} />}
+      {awards.length > 0 && (
+        <Awards
+          awards={awards}
+          award_descriptions={awardDescriptions}
+          studentName={student.name}
+          awardPhoto={student.award_photo}
+        />
+      )}
 
       {/* SLIDE 6 — CERTIFICATE */}
       {hasCert && (

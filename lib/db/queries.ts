@@ -44,6 +44,8 @@ export type StudentShape = {
   convocation_photo: string
   flea_market_photo: string
   demo_day_photo: string
+  personal_growth: string
+  award_photo: string
 }
 
 // ─── Admin read shapes ─────────────────────────────────────────────────────
@@ -117,6 +119,8 @@ function serializeStudent(s: any): StudentShape {
     convocation_photo: s.convocation_photo ?? '',
     flea_market_photo: s.flea_market_photo ?? '',
     demo_day_photo: s.demo_day_photo ?? '',
+    personal_growth: s.personal_growth ?? '',
+    award_photo: s.award_photo ?? '',
   }
 }
 
