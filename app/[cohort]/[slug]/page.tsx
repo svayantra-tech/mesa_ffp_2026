@@ -171,13 +171,12 @@ export default async function PortfolioPage({ params }: { params: Promise<Params
       {/* SLIDE 4.5 — PERSONAL GROWTH (hidden when empty) */}
       <PersonalGrowth text={student.personal_growth} studentName={student.name} />
 
-      {/* SLIDE 5 — AWARDS */}
+      {/* SLIDE 5 — AWARDS (award photo is the brand's team photo) */}
       {awards.length > 0 && (
         <Awards
           awards={awards}
           award_descriptions={awardDescriptions}
-          studentName={student.name}
-          awardPhoto={student.award_photo}
+          awardPhoto={brand?.award_photo}
         />
       )}
 

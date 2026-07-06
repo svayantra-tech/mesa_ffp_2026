@@ -18,6 +18,7 @@ const BrandSchema = new Schema(
     instagram: { type: String, default: '' },
     product_photo: { type: String, default: '' },
     feature_photo: { type: String, default: '' },
+    award_photo: { type: String, default: '' },
   },
   { collection: 'brands', timestamps: true }
 )

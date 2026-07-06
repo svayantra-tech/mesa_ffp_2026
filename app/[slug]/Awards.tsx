@@ -28,11 +28,10 @@ function generateAwardDesc(title: string): string {
 type Props = {
   awards: string[]
   award_descriptions: string[]
-  studentName: string
   awardPhoto?: string
 }
 
-export default function Awards({ awards, award_descriptions, studentName, awardPhoto }: Props) {
+export default function Awards({ awards, award_descriptions, awardPhoto }: Props) {
   const [expanded, setExpanded] = useState(false)
 
   if (awards.length === 0) return null
@@ -72,7 +71,7 @@ export default function Awards({ awards, award_descriptions, studentName, awardP
         {hasPhoto && (
           <figure className="award-photo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={awardPhoto} alt={`${studentName} receiving their FFP 2026 award`} loading="lazy" />
+            <img src={awardPhoto} alt="The team receiving their FFP 2026 award" loading="lazy" />
             <figcaption>Award ceremony &middot; FFP 2026</figcaption>
           </figure>
         )}

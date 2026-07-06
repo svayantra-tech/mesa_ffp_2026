@@ -30,6 +30,7 @@ export type BrandShape = {
   instagram: string
   product_photo: string
   feature_photo: string
+  award_photo: string
 }
 
 export type StudentShape = {
@@ -45,7 +46,6 @@ export type StudentShape = {
   flea_market_photo: string
   demo_day_photo: string
   personal_growth: string
-  award_photo: string
 }
 
 // ─── Admin read shapes ─────────────────────────────────────────────────────
@@ -102,6 +102,7 @@ function serializeBrand(b: any): BrandShape {
     instagram: b.instagram ?? '',
     product_photo: b.product_photo ?? '',
     feature_photo: b.feature_photo ?? '',
+    award_photo: b.award_photo ?? '',
   }
 }
 
@@ -120,7 +121,6 @@ function serializeStudent(s: any): StudentShape {
     flea_market_photo: s.flea_market_photo ?? '',
     demo_day_photo: s.demo_day_photo ?? '',
     personal_growth: s.personal_growth ?? '',
-    award_photo: s.award_photo ?? '',
   }
 }
 
