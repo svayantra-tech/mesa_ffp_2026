@@ -2,14 +2,11 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { ADMIN_COOKIE, verifySession } from '@/lib/admin-auth'
 import { isValidCohort } from '@/lib/cohorts'
+import { previewCookieName } from '@/lib/preview-cookie'
 
 const ADMIN_SUFFIX = '/admin-mesa-portfolio-6300'
 const LOGIN_API = '/api/admin/login'
 const PREVIEW_COOKIE_MAX_AGE = 6 * 60 * 60 // 6 hours
-
-function previewCookieName(cohort: string) {
-  return `ffp_preview_${cohort}`
-}
 
 /**
  * Forward the request to the app with a pinned x-pathname (so the layout can

@@ -15,8 +15,25 @@ import {
   getAwardBrands,
   getAllStudentsBasic,
   getProgramMedia,
+  getCohortStats,
   type BrandShape,
 } from '@/lib/db/queries'
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
+  const { cohort } = await params
+  if (!isValidCohort(cohort)) return {}
+  const c = getCohort(cohort)
+  const stats = await getCohortStats(cohort)
+  const description = `${stats.students} students. ${stats.ventures} ventures. ${(c?.durationLabel ?? '').toLowerCase()}. Real revenue.`
+  const title = `Future Founder Program · ${c?.name ?? cohort} · ${c?.year ?? ''} · Mesa`
+  return {
+    title,
+    description,
+    openGraph: { title, description },
+    twitter: { description },
+  }
+}
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -43,15 +60,21 @@ function formatRevenue(amount: number) {
 export default async function HomePage({ params }: { params: Promise<Params> }) {
   const { cohort } = await params
   if (!isValidCohort(cohort)) notFound()
-  const cohortName = getCohort(cohort)?.name ?? cohort
+  const cohortMeta = getCohort(cohort)
+  const cohortName = cohortMeta?.name ?? cohort
+  const durationLabel = cohortMeta?.durationLabel ?? ''
 
-  const [topVentures, awardBrands, allStudents, programMedia, enabledCohorts] = await Promise.all([
+  const [topVentures, awardBrands, allStudents, programMedia, enabledCohorts, stats] = await Promise.all([
     getBrandsBySlugs(cohort, ['azuri', 'kintoken', 'tact', 'lysso']),
     getAwardBrands(cohort),
     getAllStudentsBasic(cohort),
     getProgramMedia(cohort),
     getEnabledCohorts(),
+    getCohortStats(cohort),
   ])
+  // "₹16L+" style — lakhs rounded to nearest, with a "+", off the real revenue sum
+  // (matches the current prod display: cohort-1's ₹15.9L renders as ₹16L+).
+  const revenueLabel = `₹${Math.round(stats.totalRevenue / 100000)}L+`
 
   const media: Record<string, string> = Object.fromEntries(
     programMedia.map(({ key, value }) => [key, value])
@@ -93,10 +116,10 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
           </Link>
         </div>
         <div className="nav-center">
-          <a href="#what-they-built">The Program</a>
-          <a href="#demo-day">Demo Day</a>
+          {fleaPhotos.length > 0 && <a href="#what-they-built">The Program</a>}
+          {demoDayImages.length > 0 && <a href="#demo-day">Demo Day</a>}
           <a href="#enquire">FFP 2027</a>
-          <a href="#ventures">Ventures</a>
+          {sortedVentures.length > 0 && <a href="#ventures">Ventures</a>}
         </div>
         <CohortSwitcher cohorts={enabledCohorts} currentCohort={cohort} pageType="landing" />
         <Link href={`/${cohort}/directory`} className="nav-cta">
@@ -118,15 +141,15 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
             EARNED <span className="light">Real Revenue.</span>
           </h1>
           <p className="hero-sub fade-up d2">
-            113 students. 29 ventures. 2 weeks. Every product designed, built, and
+            {stats.students} students. {stats.ventures} ventures. {durationLabel.toLowerCase()}. Every product designed, built, and
             sold to real customers — from perfumes to protein bars to bamboo socks.
             This is what entrepreneurship looks like at 15.
           </p>
           <div className="stats-strip fade-up d3">
-            <div className="stat"><div className="stat-val red">113</div><div className="stat-lbl">Students</div></div>
-            <div className="stat"><div className="stat-val">29</div><div className="stat-lbl">Ventures</div></div>
-            <div className="stat"><div className="stat-val red">₹16L+</div><div className="stat-lbl">Total Revenue</div></div>
-            <div className="stat"><div className="stat-val">2 Weeks</div><div className="stat-lbl">Program Duration</div></div>
+            <div className="stat"><div className="stat-val red">{stats.students}</div><div className="stat-lbl">Students</div></div>
+            <div className="stat"><div className="stat-val">{stats.ventures}</div><div className="stat-lbl">Ventures</div></div>
+            <div className="stat"><div className="stat-val red">{revenueLabel}</div><div className="stat-lbl">Total Revenue</div></div>
+            <div className="stat"><div className="stat-val">{durationLabel}</div><div className="stat-lbl">Program Duration</div></div>
           </div>
         </div>
       </section>
@@ -213,6 +236,10 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
         </section>
       )}
 
+      {/* Featured "Top Performers" are a curated per-cohort slug list; hide the
+          whole section (and its divider) when none resolve for this cohort. */}
+      {sortedVentures.length > 0 && (
+      <>
       <hr className="section-divider" />
 
       {/* VENTURES */}
@@ -223,7 +250,7 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
             <h2 className="section-title">TOP <span className="light">Performers</span></h2>
           </div>
           <Link href={`/${cohort}/directory`} style={{ fontSize: '12px', fontWeight: 700, color: '#BA3B41', textDecoration: 'none', letterSpacing: '.03em', display: 'flex', alignItems: 'center', gap: '4px', fontFamily: "var(--font-manrope),sans-serif" }}>
-            View all 29 ventures
+            View all {stats.ventures} ventures
             <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="#BA3B41" strokeWidth="2"><path d="M4 2l4 4-4 4" /></svg>
           </Link>
         </div>
@@ -260,6 +287,8 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
           })}
         </div>
       </section>
+      </>
+      )}
 
       {/* AWARDS CAROUSEL */}
       <section className="awards-landing">
@@ -267,7 +296,7 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
         <Image src="/assets/brand-element-concentric.png" alt="" width={340} height={443} quality={100} className="section-brand-el" style={{ right: '-140px', top: '-80px', opacity: 0.04 }} />
         <div className="awards-landing-tag reveal">Recognition &middot; Earned During FFP</div>
         <h2 className="awards-landing-title reveal d1">RECOGNITION <span className="light">&amp; Awards</span></h2>
-        <p className="awards-landing-sub reveal d2">17 ventures earned awards across Demo Day, Flea Market performance, and special categories.</p>
+        <p className="awards-landing-sub reveal d2">{stats.awardedVentures} ventures earned awards across Demo Day, Flea Market performance, and special categories.</p>
 
         <AwardsCarousel awardBrands={awardBrands} allStudents={allStudents} />
       </section>

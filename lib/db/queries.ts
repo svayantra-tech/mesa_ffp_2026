@@ -227,6 +227,25 @@ export async function getProgramMedia(
   return rows.map((r) => ({ key: (r.key as string) ?? '', value: (r.value as string) ?? '' }))
 }
 
+export type CohortStats = {
+  students: number
+  ventures: number
+  totalRevenue: number
+  awardedVentures: number
+}
+
+/** Live, cohort-scoped counts for the landing page + metadata (no hardcoded numbers). */
+export async function getCohortStats(cohort: string): Promise<CohortStats> {
+  await connectDB()
+  const [students, ventures, awardedVentures, revenueAgg] = await Promise.all([
+    Student.countDocuments({ cohort }),
+    Brand.countDocuments({ cohort }),
+    Brand.countDocuments({ cohort, awards: { $exists: true, $ne: [] } }),
+    Brand.aggregate([{ $match: { cohort } }, { $group: { _id: null, total: { $sum: '$revenue' } } }]),
+  ])
+  return { students, ventures, awardedVentures, totalRevenue: revenueAgg[0]?.total ?? 0 }
+}
+
 // ─── Admin reads ───────────────────────────────────────────────────────────
 
 export async function listBrands(cohort: string): Promise<AdminBrand[]> {
