@@ -8,7 +8,7 @@ import HeroImage from '@/app/components/HeroImage'
 import FeatCardImage from '@/app/components/FeatCardImage'
 import YoutubeEmbed from '@/app/components/YoutubeEmbed'
 import CohortSwitcher from '@/app/components/CohortSwitcher'
-import { isValidCohort } from '@/lib/cohorts'
+import { isValidCohort, getCohort } from '@/lib/cohorts'
 import { getEnabledCohorts } from '@/lib/cohort-visibility'
 import {
   getBrandsBySlugs,
@@ -43,6 +43,7 @@ function formatRevenue(amount: number) {
 export default async function HomePage({ params }: { params: Promise<Params> }) {
   const { cohort } = await params
   if (!isValidCohort(cohort)) notFound()
+  const cohortName = getCohort(cohort)?.name ?? cohort
 
   const [topVentures, awardBrands, allStudents, programMedia, enabledCohorts] = await Promise.all([
     getBrandsBySlugs(cohort, ['azuri', 'kintoken', 'tact', 'lysso']),
@@ -110,7 +111,7 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
         <div className="hero-text">
           <div className="hero-tag fade-up">
             <span className="hero-tag-line"></span>
-            Future Founder&apos;s Summer School &middot; Cohort 1
+            Future Founder&apos;s Summer School &middot; {cohortName}
           </div>
           <h1 className="hero-headline fade-up d1">
             BUILT <span className="light">Real Ventures.</span><br />

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Script from 'next/script'
 import { isValidCohort, getCohort } from '@/lib/cohorts'
+import { instagramUrl, sanitizeInstagramHandle, truncateInstagramLabel } from '@/lib/instagram'
 import { getEnabledCohorts } from '@/lib/cohort-visibility'
 import { getStudentBySlug, getStudentMeta, type StudentShape, type BrandShape } from '@/lib/db/queries'
 import MarketingAssets from '@/app/[slug]/MarketingAssets'
@@ -66,6 +67,8 @@ export default async function PortfolioPage({ params }: { params: Promise<Params
   if (!student) notFound()
 
   const brand = student.brand
+  const cohortMeta = getCohort(cohort)
+  const cohortLabel = cohortMeta ? `${cohortMeta.name} · ${cohortMeta.year}` : cohort
   const hasCert = !!student.certificate_url?.match(/\/file\/d\/[a-zA-Z0-9_-]+/)
   const awards: string[] = Array.isArray(brand?.awards) ? brand.awards : []
   const awardDescriptions: string[] = Array.isArray(brand?.award_descriptions) ? brand.award_descriptions : []
@@ -169,7 +172,7 @@ export default async function PortfolioPage({ params }: { params: Promise<Params
       <AITools />
 
       {/* SLIDE 4.5 — PERSONAL GROWTH (hidden when empty) */}
-      <PersonalGrowth text={student.personal_growth} studentName={student.name} />
+      <PersonalGrowth text={student.personal_growth} />
 
       {/* SLIDE 5 — AWARDS (award photo is the brand's team photo) */}
       {awards.length > 0 && (
@@ -186,7 +189,7 @@ export default async function PortfolioPage({ params }: { params: Promise<Params
           <div className="cert-slide-inner">
             <h2 className="sec-heading" style={{ marginBottom: 6 }}>Programme Certification</h2>
             <p className="sec-intro" style={{ marginBottom: 32 }}>
-              Issued by Mesa School of Business · FFP Cohort 1 · 2026
+              Issued by Mesa School of Business · FFP {cohortLabel}
             </p>
             <div className="cert-center">
               <div className="cert-frame">
@@ -275,16 +278,11 @@ function HeroContent({
   const firstName = nameParts[0]
   const lastName = nameParts.slice(1).join(' ')
 
-  function getInstagramUrl(instagram: string): string {
-    if (instagram.startsWith('http')) return instagram
-    return `https://instagram.com/${instagram.replace('@', '')}`
-  }
+  const cohortMeta = getCohort(cohort)
+  const cohortLabel = cohortMeta ? `${cohortMeta.name} · ${cohortMeta.year}` : cohort
 
-  function getInstagramHandle(instagram: string): string {
-    const match = instagram.match(/instagram\.com\/([^/]+)/)
-    if (match) return `@${match[1]}`
-    return instagram.startsWith('@') ? instagram : `@${instagram}`
-  }
+  const igHandle = brand ? sanitizeInstagramHandle(brand.instagram) : ''
+  const igHref = brand ? instagramUrl(brand.instagram) : ''
 
   return (
     <>
@@ -294,7 +292,7 @@ function HeroContent({
             <path d="M2 5l2.5 2.5 3.5-4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-        <span className="cohort-text">Future Founder Program &middot; Cohort 1 &middot; 2026</span>
+        <span className="cohort-text">Future Founder Program &middot; {cohortLabel}</span>
       </div>
 
       <h1 className="hero-name">
@@ -343,14 +341,14 @@ function HeroContent({
             {brand.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
           </a>
         )}
-        {brand?.instagram && (
-          <a href={getInstagramUrl(brand.instagram)} target="_blank" rel="noopener noreferrer" className="btn-o">
+        {brand?.instagram && igHandle && (
+          <a href={igHref} target="_blank" rel="noopener noreferrer" className="btn-o" title={igHandle}>
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="2" y="2" width="9" height="9" rx="2.5" />
               <circle cx="6.5" cy="6.5" r="2" />
               <circle cx="9.5" cy="3.5" r="0.6" fill="currentColor" />
             </svg>
-            {getInstagramHandle(brand.instagram)}
+            {truncateInstagramLabel(igHandle)}
           </a>
         )}
         {student.email && (

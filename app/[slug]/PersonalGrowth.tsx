@@ -7,14 +7,11 @@
 
 type Props = {
   text: string
-  studentName: string
 }
 
-export default function PersonalGrowth({ text, studentName }: Props) {
+export default function PersonalGrowth({ text }: Props) {
   const clean = (text ?? '').trim()
   if (!clean) return null
-
-  const firstName = studentName.split(' ')[0]
 
   return (
     <section className="slide growth-section" id="growth">
@@ -22,7 +19,6 @@ export default function PersonalGrowth({ text, studentName }: Props) {
         <div className="growth-eyebrow">Personal Growth &middot; In their words</div>
         <span className="growth-mark" aria-hidden="true">&ldquo;</span>
         <blockquote className="growth-quote">{clean}</blockquote>
-        <div className="growth-attr">— {firstName}, FFP Graduate</div>
       </div>
     </section>
   )
