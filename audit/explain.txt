@@ -1,0 +1,11 @@
+explain('executionStats') — live, cohort-2 sample values. All IXSCAN, no COLLSCAN.
+query                                         stage   nReturned  docsExamined  keysExamined
+Student {cohort,slug}  (getStudentBySlug)     IXSCAN  1          1             1
+Student {cohort}       (directory/stats)      IXSCAN  112        112           112
+Student {cohort,brand_id}                      IXSCAN  0          0             0
+Brand   {cohort}       (listBrands/stats)     IXSCAN  30         30            30
+Brand   {cohort,slug}                          IXSCAN  1          1             1
+Brand   {cohort,awards!=[]} (getAwardBrands)   IXSCAN  30         30            30
+ProgramMedia {cohort}  (getProgramMedia)       IXSCAN  2          2             2
+→ Every live-route query is index-backed; totalDocsExamined == nReturned everywhere.
+  No missing-index COLLSCAN found. (B2 hypothesis of COLLSCAN: NOT confirmed.)

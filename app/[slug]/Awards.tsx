@@ -2,6 +2,13 @@
 
 import { useState } from 'react'
 
+// Generic catch-all description. Kept as a named const so the component can detect
+// when a title fell through to the fallback (and suppress it for multi-award brands).
+const GENERIC_AWARD_DESC =
+  'Recognized for outstanding performance and contribution during the Future Founder Program 2026.'
+
+// cohort-1 stores no award_descriptions, so this generates them per title. Do NOT
+// remove — 17 published cohort-1 ventures depend on it.
 function generateAwardDesc(title: string): string {
   const t = title.toLowerCase()
   if (t.includes('bonding') || t.includes('team spirit') || t.includes('teamwork'))
@@ -22,7 +29,7 @@ function generateAwardDesc(title: string): string {
     return 'Recognized as a natural leader and anchor for the team throughout the Future Founder Program.'
   if (t.includes('persever') || t.includes('resilient') || t.includes('grit'))
     return 'Awarded for exceptional resilience and grit through every challenge in FFP 2026.'
-  return 'Recognized for outstanding performance and contribution during the Future Founder Program 2026.'
+  return GENERIC_AWARD_DESC
 }
 
 type Props = {
@@ -37,21 +44,33 @@ export default function Awards({ awards, award_descriptions, awardPhoto }: Props
   if (awards.length === 0) return null
 
   const hasPhoto = !!awardPhoto && awardPhoto.startsWith('http')
+  const multi = awards.length > 1
 
-  const cards = awards.map((title, i) => ({
-    title,
-    description: award_descriptions[i]?.trim() || generateAwardDesc(title),
-  }))
+  const cards = awards.map((title, i) => {
+    const explicit = award_descriptions[i]?.trim()
+    const generated = generateAwardDesc(title)
+    // When the generic fallback fires AND the brand has multiple awards, drop the
+    // description — a bare title beats the identical sentence repeated per card.
+    // A single-award brand keeps the fallback (no repetition to worry about).
+    const isGeneric = !explicit && generated === GENERIC_AWARD_DESC
+    const description = explicit || (isGeneric && multi ? '' : generated)
+    return { title, description }
+  })
 
   const visibleCards = expanded ? cards : cards.slice(0, 3)
   const hasMore = cards.length > 3
 
-  const stackClass =
-    cards.length === 1
-      ? 'awards-stack count-1'
-      : cards.length === 2
-      ? 'awards-stack count-2'
-      : 'awards-stack count-3plus'
+  // Layout mode: two-column spread (photo + 2+ awards), stacked (photo + 1 award),
+  // or cards-only (no photo). Falls back gracefully so no column is ever empty.
+  const mode = !hasPhoto ? 'm-cards' : multi ? 'm-spread' : 'm-stacked'
+
+  const photo = hasPhoto ? (
+    <figure className="award-photo">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={awardPhoto} alt="The team receiving their FFP 2026 award" loading="lazy" />
+      <figcaption>Award ceremony &middot; FFP 2026</figcaption>
+    </figure>
+  ) : null
 
   return (
     <section
@@ -68,47 +87,42 @@ export default function Awards({ awards, award_descriptions, awardPhoto }: Props
           Earned during FFP 2026.
         </p>
 
-        {hasPhoto && (
-          <figure className="award-photo">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={awardPhoto} alt="The team receiving their FFP 2026 award" loading="lazy" />
-            <figcaption>Award ceremony &middot; FFP 2026</figcaption>
-          </figure>
-        )}
+        <div className={`awards-spread ${mode}`}>
+          {photo}
+          <div className="awards-col">
+            {visibleCards.map((card, i) => (
+              <div key={i} className={`award-card-v2 reveal d${Math.min(i + 1, 4)}`}>
+                <div className="award-lemon-stripe" />
+                <div className="award-icon">
+                  <svg viewBox="0 0 20 20">
+                    <path d="M10 2l2.2 4.5 5 .7-3.6 3.5.85 4.95L10 13.4l-4.45 2.25.85-4.95L2.8 7.2l5-.7z" />
+                  </svg>
+                </div>
+                <div className="award-v2-left">
+                  <div className="award-title">{card.title}</div>
+                  {card.description && <p className="award-desc">{card.description}</p>}
+                </div>
+              </div>
+            ))}
 
-        <div className={stackClass}>
-          {visibleCards.map((card, i) => (
-            <div key={i} className={`award-card-v2 reveal d${Math.min(i + 1, 4)}`}>
-              <div className="award-lemon-stripe" />
-              <div className="award-icon">
-                <svg viewBox="0 0 20 20">
-                  <path d="M10 2l2.2 4.5 5 .7-3.6 3.5.85 4.95L10 13.4l-4.45 2.25.85-4.95L2.8 7.2l5-.7z" />
+            {hasMore && (
+              <button className="awards-expand-btn" onClick={() => setExpanded(!expanded)}>
+                {expanded ? 'Show less' : `View all ${cards.length} awards`}
+                <svg
+                  viewBox="0 0 16 16"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
+                >
+                  <path d="M4 6l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-              </div>
-              <div className="award-v2-left">
-                <div className="award-title">{card.title}</div>
-                <p className="award-desc">{card.description}</p>
-              </div>
-            </div>
-          ))}
+              </button>
+            )}
+          </div>
         </div>
-
-        {hasMore && (
-          <button className="awards-expand-btn" onClick={() => setExpanded(!expanded)}>
-            {expanded ? 'Show less' : `View all ${cards.length} awards`}
-            <svg
-              viewBox="0 0 16 16"
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
-            >
-              <path d="M4 6l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        )}
       </div>
     </section>
   )

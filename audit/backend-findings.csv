@@ -1,0 +1,22 @@
+id,stage,severity,type,exploitable_today,component,expected,actual,evidence
+F01,B,P1,BUG,yes,program_media indexes,per-cohort keys via compound {cohort key} only,stale global-unique key_1 index also present so cohort-2 cannot store landing_hero_image etc that cohort-1 has,audit/indexes.txt program_media key_1 unique=TRUE
+F02,A,P1,RISK,yes,app/api/admin/login/route.ts,rate limit or lockout on login,none — brute-forceable at Vercel request rate,login route has no throttle; proxy.ts lets LOGIN_API through
+F03,C,P1,RISK,yes-under-load,all cohort routes,some caching on read-heavy public pages,force-dynamic + revalidate=0 + no unstable_cache so every view hits Atlas,queries.ts every fn connectDB; routes dynamic=force-dynamic
+F04,E,P1,GAP,partial,observability,error reporting for prod 500s,no Sentry or structured logging,grep sentry => none
+F05,B,P1,BUG,no-latent,Student.ts:7 Brand.ts:6,per-cohort unique slug,GLOBAL unique slug blocks same-name across cohorts and forces -2/-3 suffixes,audit/indexes.txt slug_1 unique=TRUE; 0 cross-cohort collisions today
+F06,B,P2,RISK,no,lib/cohort-visibility.ts:12,new cohort hidden until enabled,absent cohort_enabled_{slug} defaults TRUE so a seeded cohort is instantly live,getCohortEnabled if(!doc) return true
+F07,A,P2,GAP,no,app/api/admin/*,route-level auth as defense in depth,auth enforced only in proxy.ts middleware; handlers do not re-verify,proxy.ts:30-35 gates /api/admin
+F08,B,P2,GAP,no,Brand.ts:15-19,no dead fields,flea_photos demo_photos product_photo serialized but never written or rendered,queries.ts:99-103 serialize; no write path; no component reads
+F09,B,P2,RISK,no,Brand awards arrays,awards and award_descriptions stay aligned,parallel String[] can desync; updateBrand sets each independently,queries.ts:431-437
+F10,B,P2,RISK,no,MarketingAssets.tsx:33-38,explicit video provider discriminator,provider inferred from string length (11=YouTube else >15=Drive),classifyVideo length heuristic
+F11,D,P2,RISK,no,scripts/*,DRY_RUN=true default on every migration,most write-scripts have no DRY_RUN; npx tsx writes to prod; audit.ts mutates,audit/scripts-inventory.md
+F12,D,P2,GAP,no,prior prod migrations,rollback JSON per migration,no rollback file written for photo import awards-split cohort-stats,audit/scripts-inventory.md D3
+F13,E,P2,GAP,no,API bodies,runtime validation (zod),none; relies on Mongoose casting + ad-hoc if checks,grep zod => none
+F14,E,P2,GAP,no,lib/supabase/*,no dead client with public keys,Supabase anon client wired but unused in app/,grep supabase in app => none
+F15,E,P2,BUG,yes,app/layout.tsx metadataBase,NEXT_PUBLIC_SITE_URL set,env var read but unset in Vercel so og tags fall back,handoff + E6
+F16,A,P3,RISK,no,lib/cohort-visibility verifyPreviewToken,constant-time compare,uses === not timingSafeEqual (192-bit token so impractical),verifyPreviewToken stored===token
+F17,A,P3,RISK,yes,preview token in URL,token not in loggable surface,?preview=TOKEN captured in platform access logs browser history referrer,design of preview links
+F18,A,P3,BUG,no,lib/admin-auth.ts:83-87 checkCredentials,hashed or constant-time password,plaintext env password compared with ===,checkCredentials username===u && password===p
+F19,A,P3,GAP,no,admin API catch blocks,generic client errors,return err.message (Mongoose messages) to authed admin,api routes err.message
+F20,C,P3,RISK,no,queries.ts getStudentBySlug+getStudentMeta,fetch student once per slug render,generateMetadata and page each fetch the student (2x),queries.ts:154 + 160
+F21,C,C3,INFO,n/a,page.tsx:75-76 MarketingAssets:133/139,render all videos/statics,.slice(0,3) videos and .slice(0,2) statics truncate; DB has 4 and 3,this is frontend S1.1

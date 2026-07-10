@@ -1,0 +1,21 @@
+getIndexes() — captured live via mongoose connection.db.collection(c).indexes()
+
+[students]
+  _id_        key={_id:1}                 unique=false
+  slug_1      key={slug:1}                unique=TRUE   ← GLOBAL unique (not per-cohort) — B1
+  brand_id_1  key={brand_id:1}            unique=false
+  cohort_1    key={cohort:1}              unique=false
+  → NO compound {cohort,slug} index.
+
+[brands]
+  _id_        key={_id:1}                 unique=false
+  slug_1      key={slug:1}                unique=TRUE   ← GLOBAL unique (not per-cohort) — B1
+  cohort_1    key={cohort:1}              unique=false
+
+[program_media]
+  _id_            key={_id:1}             unique=false
+  cohort_1_key_1  key={cohort:1,key:1}    unique=TRUE   ← intended compound
+  key_1           key={key:1}             unique=TRUE   ← STALE old index, never dropped — B2/P1
+  cohort_1        key={cohort:1}          unique=false
+  → key_1 makes ProgramMedia keys GLOBALLY unique. cohort-2 cannot store
+    landing_hero_image while cohort-1 has one → blocks cohort-2 landing content.
