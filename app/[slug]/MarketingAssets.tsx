@@ -11,32 +11,9 @@
 //     becomes the in-view video, and a tap-to-play affordance stays available in
 //     case Drive silently ignores autoplay.
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { classifyVideo, type ClassifiedVideo } from '@/lib/video'
 
-function extractYouTubeId(url: string): string | null {
-  if (!url) return null
-  if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url
-  const patterns = [
-    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
-    /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
-    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
-  ]
-  for (const p of patterns) {
-    const m = url.match(p)
-    if (m) return m[1]
-  }
-  return null
-}
-
-type VideoItem = { id: string; kind: 'youtube' | 'drive' }
-
-function classifyVideo(entry: string): VideoItem | null {
-  const yt = extractYouTubeId(entry)
-  if (yt) return { id: yt, kind: 'youtube' }
-  // A bare long token is a Google Drive file id (Drive ids are >15 chars).
-  if (/^[a-zA-Z0-9_-]+$/.test(entry) && entry.length > 15) return { id: entry, kind: 'drive' }
-  return null
-}
+type VideoItem = ClassifiedVideo
 
 const PlayGlyph = () => (
   <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" /></svg>
