@@ -9,11 +9,15 @@ const manrope = Manrope({
   variable: '--font-manrope',
 })
 
-// Production host drives og:url / og:image. Set NEXT_PUBLIC_SITE_URL in Vercel;
-// fall back to the per-deploy VERCEL_URL for preview builds, then a sane default.
+// Production host drives og:url / og:image. Set NEXT_PUBLIC_SITE_URL in Vercel
+// (Production AND Preview). Fall back to the STABLE production domain, then a sane
+// default. Never VERCEL_URL — it is the ephemeral per-deploy host, so og:image would
+// point at a preview URL that dies, which is the bug this guards against.
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://ffp.mesaschool.me')
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : 'https://ffp.mesaschool.me')
 
 // Generic fallback copy (no cohort-specific numbers). Cohort landing pages override
 // title/description via their own generateMetadata() with live counts.
