@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Script from 'next/script'
 import { isValidCohort, getCohort } from '@/lib/cohorts'
-import { instagramUrl, sanitizeInstagramHandle, truncateInstagramLabel } from '@/lib/instagram'
+import { instagramUrl, sanitizeInstagramHandle, truncateInstagramLabel, sanitizeWebsiteForDisplay, websiteHref } from '@/lib/instagram'
 import { getEnabledCohorts } from '@/lib/cohort-visibility'
 import { getStudentBySlug, getStudentMeta, type StudentShape, type BrandShape } from '@/lib/db/queries'
 import MarketingAssets from '@/app/[slug]/MarketingAssets'
@@ -225,15 +225,15 @@ export default async function PortfolioPage({ params }: { params: Promise<Params
             )}
             {brand?.website && (
               <div>
-                <a href={brand.website} target="_blank" rel="noopener noreferrer">
-                  {brand.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                <a href={websiteHref(brand.website)} target="_blank" rel="noopener noreferrer">
+                  {sanitizeWebsiteForDisplay(brand.website)}
                 </a>
               </div>
             )}
           </div>
           <div className="contact-btns">
             {brand?.website && (
-              <a href={brand.website} target="_blank" rel="noopener noreferrer" className="cbtn-w">
+              <a href={websiteHref(brand.website)} target="_blank" rel="noopener noreferrer" className="cbtn-w">
                 Website &#8599;
               </a>
             )}
@@ -332,13 +332,13 @@ function HeroContent({
 
       <div className="hero-ctas">
         {brand?.website && (
-          <a href={brand.website} target="_blank" rel="noopener noreferrer" className="btn-r">
+          <a href={websiteHref(brand.website)} target="_blank" rel="noopener noreferrer" className="btn-r">
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="6.5" cy="6.5" r="5.5" />
               <line x1="1" y1="6.5" x2="12" y2="6.5" />
               <ellipse cx="6.5" cy="6.5" rx="2.2" ry="5.5" />
             </svg>
-            {brand.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+            {sanitizeWebsiteForDisplay(brand.website)}
           </a>
         )}
         {brand?.instagram && igHandle && (
