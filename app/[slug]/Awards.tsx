@@ -17,7 +17,6 @@ export default function Awards({ awards, award_descriptions, awardPhoto }: Props
 
   // Description shows ONLY real curated copy — never a fabricated line. Empty today
   // for both cohorts, so cards render title-only until real descriptions are added.
-  const multi = awards.length > 1
   const cards = awards.map((title, i) => ({
     title,
     description: award_descriptions[i]?.trim() || '',
@@ -26,9 +25,10 @@ export default function Awards({ awards, award_descriptions, awardPhoto }: Props
   const visibleCards = expanded ? cards : cards.slice(0, 3)
   const hasMore = cards.length > 3
 
-  // Layout: photo + 2+ awards → two-column spread; photo + 1 award → stacked (no card
-  // stranded beside dead space); no photo → full-width cards. Never an empty column.
-  const mode = !hasPhoto ? 'm-cards' : multi ? 'm-spread' : 'm-stacked'
+  // Layout: any photo → two-column spread (photo left, cards stacked right) — fills the
+  // row for 1, 2, or 3+ cards, so a single-award brand has no empty right column.
+  // No photo → full-width cards.
+  const mode = hasPhoto ? 'm-spread' : 'm-cards'
 
   const photo = hasPhoto ? (
     <figure className="award-photo">
