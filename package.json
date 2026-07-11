@@ -10,7 +10,6 @@
     "migrate": "node scripts/migrate-to-mongo.mjs"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.107.0",
     "mongodb": "^7.3.0",
     "mongoose": "^9.7.0",
