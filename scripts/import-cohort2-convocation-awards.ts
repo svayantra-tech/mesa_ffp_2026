@@ -107,7 +107,10 @@ async function rawFileHash(id: string): Promise<{ hash: string; size: number } |
 
 // ── main ────────────────────────────────────────────────────────────────────────
 
+import { hardenOrExit } from './_guard'
+
 async function main() {
+  hardenOrExit('import-cohort2-convocation-awards')
   const { connectDB } = await import('../lib/mongodb')
   const { Brand } = (await import('../lib/models/Brand')) as { Brand: typeof BrandModel }
   const { Student } = (await import('../lib/models/Student')) as { Student: typeof StudentModel }

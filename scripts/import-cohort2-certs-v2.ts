@@ -42,7 +42,10 @@ function extractDriveId(url: string): string | null {
   return m ? m[1] : null
 }
 
+import { hardenOrExit } from './_guard'
+
 async function main() {
+  hardenOrExit('import-cohort2-certs-v2')
   const abs = path.resolve(process.cwd(), CSV_PATH)
   if (!fs.existsSync(abs)) throw new Error(`CSV not found: ${abs}`)
   const parsed = Papa.parse<Record<string, string>>(fs.readFileSync(abs, 'utf8'), { header: true, skipEmptyLines: true })

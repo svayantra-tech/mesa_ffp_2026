@@ -16,7 +16,10 @@ import path from 'path'
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
 
+import { hardenOrExit } from './_guard'
+
 async function main() {
+  hardenOrExit('migrate-cohort2-awards-split')
   const { connectDB } = await import('../lib/mongodb')
   const { Brand } = await import('../lib/models/Brand')
   await connectDB()

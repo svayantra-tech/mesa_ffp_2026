@@ -143,7 +143,10 @@ async function rehostDriveImage(
 
 type StudentLite = { _id: string; name: string; slug: string; brandId: string; award_photo: string }
 
+import { hardenOrExit } from './_guard'
+
 async function main() {
+  hardenOrExit('import-cohort2-growth-awards')
   const { connectDB } = await import('../lib/mongodb')
   const { Brand } = (await import('../lib/models/Brand')) as { Brand: typeof BrandModel }
   const { Student } = (await import('../lib/models/Student')) as { Student: typeof StudentModel }

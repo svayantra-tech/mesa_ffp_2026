@@ -47,7 +47,10 @@ async function probeUrl(url: string): Promise<{ ok: boolean; contentType: string
 
 // ── main ─────────────────────────────────────────────────────────────────────
 
+import { hardenOrExit } from './_guard'
+
 async function main() {
+  hardenOrExit('import-student-photos')
   // 1. Fetch CSV
   console.log('Fetching sheet CSV…')
   const csvText = await fetch(SHEET_CSV_URL).then((r) => {

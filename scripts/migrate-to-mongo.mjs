@@ -18,6 +18,7 @@ import { dirname, join } from 'node:path'
 import dns from 'node:dns'
 import { createClient } from '@supabase/supabase-js'
 import { MongoClient, ObjectId } from 'mongodb'
+import { hardenOrExit } from './_guard.mjs'
 import sharp from 'sharp'
 
 // Optional DNS override (e.g. MIGRATE_DNS=8.8.8.8,1.1.1.1) for environments
@@ -46,6 +47,9 @@ loadEnv('.env.local')
 
 const REHOST = !process.argv.includes('--no-rehost')
 const DRY_RUN = process.argv.includes('--dry-run')
+
+// ── Safety rail: a bare run (env DRY_RUN default TRUE) never writes ──
+hardenOrExit('migrate-to-mongo')
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
 const SUPABASE_KEY =
