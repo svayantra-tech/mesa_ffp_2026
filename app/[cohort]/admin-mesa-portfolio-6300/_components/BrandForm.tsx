@@ -123,10 +123,9 @@ export default function BrandForm({ cohort, brand }: { cohort: string; brand?: A
         <h2 className="admin-card-title">Media</h2>
         <VideoListField label="YouTube videos" values={form.videos} onChange={(v) => set('videos', v)} />
         <AssetListField
-          label="Ad statics (max 2 shown)"
+          label="Ad statics"
           values={form.ad_statics}
           onChange={(v) => set('ad_statics', v)}
-          max={2}
           allowPasteUrl
         />
         <AssetListField
