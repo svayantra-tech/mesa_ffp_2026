@@ -200,6 +200,17 @@ export async function getBrandsBySlugs(cohort: string, slugs: string[]): Promise
   return rows.map(serializeBrand)
 }
 
+// Fallback Top Performers for a cohort with no curated list: brands that have a
+// feature_photo, highest revenue first. Cohort-scoped, so it never leaks.
+export async function getFeaturedBrands(cohort: string, limit = 4): Promise<BrandShape[]> {
+  await connectDB()
+  const rows = await Brand.find({ cohort, feature_photo: { $nin: [null, ''] } })
+    .sort({ revenue: -1 })
+    .limit(limit)
+    .lean()
+  return rows.map(serializeBrand)
+}
+
 export async function getAwardBrands(cohort: string): Promise<BrandShape[]> {
   await connectDB()
   const rows = await Brand.find({ cohort, awards: { $exists: true, $ne: [] } })

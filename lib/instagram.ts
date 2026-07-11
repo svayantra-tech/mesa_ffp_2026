@@ -40,3 +40,33 @@ export function truncateInstagramLabel(handle: string, max = 24): string {
   if (handle.length <= max) return handle
   return `${handle.slice(0, max - 1)}…`
 }
+
+/**
+ * Website display label — DISPLAY only, never mutates the DB. Raw values can be
+ * full tracking URLs, e.g.
+ *   "https://pinkpanktimesa.com/?utm_campaign=1st+Visit…" → "pinkpanktimesa.com"
+ * Strips protocol + www., everything from the first "?"/"#", and a trailing "/".
+ * A real path is kept ("acme.com/about/" → "acme.com/about"). '' for empty input.
+ */
+export function sanitizeWebsiteForDisplay(raw: string | null | undefined): string {
+  if (!raw) return ''
+  let s = raw.trim()
+  if (!s) return ''
+  s = s.replace(/^https?:\/\//i, '')          // protocol
+  s = s.replace(/^www\./i, '')                 // www.
+  s = s.split(/[?#]/)[0]                        // query / fragment
+  s = s.replace(/\/+$/, '')                     // trailing slash(es)
+  return s
+}
+
+/**
+ * Website href — LINK target. Keeps the full URL (incl. query) so the link still
+ * works; only ensures a protocol so it isn't treated as a relative path.
+ * "acme.com/x" → "https://acme.com/x"; "http://acme.com" stays as-is. '' if empty.
+ */
+export function websiteHref(raw: string | null | undefined): string {
+  if (!raw) return ''
+  const s = raw.trim()
+  if (!s) return ''
+  return /^https?:\/\//i.test(s) ? s : `https://${s}`
+}

@@ -10,8 +10,10 @@ import YoutubeEmbed from '@/app/components/YoutubeEmbed'
 import CohortSwitcher from '@/app/components/CohortSwitcher'
 import { isValidCohort, getCohort } from '@/lib/cohorts'
 import { getEnabledCohorts } from '@/lib/cohort-visibility'
+import { SITE_HOST } from '@/lib/site'
 import {
   getBrandsBySlugs,
+  getFeaturedBrands,
   getAwardBrands,
   getAllStudentsBasic,
   getProgramMedia,
@@ -64,8 +66,16 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
   const cohortName = cohortMeta?.name ?? cohort
   const durationLabel = cohortMeta?.durationLabel ?? ''
 
+  // Top Performers: use the cohort's curated list if it has one, else auto-derive
+  // from this cohort's brands that have a feature_photo (revenue desc). Cohort-scoped
+  // either way — no hardcoded cross-cohort slugs.
+  const curatedTop = cohortMeta?.topPerformers ?? []
+  const topVenturesFetch = curatedTop.length
+    ? getBrandsBySlugs(cohort, curatedTop.map((t) => t.slug))
+    : getFeaturedBrands(cohort, 4)
+
   const [topVentures, awardBrands, allStudents, programMedia, enabledCohorts, stats] = await Promise.all([
-    getBrandsBySlugs(cohort, ['azuri', 'kintoken', 'tact', 'lysso']),
+    topVenturesFetch,
     getAwardBrands(cohort),
     getAllStudentsBasic(cohort),
     getProgramMedia(cohort),
@@ -94,17 +104,28 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
   const highlightPhotos = parseJsonUrls(media.landing_highlights)
   const ffp2027VideoId = media.landing_ffp2027_video_id || null
 
-  const ventureOrder = ['azuri', 'kintoken', 'tact', 'lysso']
-  const sortedVentures = ventureOrder
-    .map(slug => topVentures?.find(v => v.slug === slug))
-    .filter(Boolean) as NonNullable<typeof topVentures>
+  // Curated cohorts keep their exact order + award labels; auto cohorts show the
+  // fetched featured brands (already revenue-sorted) as-is.
+  const sortedVentures = (curatedTop.length
+    ? curatedTop.map((t) => topVentures?.find((v) => v.slug === t.slug)).filter(Boolean)
+    : (topVentures ?? [])) as NonNullable<typeof topVentures>
 
-  const ventureAwardLabels: Record<string, string> = {
-    azuri: 'Highest Revenue',
-    kintoken: '2nd Highest Revenue',
-    tact: 'Best Pitch',
-    lysso: 'Spirit Award',
-  }
+  const ventureAwardLabels: Record<string, string> = Object.fromEntries(
+    curatedTop.map((t) => [t.slug, t.label])
+  )
+
+  // Year-derived labels (no hardcoded 2027/2026). The "next cohort" enquire link is
+  // this cohort's year + 1.
+  const cohortYear = cohortMeta?.year ?? 2026
+  const nextCohortLabel = `FFP ${cohortYear + 1}`
+
+  // Contiguous eyebrow numbers over the sections that actually render, so cohort-2
+  // (with flea/demo-day hidden) doesn't show an orphaned "03".
+  const pad = (n: number) => String(n).padStart(2, '0')
+  let secNum = 0
+  const fleaSecNum = fleaPhotos.length > 0 ? pad(++secNum) : ''
+  const demoSecNum = demoDayImages.length > 0 ? pad(++secNum) : ''
+  const knowMoreSecNum = pad(++secNum)
 
   return (
     <>
@@ -118,7 +139,7 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
         <div className="nav-center">
           {fleaPhotos.length > 0 && <a href="#what-they-built">The Program</a>}
           {demoDayImages.length > 0 && <a href="#demo-day">Demo Day</a>}
-          <a href="#enquire">FFP 2027</a>
+          <a href="#enquire">{nextCohortLabel}</a>
           {sortedVentures.length > 0 && <a href="#ventures">Ventures</a>}
         </div>
         <CohortSwitcher cohorts={enabledCohorts} currentCohort={cohort} pageType="landing" />
@@ -160,7 +181,7 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
       {fleaPhotos.length > 0 && (
         <section id="what-they-built" className="numbered-section on-cream">
           <Image src="/assets/brand-element-solid.png" alt="" width={280} height={361} quality={100} className="section-brand-el" style={{ right: '-120px', bottom: '-100px', opacity: 0.05 }} />
-          <div className="section-num reveal">01</div>
+          <div className="section-num reveal">{fleaSecNum}</div>
           <div className="section-num-small reveal">What they built</div>
           <h2 className="section-title reveal">FLEA MARKET <span className="light">at Vega City Mall</span></h2>
           <p className="section-sub reveal">
@@ -209,9 +230,10 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
 
       <hr className="section-divider" />
 
-      {/* 02 — DEMO DAY */}
+      {/* DEMO DAY (eyebrow number derived from rendered sections) */}
       <DemoDay
         demoDayImages={demoDayImages}
+        sectionNum={demoSecNum}
         demoPhotos={[
           media.demo_photo_1,
           media.demo_photo_2,
@@ -304,7 +326,7 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
       {/* 03 — ENQUIRE */}
       <section id="enquire" className="numbered-section on-butter">
         <Image src="/assets/brand-element-concentric.png" alt="" width={280} height={365} quality={100} className="section-brand-el" style={{ right: '-140px', top: '50%', transform: 'translateY(-50%)', opacity: 0.06 }} />
-        <div className="section-num reveal">03</div>
+        <div className="section-num reveal">{knowMoreSecNum}</div>
         <div className="section-num-small reveal">Know more</div>
         <h2 className="section-title reveal">INTERESTED <span className="light">in Mesa Future Founders?</span></h2>
         <p className="section-sub reveal">
@@ -354,9 +376,9 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
       <footer>
         <div className="footer-l">
           <Image src="/mesa-logos/mesa-logomark.png" alt="Mesa" width={22} height={22} quality={100} unoptimized style={{ borderRadius: 5, display: 'block', flexShrink: 0 }} />
-          Built by <a href="https://mesaschool.co">Mesa School of Business</a> &nbsp;&middot;&nbsp; Future Founder&apos;s Summer School 2026
+          Built by <a href="https://mesaschool.co">Mesa School of Business</a> &nbsp;&middot;&nbsp; Future Founder&apos;s Summer School {cohortYear}
         </div>
-        <div className="footer-r">ffp.mesaschool.co</div>
+        <div className="footer-r">{SITE_HOST}</div>
       </footer>
 
       <LandingScripts />
