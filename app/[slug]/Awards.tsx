@@ -17,6 +17,7 @@ export default function Awards({ awards, award_descriptions, awardPhoto }: Props
 
   // Description shows ONLY real curated copy — never a fabricated line. Empty today
   // for both cohorts, so cards render title-only until real descriptions are added.
+  const multi = awards.length > 1
   const cards = awards.map((title, i) => ({
     title,
     description: award_descriptions[i]?.trim() || '',
@@ -25,12 +26,17 @@ export default function Awards({ awards, award_descriptions, awardPhoto }: Props
   const visibleCards = expanded ? cards : cards.slice(0, 3)
   const hasMore = cards.length > 3
 
-  const stackClass =
-    cards.length === 1
-      ? 'awards-stack count-1'
-      : cards.length === 2
-      ? 'awards-stack count-2'
-      : 'awards-stack count-3plus'
+  // Layout: photo + 2+ awards → two-column spread; photo + 1 award → stacked (no card
+  // stranded beside dead space); no photo → full-width cards. Never an empty column.
+  const mode = !hasPhoto ? 'm-cards' : multi ? 'm-spread' : 'm-stacked'
+
+  const photo = hasPhoto ? (
+    <figure className="award-photo">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={awardPhoto} alt="The team receiving their FFP 2026 award" loading="lazy" />
+      <figcaption>Award ceremony &middot; FFP 2026</figcaption>
+    </figure>
+  ) : null
 
   return (
     <section
@@ -47,47 +53,42 @@ export default function Awards({ awards, award_descriptions, awardPhoto }: Props
           Earned during FFP 2026.
         </p>
 
-        {hasPhoto && (
-          <figure className="award-photo">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={awardPhoto} alt="The team receiving their FFP 2026 award" loading="lazy" />
-            <figcaption>Award ceremony &middot; FFP 2026</figcaption>
-          </figure>
-        )}
+        <div className={`awards-spread ${mode}`}>
+          {photo}
+          <div className="awards-col">
+            {visibleCards.map((card, i) => (
+              <div key={i} className={`award-card-v2 reveal d${Math.min(i + 1, 4)}`}>
+                <div className="award-lemon-stripe" />
+                <div className="award-icon">
+                  <svg viewBox="0 0 20 20">
+                    <path d="M10 2l2.2 4.5 5 .7-3.6 3.5.85 4.95L10 13.4l-4.45 2.25.85-4.95L2.8 7.2l5-.7z" />
+                  </svg>
+                </div>
+                <div className="award-v2-left">
+                  <div className="award-title">{card.title}</div>
+                  {card.description && <p className="award-desc">{card.description}</p>}
+                </div>
+              </div>
+            ))}
 
-        <div className={stackClass}>
-          {visibleCards.map((card, i) => (
-            <div key={i} className={`award-card-v2 reveal d${Math.min(i + 1, 4)}`}>
-              <div className="award-lemon-stripe" />
-              <div className="award-icon">
-                <svg viewBox="0 0 20 20">
-                  <path d="M10 2l2.2 4.5 5 .7-3.6 3.5.85 4.95L10 13.4l-4.45 2.25.85-4.95L2.8 7.2l5-.7z" />
+            {hasMore && (
+              <button className="awards-expand-btn" onClick={() => setExpanded(!expanded)}>
+                {expanded ? 'Show less' : `View all ${cards.length} awards`}
+                <svg
+                  viewBox="0 0 16 16"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
+                >
+                  <path d="M4 6l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-              </div>
-              <div className="award-v2-left">
-                <div className="award-title">{card.title}</div>
-                {card.description && <p className="award-desc">{card.description}</p>}
-              </div>
-            </div>
-          ))}
+              </button>
+            )}
+          </div>
         </div>
-
-        {hasMore && (
-          <button className="awards-expand-btn" onClick={() => setExpanded(!expanded)}>
-            {expanded ? 'Show less' : `View all ${cards.length} awards`}
-            <svg
-              viewBox="0 0 16 16"
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
-            >
-              <path d="M4 6l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        )}
       </div>
     </section>
   )

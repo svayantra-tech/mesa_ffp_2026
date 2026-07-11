@@ -600,6 +600,20 @@ section.awards-section{background:#0F1919;border-top:0.5px solid rgba(255,255,25
 .award-photo{margin:0 0 32px;max-width:280px}
 .award-photo img{width:100%;height:auto;display:block;border-radius:14px;border:0.5px solid rgba(255,251,243,0.12);box-shadow:0 14px 34px rgba(0,0,0,0.4)}
 .award-photo figcaption{margin-top:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,251,243,0.4);font-family:var(--font-manrope),sans-serif}
+/* Recognition & Awards — two-column "spread" (photo left, cards stacked right). */
+.awards-spread{align-items:start}
+.awards-spread .award-photo{margin:0;max-width:none} /* photo fills its column, natural aspect (no crop) */
+.awards-col{display:flex;flex-direction:column;gap:14px;min-width:0}
+/* photo + 2+ awards → grid; minmax(0,…) so long titles don't blow out the column */
+.awards-spread.m-spread{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px}
+/* photo + 1 award → single column, constrained, no void beside the card */
+.awards-spread.m-stacked{display:flex;flex-direction:column;gap:20px;max-width:560px}
+/* no photo → cards full-width, no empty left column */
+.awards-spread.m-cards{display:block;max-width:820px}
+@media (max-width:900px){
+  /* collapse the spread to a single column: photo first, cards beneath */
+  .awards-spread.m-spread{display:flex;flex-direction:column;gap:22px}
+}
 
 /* ── PERSONAL GROWTH (pull-quote testimonial) ── */
 .growth-section{background:#FBF4D7;padding:96px 80px;display:flex;justify-content:center;align-items:center}
