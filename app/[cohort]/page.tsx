@@ -10,6 +10,7 @@ import YoutubeEmbed from '@/app/components/YoutubeEmbed'
 import CohortSwitcher from '@/app/components/CohortSwitcher'
 import { isValidCohort, getCohort } from '@/lib/cohorts'
 import { getEnabledCohorts } from '@/lib/cohort-visibility'
+import { SITE_HOST } from '@/lib/site'
 import {
   getBrandsBySlugs,
   getAwardBrands,
@@ -356,7 +357,7 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
           <Image src="/mesa-logos/mesa-logomark.png" alt="Mesa" width={22} height={22} quality={100} unoptimized style={{ borderRadius: 5, display: 'block', flexShrink: 0 }} />
           Built by <a href="https://mesaschool.co">Mesa School of Business</a> &nbsp;&middot;&nbsp; Future Founder&apos;s Summer School 2026
         </div>
-        <div className="footer-r">ffp.mesaschool.co</div>
+        <div className="footer-r">{SITE_HOST}</div>
       </footer>
 
       <LandingScripts />

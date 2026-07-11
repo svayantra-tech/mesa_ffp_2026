@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { isValidCohort } from '@/lib/cohorts'
 import { getEnabledCohorts } from '@/lib/cohort-visibility'
+import { SITE_HOST } from '@/lib/site'
 import { getDirectoryStudents } from '@/lib/db/queries'
 import DirectoryClient from './DirectoryClient'
 import CohortSwitcher from '@/app/components/CohortSwitcher'
@@ -50,7 +51,7 @@ export default async function DirectoryPage({ params }: { params: Promise<Params
           <Image src="/mesa-logos/mesa-logomark.png" alt="Mesa" width={22} height={22} quality={100} unoptimized style={{ borderRadius: 5, display: 'block', flexShrink: 0 }} />
           Built by <a href="https://mesaschool.co">Mesa School of Business</a> &nbsp;&middot;&nbsp; FFP 2026
         </div>
-        <div className="footer-r">ffp.mesaschool.co</div>
+        <div className="footer-r">{SITE_HOST}</div>
       </footer>
     </div>
   )

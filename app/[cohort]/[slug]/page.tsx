@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Script from 'next/script'
 import { isValidCohort, getCohort } from '@/lib/cohorts'
 import { instagramUrl, sanitizeInstagramHandle, truncateInstagramLabel, sanitizeWebsiteForDisplay, websiteHref } from '@/lib/instagram'
+import { SITE_URL, SITE_HOST } from '@/lib/site'
 import { getEnabledCohorts } from '@/lib/cohort-visibility'
 import { getStudentBySlug, getStudentMeta, type StudentShape, type BrandShape } from '@/lib/db/queries'
 import MarketingAssets from '@/app/[slug]/MarketingAssets'
@@ -256,7 +257,7 @@ export default async function PortfolioPage({ params }: { params: Promise<Params
             <Link href="https://mesaschool.co">Mesa School of Business</Link>
             {' '}&middot; FFP 2026 &middot; Not student-editable
           </div>
-          <div className="footer-row-r">ffp.mesaschool.co/{cohort}/{slug}</div>
+          <div className="footer-row-r">{SITE_HOST}/{cohort}/{slug}</div>
         </div>
       </section>
 
@@ -378,7 +379,7 @@ if (shareBtn) {
   shareBtn.addEventListener('click', function() {
     var name = ${JSON.stringify(studentName)};
     var title = name + " FFP Portfolio \\u00b7 Mesa 2026";
-    var url = "https://ffp.mesaschool.co/${cohort}/${slug}";
+    var url = "${SITE_URL}/${cohort}/${slug}";
     if (navigator.share) {
       navigator.share({ title: title, url: url }).catch(function(){});
     } else {
