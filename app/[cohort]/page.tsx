@@ -13,6 +13,7 @@ import { getEnabledCohorts } from '@/lib/cohort-visibility'
 import { SITE_HOST } from '@/lib/site'
 import {
   getBrandsBySlugs,
+  getFeaturedBrands,
   getAwardBrands,
   getAllStudentsBasic,
   getProgramMedia,
@@ -65,8 +66,16 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
   const cohortName = cohortMeta?.name ?? cohort
   const durationLabel = cohortMeta?.durationLabel ?? ''
 
+  // Top Performers: use the cohort's curated list if it has one, else auto-derive
+  // from this cohort's brands that have a feature_photo (revenue desc). Cohort-scoped
+  // either way — no hardcoded cross-cohort slugs.
+  const curatedTop = cohortMeta?.topPerformers ?? []
+  const topVenturesFetch = curatedTop.length
+    ? getBrandsBySlugs(cohort, curatedTop.map((t) => t.slug))
+    : getFeaturedBrands(cohort, 4)
+
   const [topVentures, awardBrands, allStudents, programMedia, enabledCohorts, stats] = await Promise.all([
-    getBrandsBySlugs(cohort, ['azuri', 'kintoken', 'tact', 'lysso']),
+    topVenturesFetch,
     getAwardBrands(cohort),
     getAllStudentsBasic(cohort),
     getProgramMedia(cohort),
@@ -95,17 +104,15 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
   const highlightPhotos = parseJsonUrls(media.landing_highlights)
   const ffp2027VideoId = media.landing_ffp2027_video_id || null
 
-  const ventureOrder = ['azuri', 'kintoken', 'tact', 'lysso']
-  const sortedVentures = ventureOrder
-    .map(slug => topVentures?.find(v => v.slug === slug))
-    .filter(Boolean) as NonNullable<typeof topVentures>
+  // Curated cohorts keep their exact order + award labels; auto cohorts show the
+  // fetched featured brands (already revenue-sorted) as-is.
+  const sortedVentures = (curatedTop.length
+    ? curatedTop.map((t) => topVentures?.find((v) => v.slug === t.slug)).filter(Boolean)
+    : (topVentures ?? [])) as NonNullable<typeof topVentures>
 
-  const ventureAwardLabels: Record<string, string> = {
-    azuri: 'Highest Revenue',
-    kintoken: '2nd Highest Revenue',
-    tact: 'Best Pitch',
-    lysso: 'Spirit Award',
-  }
+  const ventureAwardLabels: Record<string, string> = Object.fromEntries(
+    curatedTop.map((t) => [t.slug, t.label])
+  )
 
   return (
     <>
