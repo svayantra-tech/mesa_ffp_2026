@@ -19,7 +19,10 @@ if (process.env.MONGODB_DNS) {
 
 const COHORT = 'cohort-1'
 
+import { hardenOrExit } from './_guard'
+
 async function main() {
+  hardenOrExit('migrate-cohorts')
   const uri = process.env.MONGODB_URI
   if (!uri) throw new Error('MONGODB_URI not set in .env.local')
 

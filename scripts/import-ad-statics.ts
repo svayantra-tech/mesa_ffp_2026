@@ -76,7 +76,10 @@ type BrandResult =
 
 // ── main ──────────────────────────────────────────────────────────────────────
 
+import { hardenOrExit } from './_guard'
+
 async function main() {
+  hardenOrExit('import-ad-statics')
   console.log('Connecting to MongoDB…')
   await connectDB()
 

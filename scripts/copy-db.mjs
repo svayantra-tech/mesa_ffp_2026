@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import dns from 'node:dns'
 import { MongoClient } from 'mongodb'
+import { isDryRun } from './_guard.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
@@ -25,6 +26,18 @@ if (process.env.MIGRATE_DNS) dns.setServers(process.env.MIGRATE_DNS.split(','))
 const SOURCE = process.argv[2] || 'ffpportfolio'
 const DEST = process.argv[3] || 'database'
 const COLLECTIONS = ['brands', 'students', 'program_media']
+
+// ── Safety rails (this script deleteMany()s the DEST and rebuilds indexes) ──
+const DRY = isDryRun() // default TRUE
+console.log(`[guard] copy-db: source="${SOURCE}" dest="${DEST}" DRY_RUN=${DRY}`)
+if (DRY) {
+  console.log(`◆ DRY RUN (default). Would WIPE + copy into "${DEST}". No writes. Set DRY_RUN=false to run.`)
+  process.exit(0)
+}
+if (DEST === 'database' && !process.argv.includes('--i-mean-prod')) {
+  console.error('ABORT: dest is PROD ("database") with DRY_RUN=false. Re-run with --i-mean-prod to confirm.')
+  process.exit(2)
+}
 
 const client = new MongoClient(process.env.MONGODB_URI)
 await client.connect()

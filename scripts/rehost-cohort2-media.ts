@@ -109,7 +109,10 @@ type Line = { label: string; oldUrl: string; newUrl?: string; failed?: string }
 
 // ── main ───────────────────────────────────────────────────────────────────────
 
+import { hardenOrExit } from './_guard'
+
 async function main() {
+  hardenOrExit('rehost-cohort2-media')
   const { connectDB } = await import('../lib/mongodb')
   const { Brand } = (await import('../lib/models/Brand')) as { Brand: typeof BrandModel }
   const { Student } = (await import('../lib/models/Student')) as { Student: typeof StudentModel }
