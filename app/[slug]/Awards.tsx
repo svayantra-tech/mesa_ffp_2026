@@ -2,29 +2,6 @@
 
 import { useState } from 'react'
 
-function generateAwardDesc(title: string): string {
-  const t = title.toLowerCase()
-  if (t.includes('bonding') || t.includes('team spirit') || t.includes('teamwork'))
-    return 'Awarded for the camaraderie and spirit this team brought to the Future Founder Program every single day.'
-  if (t.includes('pitch') || t.includes('presenter') || t.includes('presentation'))
-    return 'Recognized for delivering a compelling, persuasive pitch at FFP Demo Day 2026.'
-  if (t.includes('innovat') || t.includes('creative') || t.includes('idea'))
-    return 'Acknowledged for bringing a genuinely inventive idea to life during FFP 2026.'
-  if (t.includes('revenue') || t.includes('sales') || t.includes('top earn'))
-    return 'Recognized for generating the highest revenue among all ventures in the FFP 2026 cohort.'
-  if (t.includes('customer') || t.includes('market'))
-    return 'Awarded for reaching the most customers and proving strong market demand during FFP 2026.'
-  if (t.includes('product') || t.includes('design') || t.includes('brand'))
-    return 'Recognized for building the standout product of the FFP 2026 cohort.'
-  if (t.includes('social') || t.includes('media') || t.includes('content'))
-    return 'Awarded for producing high-impact, creative content throughout the Future Founder Program.'
-  if (t.includes('leader') || t.includes('mentor'))
-    return 'Recognized as a natural leader and anchor for the team throughout the Future Founder Program.'
-  if (t.includes('persever') || t.includes('resilient') || t.includes('grit'))
-    return 'Awarded for exceptional resilience and grit through every challenge in FFP 2026.'
-  return 'Recognized for outstanding performance and contribution during the Future Founder Program 2026.'
-}
-
 type Props = {
   awards: string[]
   award_descriptions: string[]
@@ -38,9 +15,11 @@ export default function Awards({ awards, award_descriptions, awardPhoto }: Props
 
   const hasPhoto = !!awardPhoto && awardPhoto.startsWith('http')
 
+  // Description shows ONLY real curated copy — never a fabricated line. Empty today
+  // for both cohorts, so cards render title-only until real descriptions are added.
   const cards = awards.map((title, i) => ({
     title,
-    description: award_descriptions[i]?.trim() || generateAwardDesc(title),
+    description: award_descriptions[i]?.trim() || '',
   }))
 
   const visibleCards = expanded ? cards : cards.slice(0, 3)
@@ -87,7 +66,7 @@ export default function Awards({ awards, award_descriptions, awardPhoto }: Props
               </div>
               <div className="award-v2-left">
                 <div className="award-title">{card.title}</div>
-                <p className="award-desc">{card.description}</p>
+                {card.description && <p className="award-desc">{card.description}</p>}
               </div>
             </div>
           ))}
