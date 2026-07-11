@@ -40,17 +40,18 @@ function PhotoSlot({ src }: { src?: string }) {
 
 interface DemoDayProps {
   demoDayImages: string[]
+  sectionNum?: string
   demoPhotos?: string[]
 }
 
-export default function DemoDay({ demoDayImages, demoPhotos = [] }: DemoDayProps) {
+export default function DemoDay({ demoDayImages, demoPhotos = [], sectionNum = '02' }: DemoDayProps) {
   if (demoDayImages.length === 0) return null
 
   return (
     <section id="demo-day" className="dd-section" role="region" aria-label="Demo Day">
       {/* LAYER 1 — diagonal cream panel */}
       <div className="dd-diag">
-        <div className="section-num">02</div>
+        <div className="section-num">{sectionNum}</div>
         <div className="section-num-small">How they pitched</div>
         <h2 className="section-title">DEMO DAY <span className="light">to Tier-1 VCs</span></h2>
         <p className="dd-desc">
