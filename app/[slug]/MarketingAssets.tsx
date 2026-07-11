@@ -106,14 +106,14 @@ function DriveTile({ id, active }: { id: string; active: boolean }) {
 type Props = { videos: string[]; adStatics?: string[] }
 
 export default function MarketingAssets({ videos, adStatics = [] }: Props) {
+  // F4 (AWAITING SIGN-OFF): no cap — render every classified video. cohort-1 max is 3
+  // (unchanged); cohort-2 has 4. Grid reflows by count.
   const items = (Array.isArray(videos) ? videos : [])
-    .slice(0, 3)
     .map(classifyVideo)
     .filter((v): v is VideoItem => v !== null)
 
   const staticAds = (Array.isArray(adStatics) ? adStatics : [])
     .filter((url) => url.startsWith('http'))
-    .slice(0, 5)
 
   const sectionRef = useRef<HTMLDivElement>(null)
   const tileRefs = useRef<(HTMLDivElement | null)[]>([])
