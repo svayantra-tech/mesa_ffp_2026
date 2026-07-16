@@ -297,10 +297,12 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
                       <div className="feat-card-stat-val red">{formatRevenue(venture.revenue)}</div>
                       <div className="feat-card-stat-lbl">Revenue</div>
                     </div>
+                    {venture.customers > 0 && (
                     <div className="feat-card-stat">
                       <div className="feat-card-stat-val">{venture.customers}</div>
                       <div className="feat-card-stat-lbl">Customers</div>
                     </div>
+                    )}
                   </div>
                   {founderNames && <div className="feat-card-founders">{founderNames}</div>}
                 </div>
