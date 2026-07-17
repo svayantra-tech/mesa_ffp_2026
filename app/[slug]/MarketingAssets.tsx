@@ -2,14 +2,14 @@
 
 // Video creatives + static ad images — parent <section> slide is provided by page.tsx.
 //
-// Videos autoplay MUTED when scrolled into view and pause when they leave, with
-// only one playing per section at a time:
-//   • YouTube (cohort-1): controlled reliably via the IFrame API (enablejsapi +
-//     postMessage playVideo/pauseVideo/mute/unMute).
-//   • Google Drive (cohort-2): Drive's embed has no parent-page control API, so
-//     this is BEST-EFFORT — the iframe is (re)loaded with ?autoplay=1 when it
-//     becomes the in-view video, and a tap-to-play affordance stays available in
-//     case Drive silently ignores autoplay.
+// ALL videos autoplay MUTED simultaneously when scrolled into view, and pause
+// when they leave:
+//   • YouTube: controlled via the IFrame API (enablejsapi + postMessage
+//     playVideo/pauseVideo/mute/unMute).
+//   • Google Drive: Drive's embed has no parent-page control API, so this is
+//     BEST-EFFORT — the iframe is (re)loaded with ?autoplay=1 when it scrolls
+//     into view, and a tap-to-play affordance stays available in case Drive
+//     silently ignores autoplay.
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 function extractYouTubeId(url: string): string | null {
@@ -142,7 +142,7 @@ export default function MarketingAssets({ videos, adStatics = [] }: Props) {
   const tileRefs = useRef<(HTMLDivElement | null)[]>([])
   const ratios = useRef<Record<number, number>>({})
   const [loaded, setLoaded] = useState(false)
-  const [primary, setPrimary] = useState(-1)
+  const [activeTiles, setActiveTiles] = useState<Set<number>>(new Set())
   const [muted, setMuted] = useState(true)
   const [erroredAds, setErroredAds] = useState<Set<number>>(new Set())
 
@@ -166,7 +166,8 @@ export default function MarketingAssets({ videos, adStatics = [] }: Props) {
     return () => io.disconnect()
   }, [items.length, loaded])
 
-  // Once loaded, pick the single most-visible tile (>= 60%) as the one that plays.
+  // Once loaded, track which tiles are >= 50% visible — ALL visible tiles play
+  // simultaneously (muted). When a tile scrolls out it pauses.
   useEffect(() => {
     if (!loaded || !items.length) return
     const io = new IntersectionObserver(
@@ -175,14 +176,17 @@ export default function MarketingAssets({ videos, adStatics = [] }: Props) {
           const idx = Number((e.target as HTMLElement).dataset.vidx)
           ratios.current[idx] = e.isIntersecting ? e.intersectionRatio : 0
         }
-        let bestIdx = -1
-        let bestRatio = 0
+        const next = new Set<number>()
         for (const [k, v] of Object.entries(ratios.current)) {
-          if (v > bestRatio) { bestRatio = v; bestIdx = Number(k) }
+          if (v >= 0.5) next.add(Number(k))
         }
-        setPrimary(bestRatio >= 0.6 ? bestIdx : -1)
+        setActiveTiles((prev) => {
+          // Only update state if the set actually changed to avoid unnecessary re-renders
+          if (prev.size === next.size && [...prev].every((v) => next.has(v))) return prev
+          return next
+        })
       },
-      { threshold: [0, 0.25, 0.5, 0.6, 0.75, 1] }
+      { threshold: [0, 0.25, 0.5, 0.75, 1] }
     )
     tileRefs.current.forEach((el) => el && io.observe(el))
     return () => io.disconnect()
@@ -219,7 +223,7 @@ export default function MarketingAssets({ videos, adStatics = [] }: Props) {
                   </button>
                 ) : it.kind === 'youtube' ? (
                   <>
-                    <YouTubeTile id={it.id} active={i === primary} muted={muted} />
+                    <YouTubeTile id={it.id} active={activeTiles.has(i)} muted={muted} />
                     <button
                       type="button"
                       className="ma-mute-btn"
@@ -235,13 +239,13 @@ export default function MarketingAssets({ videos, adStatics = [] }: Props) {
                     </button>
                   </>
                 ) : (
-                  <DriveTile id={it.id} active={i === primary} />
+                  <DriveTile id={it.id} active={activeTiles.has(i)} />
                 )}
               </div>
             ))}
           </div>
           {hasYouTube && (
-            <p className="ma-video-hint">Videos play muted as you scroll — tap the speaker to hear audio.</p>
+            <p className="ma-video-hint">All videos autoplay muted — tap a speaker to hear that one.</p>
           )}
         </>
       )}
