@@ -16,6 +16,7 @@ import {
   getAllStudentsBasic,
   getProgramMedia,
   getCohortStats,
+  getTopBrandByRevenue,
   type BrandShape,
 } from '@/lib/db/queries'
 import type { Metadata } from 'next'
@@ -64,13 +65,14 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
   const cohortName = cohortMeta?.name ?? cohort
   const durationLabel = cohortMeta?.durationLabel ?? ''
 
-  const [topVentures, awardBrands, allStudents, programMedia, enabledCohorts, stats] = await Promise.all([
+  const [topVentures, awardBrands, allStudents, programMedia, enabledCohorts, stats, topBrand] = await Promise.all([
     getBrandsBySlugs(cohort, ['azuri', 'kintoken', 'tact', 'lysso']),
     getAwardBrands(cohort),
     getAllStudentsBasic(cohort),
     getProgramMedia(cohort),
     getEnabledCohorts(),
     getCohortStats(cohort),
+    getTopBrandByRevenue(cohort),
   ])
   // "₹16L+" style — lakhs rounded to nearest, with a "+", off the real revenue sum
   // (matches the current prod display: cohort-1's ₹15.9L renders as ₹16L+).
@@ -197,12 +199,14 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
               </div>
               <div><div className="highlight-label">Duration</div><div className="highlight-val">2-Day Mega Flea Market</div></div>
             </div>
-            <div className="highlight-item reveal d4">
-              <div className="highlight-icon">
-                <svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="6" /><path d="M18.09 10.37A6 6 0 1110.34 18" /><path d="M7 6h2v4" /></svg>
+            {topBrand && (
+              <div className="highlight-item reveal d4">
+                <div className="highlight-icon">
+                  <svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="6" /><path d="M18.09 10.37A6 6 0 1110.34 18" /><path d="M7 6h2v4" /></svg>
+                </div>
+                <div><div className="highlight-label">Highest Revenue</div><div className="highlight-val">₹{topBrand.revenue.toLocaleString('en-IN')} — {topBrand.name}</div></div>
               </div>
-              <div><div className="highlight-label">Highest Revenue</div><div className="highlight-val">₹3,04,550 — Azuri</div></div>
-            </div>
+            )}
           </div>
         </section>
       )}
@@ -212,6 +216,7 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
       {/* 02 — DEMO DAY */}
       <DemoDay
         demoDayImages={demoDayImages}
+        stats={cohortMeta?.demoDay ?? { ventures: stats.ventures, awards: stats.awardedVentures, pitchLabel: '5 min', vcJudges: 0 }}
         demoPhotos={[
           media.demo_photo_1,
           media.demo_photo_2,

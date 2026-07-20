@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import ImageCarousel from './ImageCarousel'
+import type { DemoDayStats } from '@/lib/cohorts'
 
 const CAMERA_ICON = (
   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="rgba(15,25,25,0.22)" strokeWidth="1.4">
@@ -41,9 +42,10 @@ function PhotoSlot({ src }: { src?: string }) {
 interface DemoDayProps {
   demoDayImages: string[]
   demoPhotos?: string[]
+  stats: DemoDayStats
 }
 
-export default function DemoDay({ demoDayImages, demoPhotos = [] }: DemoDayProps) {
+export default function DemoDay({ demoDayImages, demoPhotos = [], stats }: DemoDayProps) {
   if (demoDayImages.length === 0) return null
 
   return (
@@ -66,19 +68,19 @@ export default function DemoDay({ demoDayImages, demoPhotos = [] }: DemoDayProps
         {/* Stats moved to left panel, under text */}
         <div className="dd-stats dd-stats-light">
           <div className="dd-chip">
-            <span className="dd-chip-val">29</span>
+            <span className="dd-chip-val">{stats.ventures}</span>
             <span className="dd-chip-lbl">Ventures</span>
           </div>
           <div className="dd-chip">
-            <span className="dd-chip-val">8</span>
+            <span className="dd-chip-val">{stats.awards}</span>
             <span className="dd-chip-lbl">Awards</span>
           </div>
           <div className="dd-chip">
-            <span className="dd-chip-val">5 min</span>
+            <span className="dd-chip-val">{stats.pitchLabel}</span>
             <span className="dd-chip-lbl">Per Pitch</span>
           </div>
           <div className="dd-chip">
-            <span className="dd-chip-val">3</span>
+            <span className="dd-chip-val">{stats.vcJudges}</span>
             <span className="dd-chip-lbl">VC Judges</span>
           </div>
         </div>

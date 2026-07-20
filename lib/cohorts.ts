@@ -1,15 +1,38 @@
+// Demo Day chip stats — non-derived, per-cohort facts (how the pitch event ran).
+// These are NOT computed from DB counts; they're what actually happened at that
+// cohort's Demo Day, so each cohort carries its own values.
+export type DemoDayStats = {
+  ventures: number
+  awards: number
+  pitchLabel: string // e.g. "5 min"
+  vcJudges: number
+}
+
 export type Cohort = {
   slug: string
   name: string
   year: number
   durationLabel: string // program duration, e.g. "2 Weeks" — not derived data
+  demoDay: DemoDayStats
 }
 
 // Single source of truth for valid cohorts.
 // To add Cohort 3+: append an entry here — nothing else changes.
 export const COHORTS: Cohort[] = [
-  { slug: 'cohort-1', name: 'Cohort 1', year: 2026, durationLabel: '2 Weeks' },
-  { slug: 'cohort-2', name: 'Cohort 2', year: 2026, durationLabel: '2 Weeks' },
+  {
+    slug: 'cohort-1',
+    name: 'Cohort 1',
+    year: 2026,
+    durationLabel: '2 Weeks',
+    demoDay: { ventures: 29, awards: 8, pitchLabel: '5 min', vcJudges: 3 },
+  },
+  {
+    slug: 'cohort-2',
+    name: 'Cohort 2',
+    year: 2026,
+    durationLabel: '2 Weeks',
+    demoDay: { ventures: 30, awards: 8, pitchLabel: '5 min', vcJudges: 4 },
+  },
 ]
 
 export const LATEST_COHORT: string = COHORTS[COHORTS.length - 1].slug
