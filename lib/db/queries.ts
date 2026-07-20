@@ -211,6 +211,17 @@ export async function getFeaturedBrands(cohort: string, limit = 4): Promise<Bran
   return rows.map(serializeBrand)
 }
 
+/** The single highest-revenue venture for a cohort (for the "Highest Revenue"
+ *  highlight). Returns null when the cohort has no venture with revenue. */
+export async function getTopBrandByRevenue(
+  cohort: string
+): Promise<{ name: string; revenue: number } | null> {
+  await connectDB()
+  const b = await Brand.findOne({ cohort }).sort({ revenue: -1 }).lean()
+  if (!b || !((b.revenue as number) > 0)) return null
+  return { name: (b.name as string) ?? '', revenue: (b.revenue as number) ?? 0 }
+}
+
 export async function getAwardBrands(cohort: string): Promise<BrandShape[]> {
   await connectDB()
   const rows = await Brand.find({ cohort, awards: { $exists: true, $ne: [] } })
