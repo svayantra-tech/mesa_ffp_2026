@@ -4,7 +4,7 @@
  * One place to get right = data isolation guaranteed across all cohorts.
  */
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { connectDB } from '@/lib/mongodb'
 import { Brand } from '@/lib/models/Brand'
 import { Student } from '@/lib/models/Student'
@@ -143,72 +143,109 @@ function toAdminBrand(b: any): AdminBrand {
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+// ─── Public read caching ─────────────────────────────────────────────────────
+//
+// Public pages are force-dynamic (the cohort visibility/preview gate in the
+// layout reads cookies), so without this every visit would re-run ~11 Atlas
+// queries. We cache the *data* instead: each read is memoized under a per-cohort
+// tag. Admin writes call revalidatePublic() → revalidateTag() to bust it
+// instantly; the TTL is only a safety net. Admin reads stay uncached (editors
+// must always see live data).
+
+const PUBLIC_TTL = 300 // seconds — on-demand revalidateTag keeps edits instant
+const cohortTag = (cohort: string) => `public:${cohort}`
+
+/** Memoize a cohort-scoped public read, tagged so admin writes can bust it. */
+function cachedCohortRead<T>(
+  name: string,
+  cohort: string,
+  extraKey: string[],
+  loader: () => Promise<T>
+): Promise<T> {
+  return unstable_cache(loader, [name, cohort, ...extraKey], {
+    revalidate: PUBLIC_TTL,
+    tags: [cohortTag(cohort)],
+  })()
+}
+
 // ─── Public reads ──────────────────────────────────────────────────────────
 
 export async function getAllStudentSlugs(cohort: string): Promise<string[]> {
-  await connectDB()
-  const rows = await Student.find({ cohort }, 'slug').lean()
-  return rows.map((r) => r.slug as string).filter(Boolean)
+  return cachedCohortRead('getAllStudentSlugs', cohort, [], async () => {
+    await connectDB()
+    const rows = await Student.find({ cohort }, 'slug').lean()
+    return rows.map((r) => r.slug as string).filter(Boolean)
+  })
 }
 
 export async function getStudentBySlug(cohort: string, slug: string): Promise<StudentShape | null> {
-  await connectDB()
-  const doc = await Student.findOne({ cohort, slug }).populate('brand_id').lean()
-  return doc ? serializeStudent(doc) : null
+  return cachedCohortRead('getStudentBySlug', cohort, [slug], async () => {
+    await connectDB()
+    const doc = await Student.findOne({ cohort, slug }).populate('brand_id').lean()
+    return doc ? serializeStudent(doc) : null
+  })
 }
 
 export async function getStudentMeta(
   cohort: string,
   slug: string
 ): Promise<{ name: string; brand: { name: string } | null } | null> {
-  await connectDB()
-  const doc = await Student.findOne({ cohort, slug }, 'name brand_id')
-    .populate('brand_id', 'name')
-    .lean()
-  if (!doc) return null
-  const brand =
-    doc.brand_id && typeof doc.brand_id === 'object'
-      ? (doc.brand_id as { name?: string })
-      : null
-  return { name: (doc.name as string) ?? '', brand: brand ? { name: brand.name ?? '' } : null }
+  return cachedCohortRead('getStudentMeta', cohort, [slug], async () => {
+    await connectDB()
+    const doc = await Student.findOne({ cohort, slug }, 'name brand_id')
+      .populate('brand_id', 'name')
+      .lean()
+    if (!doc) return null
+    const brand =
+      doc.brand_id && typeof doc.brand_id === 'object'
+        ? (doc.brand_id as { name?: string })
+        : null
+    return { name: (doc.name as string) ?? '', brand: brand ? { name: brand.name ?? '' } : null }
+  })
 }
 
 export async function getDirectoryStudents(
   cohort: string
 ): Promise<{ slug: string; name: string; brand: { name: string; description: string } | null }[]> {
-  await connectDB()
-  const rows = await Student.find({ cohort }, 'slug name brand_id')
-    .populate('brand_id', 'name description')
-    .sort({ name: 1 })
-    .lean()
-  return rows.map((s) => {
-    const brand =
-      s.brand_id && typeof s.brand_id === 'object'
-        ? (s.brand_id as { name?: string; description?: string })
-        : null
-    return {
-      slug: (s.slug as string) ?? '',
-      name: (s.name as string) ?? '',
-      brand: brand ? { name: brand.name ?? '', description: brand.description ?? '' } : null,
-    }
+  return cachedCohortRead('getDirectoryStudents', cohort, [], async () => {
+    await connectDB()
+    const rows = await Student.find({ cohort }, 'slug name brand_id')
+      .populate('brand_id', 'name description')
+      .sort({ name: 1 })
+      .lean()
+    return rows.map((s) => {
+      const brand =
+        s.brand_id && typeof s.brand_id === 'object'
+          ? (s.brand_id as { name?: string; description?: string })
+          : null
+      return {
+        slug: (s.slug as string) ?? '',
+        name: (s.name as string) ?? '',
+        brand: brand ? { name: brand.name ?? '', description: brand.description ?? '' } : null,
+      }
+    })
   })
 }
 
 export async function getBrandsBySlugs(cohort: string, slugs: string[]): Promise<BrandShape[]> {
-  await connectDB()
-  const rows = await Brand.find({ cohort, slug: { $in: slugs } }).lean()
-  return rows.map(serializeBrand)
+  return cachedCohortRead('getBrandsBySlugs', cohort, [...slugs].sort(), async () => {
+    await connectDB()
+    const rows = await Brand.find({ cohort, slug: { $in: slugs } }).lean()
+    return rows.map(serializeBrand)
+  })
 }
 
 // Fallback Top Performers for a cohort with no curated list: brands that have a
 // feature_photo, highest revenue first. Cohort-scoped, so it never leaks.
 export async function getFeaturedBrands(cohort: string, limit = 4): Promise<BrandShape[]> {
-  await connectDB()
-  const rows = await Brand.find({ cohort, feature_photo: { $nin: [null, ''] } })
-    .sort({ revenue: -1 })
-    .limit(limit)
-    .lean()
-  return rows.map(serializeBrand)
+  return cachedCohortRead('getFeaturedBrands', cohort, [String(limit)], async () => {
+    await connectDB()
+    const rows = await Brand.find({ cohort, feature_photo: { $nin: [null, ''] } })
+      .sort({ revenue: -1 })
+      .limit(limit)
+      .lean()
+    return rows.map(serializeBrand)
+  })
 }
 
 /** The single highest-revenue venture for a cohort (for the "Highest Revenue"
@@ -216,37 +253,45 @@ export async function getFeaturedBrands(cohort: string, limit = 4): Promise<Bran
 export async function getTopBrandByRevenue(
   cohort: string
 ): Promise<{ name: string; revenue: number } | null> {
-  await connectDB()
-  const b = await Brand.findOne({ cohort }).sort({ revenue: -1 }).lean()
-  if (!b || !((b.revenue as number) > 0)) return null
-  return { name: (b.name as string) ?? '', revenue: (b.revenue as number) ?? 0 }
+  return cachedCohortRead('getTopBrandByRevenue', cohort, [], async () => {
+    await connectDB()
+    const b = await Brand.findOne({ cohort }).sort({ revenue: -1 }).lean()
+    if (!b || !((b.revenue as number) > 0)) return null
+    return { name: (b.name as string) ?? '', revenue: (b.revenue as number) ?? 0 }
+  })
 }
 
 export async function getAwardBrands(cohort: string): Promise<BrandShape[]> {
-  await connectDB()
-  const rows = await Brand.find({ cohort, awards: { $exists: true, $ne: [] } })
-    .sort({ revenue: -1 })
-    .lean()
-  return rows.map(serializeBrand)
+  return cachedCohortRead('getAwardBrands', cohort, [], async () => {
+    await connectDB()
+    const rows = await Brand.find({ cohort, awards: { $exists: true, $ne: [] } })
+      .sort({ revenue: -1 })
+      .lean()
+    return rows.map(serializeBrand)
+  })
 }
 
 export async function getAllStudentsBasic(
   cohort: string
 ): Promise<{ name: string; brand_id: string | null }[]> {
-  await connectDB()
-  const rows = await Student.find({ cohort }, 'name brand_id').lean()
-  return rows.map((s) => ({
-    name: (s.name as string) ?? '',
-    brand_id: s.brand_id ? String(s.brand_id) : null,
-  }))
+  return cachedCohortRead('getAllStudentsBasic', cohort, [], async () => {
+    await connectDB()
+    const rows = await Student.find({ cohort }, 'name brand_id').lean()
+    return rows.map((s) => ({
+      name: (s.name as string) ?? '',
+      brand_id: s.brand_id ? String(s.brand_id) : null,
+    }))
+  })
 }
 
 export async function getProgramMedia(
   cohort: string
 ): Promise<{ key: string; value: string }[]> {
-  await connectDB()
-  const rows = await ProgramMedia.find({ cohort }, 'key value').lean()
-  return rows.map((r) => ({ key: (r.key as string) ?? '', value: (r.value as string) ?? '' }))
+  return cachedCohortRead('getProgramMedia', cohort, [], async () => {
+    await connectDB()
+    const rows = await ProgramMedia.find({ cohort }, 'key value').lean()
+    return rows.map((r) => ({ key: (r.key as string) ?? '', value: (r.value as string) ?? '' }))
+  })
 }
 
 export type CohortStats = {
@@ -258,14 +303,16 @@ export type CohortStats = {
 
 /** Live, cohort-scoped counts for the landing page + metadata (no hardcoded numbers). */
 export async function getCohortStats(cohort: string): Promise<CohortStats> {
-  await connectDB()
-  const [students, ventures, awardedVentures, revenueAgg] = await Promise.all([
-    Student.countDocuments({ cohort }),
-    Brand.countDocuments({ cohort }),
-    Brand.countDocuments({ cohort, awards: { $exists: true, $ne: [] } }),
-    Brand.aggregate([{ $match: { cohort } }, { $group: { _id: null, total: { $sum: '$revenue' } } }]),
-  ])
-  return { students, ventures, awardedVentures, totalRevenue: revenueAgg[0]?.total ?? 0 }
+  return cachedCohortRead('getCohortStats', cohort, [], async () => {
+    await connectDB()
+    const [students, ventures, awardedVentures, revenueAgg] = await Promise.all([
+      Student.countDocuments({ cohort }),
+      Brand.countDocuments({ cohort }),
+      Brand.countDocuments({ cohort, awards: { $exists: true, $ne: [] } }),
+      Brand.aggregate([{ $match: { cohort } }, { $group: { _id: null, total: { $sum: '$revenue' } } }]),
+    ])
+    return { students, ventures, awardedVentures, totalRevenue: revenueAgg[0]?.total ?? 0 }
+  })
 }
 
 // ─── Admin reads ───────────────────────────────────────────────────────────
@@ -505,6 +552,11 @@ export async function upsertProgramMedia(
 // ─── Cache revalidation ────────────────────────────────────────────────────
 
 export function revalidatePublic(cohort: string) {
+  // Bust the cached public reads for this cohort (see cachedCohortRead) so admin
+  // edits show up immediately, then refresh the rendered pages. `{ expire: 0 }`
+  // forces the next request to fetch fresh data (read-your-writes) rather than
+  // serving stale-while-revalidate.
+  revalidateTag(cohortTag(cohort), { expire: 0 })
   revalidatePath(`/${cohort}`)
   revalidatePath(`/${cohort}/directory`)
   revalidatePath(`/${cohort}/[slug]`, 'page')
