@@ -8,6 +8,7 @@ import HeroImage from '@/app/components/HeroImage'
 import FeatCardImage from '@/app/components/FeatCardImage'
 import YoutubeEmbed from '@/app/components/YoutubeEmbed'
 import CohortSwitcher from '@/app/components/CohortSwitcher'
+import NavMobileMenu from '@/app/components/NavMobileMenu'
 import { isValidCohort, getCohort } from '@/lib/cohorts'
 import { getEnabledCohorts } from '@/lib/cohort-visibility'
 import { SITE_HOST } from '@/lib/site'
@@ -138,17 +139,19 @@ export default async function HomePage({ params }: { params: Promise<Params> }) 
             <Image src="/assets/mesa-logo.png" alt="Mesa School of Business" width={75} height={28} quality={100} className="nav-logo" priority />
           </Link>
         </div>
-        <div className="nav-center">
-          {fleaPhotos.length > 0 && <a href="#what-they-built">The Program</a>}
-          {demoDayImages.length > 0 && <a href="#demo-day">Demo Day</a>}
-          <a href="#enquire">{nextCohortLabel}</a>
-          {sortedVentures.length > 0 && <a href="#ventures">Ventures</a>}
-        </div>
-        <CohortSwitcher cohorts={enabledCohorts} currentCohort={cohort} pageType="landing" />
-        <Link href={`/${cohort}/directory`} className="nav-cta">
-          <svg viewBox="0 0 16 16"><path d="M6 2h8M6 6h8M6 10h8M6 14h8M2 2h0M2 6h0M2 10h0M2 14h0" strokeLinecap="round" /></svg>
-          Browse Students
-        </Link>
+        <NavMobileMenu>
+          <div className="nav-center">
+            {fleaPhotos.length > 0 && <a href="#what-they-built">The Program</a>}
+            {demoDayImages.length > 0 && <a href="#demo-day">Demo Day</a>}
+            <a href="#enquire">{nextCohortLabel}</a>
+            {sortedVentures.length > 0 && <a href="#ventures">Ventures</a>}
+          </div>
+          <CohortSwitcher cohorts={enabledCohorts} currentCohort={cohort} pageType="landing" />
+          <Link href={`/${cohort}/directory`} className="nav-cta">
+            <svg viewBox="0 0 16 16"><path d="M6 2h8M6 6h8M6 10h8M6 14h8M2 2h0M2 6h0M2 10h0M2 14h0" strokeLinecap="round" /></svg>
+            Browse Students
+          </Link>
+        </NavMobileMenu>
       </nav>
 
       {/* HERO */}

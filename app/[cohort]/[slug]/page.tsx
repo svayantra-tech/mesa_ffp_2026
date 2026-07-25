@@ -14,6 +14,7 @@ import PersonalGrowth from '@/app/[slug]/PersonalGrowth'
 import CertificateViewer from '@/app/[slug]/CertificateViewerClient'
 import MomentGrid from '@/app/[slug]/MomentGrid'
 import CohortSwitcher from '@/app/components/CohortSwitcher'
+import NavMobileMenu from '@/app/components/NavMobileMenu'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -105,20 +106,22 @@ export default async function PortfolioPage({ params }: { params: Promise<Params
             Mesa <span>FFP</span> &middot; 2026
           </Link>
         </div>
-        <div className="nav-center">
-          {momentPhotos.length > 0 && <a href="#moments">Moments</a>}
-          {hasCreatives && <a href="#creatives">Creatives</a>}
-          <a href="#ai">AI Tools</a>
-          {awards.length > 0 && <a href="#awards">Awards</a>}
-          <a href="#cert">Certificate</a>
-        </div>
-        <CohortSwitcher cohorts={enabledCohorts} currentCohort={cohort} pageType="slug" slug={slug} />
-        <button className="nav-share" id="share-btn" data-name={student.name} data-cohort={cohort} data-slug={slug}>
-          <svg viewBox="0 0 16 16">
-            <path d="M4 8V4h4M8 4l4 4M10 10v4H2V6" />
-          </svg>
-          <span className="nav-share-text">Share portfolio</span>
-        </button>
+        <NavMobileMenu>
+          <div className="nav-center">
+            {momentPhotos.length > 0 && <a href="#moments">Moments</a>}
+            {hasCreatives && <a href="#creatives">Creatives</a>}
+            <a href="#ai">AI Tools</a>
+            {awards.length > 0 && <a href="#awards">Awards</a>}
+            <a href="#cert">Certificate</a>
+          </div>
+          <CohortSwitcher cohorts={enabledCohorts} currentCohort={cohort} pageType="slug" slug={slug} />
+          <button className="nav-share" id="share-btn" data-name={student.name} data-cohort={cohort} data-slug={slug}>
+            <svg viewBox="0 0 16 16">
+              <path d="M4 8V4h4M8 4l4 4M10 10v4H2V6" />
+            </svg>
+            <span className="nav-share-text">Share portfolio</span>
+          </button>
+        </NavMobileMenu>
       </nav>
 
       {/* SLIDE 1 — HERO */}

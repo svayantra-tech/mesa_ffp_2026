@@ -7,6 +7,7 @@ import { SITE_HOST } from '@/lib/site'
 import { getDirectoryStudents } from '@/lib/db/queries'
 import DirectoryClient from './DirectoryClient'
 import CohortSwitcher from '@/app/components/CohortSwitcher'
+import NavMobileMenu from '@/app/components/NavMobileMenu'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -33,15 +34,17 @@ export default async function DirectoryPage({ params }: { params: Promise<Params
             <Image src="/assets/mesa-logo.png" alt="Mesa School of Business" width={75} height={28} quality={100} className="nav-logo" priority />
           </Link>
         </div>
-        <div className="nav-center">
-          <Link href={`/${cohort}`}>Home</Link>
-          <a href="#" style={{ color: '#BA3B41' }}>Directory</a>
-        </div>
-        <CohortSwitcher cohorts={enabledCohorts} currentCohort={cohort} pageType="directory" />
-        <Link href={`/${cohort}`} className="nav-cta">
-          <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          Back to Home
-        </Link>
+        <NavMobileMenu>
+          <div className="nav-center">
+            <Link href={`/${cohort}`}>Home</Link>
+            <a href="#" style={{ color: '#BA3B41' }}>Directory</a>
+          </div>
+          <CohortSwitcher cohorts={enabledCohorts} currentCohort={cohort} pageType="directory" />
+          <Link href={`/${cohort}`} className="nav-cta">
+            <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            Back to Home
+          </Link>
+        </NavMobileMenu>
       </nav>
 
       <DirectoryClient students={students} ventureCount={ventureCount} cohort={cohort} />

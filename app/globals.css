@@ -36,6 +36,10 @@ nav{
 .nav-cta:hover{background:#9e3137}
 .nav-cta svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2}
 
+/* ── MOBILE NAV MENU (desktop: fully flattened, zero visual change) ── */
+.nav-menu,.nav-menu-panel,.nav-menu-panel-inner{display:contents}
+.nav-burger{display:none}
+
 /* ── HERO (full-width, no right panel) ── */
 .landing-hero{
   padding:32px 32px 80px;
@@ -327,8 +331,35 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:24p
 
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
-  nav{padding:0 24px}
-  .nav-center{display:none}
+  nav{padding:0 16px}
+  .nav-menu{display:flex;align-items:center}
+  .nav-burger{
+    display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;
+    width:38px;height:38px;padding:0;border:none;background:transparent;cursor:pointer;flex-shrink:0
+  }
+  .nav-burger span{display:block;width:20px;height:2px;background:#0F1919;border-radius:2px;transition:transform .2s ease,opacity .2s ease}
+  .nav-burger.is-open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .nav-burger.is-open span:nth-child(2){opacity:0}
+  .nav-burger.is-open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .nav-menu-panel{
+    display:block;position:fixed;top:60px;left:0;right:0;
+    max-height:0;overflow:hidden;background:#FFFBF3;
+    border-bottom:.5px solid rgba(15,25,25,0.08);
+    box-shadow:0 16px 32px rgba(15,25,25,0.1);
+    transition:max-height .25s ease;z-index:99
+  }
+  .nav-menu-panel.open{max-height:calc(100vh - 60px);overflow-y:auto}
+  .nav-menu-panel-inner{
+    display:flex;flex-direction:column;align-items:stretch;gap:18px;
+    padding:22px 24px 30px
+  }
+  .nav-menu-panel-inner .nav-center{display:flex;flex-direction:column;gap:16px}
+  .nav-menu-panel-inner .nav-center a{font-size:13px}
+  .nav-menu-panel-inner .cohort-switcher{flex-wrap:wrap;gap:8px}
+  .nav-menu-panel-inner .cs-pill{padding:8px 16px;font-size:12px}
+  .nav-menu-panel-inner .nav-cta,.nav-menu-panel-inner .nav-share{width:100%;justify-content:center;padding:13px}
+  .nav-menu-panel-inner .nav-cta svg,.nav-menu-panel-inner .nav-share svg{display:inline-block !important}
+  .nav-menu-panel-inner .nav-share-text{display:inline !important}
   .landing-hero{padding:60px 24px 50px;min-height:auto}
   .hero-img{display:none}
   .hero-text{max-width:100%}
@@ -740,12 +771,6 @@ section.awards-section{background:#0F1919;border-top:0.5px solid rgba(255,255,25
   .hs{flex:1 1 45%}
   .chess-frame{max-width:260px}
   .contact-heading{font-size:42px}
-  .nav-cta{padding:6px 12px;font-size:11px;gap:4px}
-  .nav-cta svg{display:none}
-  .nav-share{padding:6px 10px}
-  .nav-share-text{display:none}
-  .cohort-switcher{gap:4px}
-  .cs-pill{padding:4px 9px;font-size:10px}
 }
 
 /* ===== DIRECTORY PAGE STYLES ===== */
